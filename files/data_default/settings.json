@@ -1,0 +1,23 @@
+{
+	"servers": {
+		"http": {
+			"port": 1887
+		},
+		"smtp": {
+			"host": "",
+			"port": 25,
+			"fromAddress": "",
+			"fromName": "",
+			"pass": ""
+		}
+	},
+	"addressPrefix": "https://reto.tejo.org/",
+	"bcryptCost": 10,
+	"trustLocalProxy": true,
+	"loginLimit": {
+		"max": 20,
+		"time": 900,
+		"delay": 100
+	},
+	"sessionSecret": null
+}
