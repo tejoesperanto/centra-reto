@@ -10,27 +10,19 @@ import path from 'path';
 import mergeOptions from 'merge-options';
 import SQLDatabase from 'better-sqlite3';
 import moment from 'moment-timezone';
+import stream from 'stream';
+import readline from 'readline';
 
 import CRHttp from './http';
+import CRSmtp from './smtp';
+import CRCmd from './cmd';
 
 (async () => {
 	const DBs = [ 'users' ];
 
 	global.CR = {
 		version: require('../package.json').version,
-		log: winston.createLogger({
-			level: 'info',
-			format: winston.format.combine(
-				winston.format.splat(),
-				winston.format.colorize(),
-				winston.format.timestamp({
-					format: () => moment.tz('UTC').format('YYYY-MM-DD HH:mm:ss:SSS [Z]')
-				}),
-				winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
-			),
-			transports: [ new winston.transports.Console() ],
-
-		}),
+		log: null, // init
 		argv: null, // init
 		dataDir: null, // init
 		defaultDataDir: path.normalize(path.join(__dirname, '../files/data_default')),
@@ -38,10 +30,35 @@ import CRHttp from './http';
 		db: {}, // init
 		app: null, // init
 		cacheEnabled: true,
-		limiter: null // init
+		limiter: null, // init
+		smtp: null, // init
+		reader: readline.createInterface(process.stdin, process.stdout),
 	};
 
 	// Init
+	// Set up logging
+	const logStream = new stream.Writable({
+		write: (chunk, encoding, callback) => {
+			readline.cursorTo(process.stdout, 0);
+			process.stdout.write(chunk, encoding);
+			CR.reader.prompt(true);
+			callback();
+		}
+	});
+
+	CR.log = winston.createLogger({
+		level: 'info',
+		format: winston.format.combine(
+			winston.format.splat(),
+			winston.format.colorize(),
+			winston.format.timestamp({
+				format: () => moment.tz('UTC').format('YYYY-MM-DD HH:mm:ss:SSS [Z]')
+			}),
+			winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
+		),
+		transports: [ new winston.transports.Stream({ stream: logStream }) ]
+	});
+	
 	CR.log.info("Centra Reto versio %s", CR.version)
 
 	// Read args
@@ -108,6 +125,12 @@ import CRHttp from './http';
 		CR.db[dbName] = new SQLDatabase(path.join(CR.dataDir, dbName + ".db"));
 	}
 
+	// Create smtp server
+	CRSmtp.init();
+
 	// Create http server
-	CRHttp.init();
+	await CRHttp.init();
+
+	// Read command input
+	CRCmd.init();
 })();

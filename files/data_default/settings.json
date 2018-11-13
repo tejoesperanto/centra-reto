@@ -5,13 +5,19 @@
 		},
 		"smtp": {
 			"host": "",
-			"port": 25,
-			"fromAddress": "",
-			"fromName": "",
-			"pass": ""
+			"port": 465,
+			"secure": true,
+			"auth": {
+				"user": "",
+				"pass": ""
+			}
 		}
 	},
-	"addressPrefix": "https://reto.tejo.org/",
+	"emailFrom": {
+		"address": "",
+		"name": ""
+	},
+	"addressPrefix": "",
 	"bcryptCost": 10,
 	"trustLocalProxy": true,
 	"loginLimit": {
