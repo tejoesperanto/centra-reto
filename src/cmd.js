@@ -35,7 +35,20 @@ async function parseCmd (cmdRaw) {
 		return;
 	}
 
-	cmds[cmdBits[0]].cmd(cmdBits.slice(1));
+	try {
+		cmds[cmdBits[0]].cmd(
+			cmdBits.slice(1),
+			(type, text, format) => {
+				if (type === 'SYNTAX') {
+					type = 'error';
+					text = 'malĝusta sintakso, provu `helpo [komando]`';
+				}
+				logCmd(type, cmdBits[0], text, format);
+			}
+		);
+	} catch (e) {
+		logCmd('error', cmdBits[0], 'okazis eraro %j', e);
+	}
 }
 
 function readCmd () {
