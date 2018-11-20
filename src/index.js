@@ -15,7 +15,7 @@ import readline from 'readline';
 
 import CRHttp from './http';
 import CRSmtp from './smtp';
-import CRCmd from './cmd';
+import * as CRCmd from './cmd';
 
 (async () => {
 	const DBs = [ 'users' ];

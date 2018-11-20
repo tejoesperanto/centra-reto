@@ -1,6 +1,6 @@
 import * as cmds from '.';
 
-export function cmd (bits, log) {
+export async function cmd (bits, log) {
 	if (bits.length === 0 || (bits.length === 1 && bits[0] == 'helpo')) {
 		// General help
 		let cmdsSorted = Object.keys(cmds).sort();

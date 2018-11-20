@@ -5,7 +5,7 @@ const csvParse = promisify(_csvParse);
 
 import * as cmds from './cmds';
 
-function init () {
+export function init () {
 	handleCmd();
 }
 
@@ -36,7 +36,7 @@ async function parseCmd (cmdRaw) {
 	}
 
 	try {
-		cmds[cmdBits[0]].cmd(
+		await cmds[cmdBits[0]].cmd(
 			cmdBits.slice(1),
 			(type, text, ...format) => {
 				if (type === 'SYNTAX') {
@@ -53,17 +53,23 @@ async function parseCmd (cmdRaw) {
 
 function readCmd () {
 	return new Promise((resolve, reject) => {
-		CR.reader.question('> ', cmdRaw => {
-			resolve(cmdRaw);
-		});
+		CR.reader.question('> ', cmdRaw => { resolve(cmdRaw) });
 	});
 }
 
-function logCmd (type, cmd, text, ...format) {
+export function logCmd (type, cmd, text, ...format) {
 	CR.log[type](`${cmd}: ${text}`, ...format);
 }
 
-export default {
-	init: init,
-	logCmd: logCmd
+export function prompt (q) {
+	return new Promise((resolve, reject) => {
+		CR.reader.question(q, a => { resolve(a) });
+	});
+}
+
+export async function promptYesNo (q) {
+	const response = await prompt(`${q}\nĈu vi volas daŭrigi? [J/n] `);
+	const validResponses = [ 'j', 'y', '' ];
+	const isValid = validResponses.indexOf(response.trim().toLowerCase()) > -1
+	return isValid;
 }
