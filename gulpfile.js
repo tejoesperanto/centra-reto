@@ -10,7 +10,10 @@ const compileSrc = function (source) {
 		.pipe(sourcemaps.init())
 		.pipe(babel({
 				presets: ["@babel/env"],
-				plugins: ["transform-async-to-generator"]
+				plugins: [
+					"transform-async-to-generator",
+					"@babel/plugin-proposal-export-namespace-from"
+				]
 			}))
 		.pipe(sourcemaps.write('.'))
 		.pipe(gulp.dest('dist'))

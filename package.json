@@ -17,6 +17,7 @@
     "better-sqlite3": "^5.0.1",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
+    "csv-parse": "^4.0.1",
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.1",
     "express-session": "^1.15.6",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.5",
+    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
     "@babel/preset-env": "^7.1.5",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-polyfill": "^6.26.0",

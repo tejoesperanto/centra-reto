@@ -30,7 +30,7 @@ async function init () {
 
 	let limiterMax = 0;
 	if (CR.argv.limiter) {
-		limiterMax = this.conf.loginLimit.max;
+		limiterMax = CR.conf.loginLimit.max;
 	} else {
 		CR.log.warn("Ensalutlimigo malŝaltita");
 	}
