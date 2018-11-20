@@ -133,4 +133,24 @@ import CRCmd from './cmd';
 
 	// Read command input
 	CRCmd.init();
+
+	// Handle shutdown signal
+	const performCleanup = () => {
+		// This must be done prior to writing the shutting down message
+		CR.reader.close();
+
+		CR.log.info('Shutting down');
+		// Perform any necessary cleanup
+		for (let dbName in CR.db) {
+			CR.db[dbName].close();
+		}
+		// Shut down
+		process.exit();
+	};
+
+	const shutDownTriggers = [ 'SIGINT', 'SIGHUP', 'SIGTERM' ];
+	for (let trigger of shutDownTriggers) {
+		process.on(trigger, performCleanup);
+		CR.reader.on(trigger, performCleanup);
+	}
 })();
