@@ -31,23 +31,23 @@ async function parseCmd (cmdRaw) {
 	// Ensure that the command exists
 	if (!(cmdBits[0] in cmds)) {
 		// Command doesn't exist
-		logCmd('info', cmdBits[0], "komando ne trovita")
+		logCmd('error', cmdBits[0], "komando ne trovita")
 		return;
 	}
 
 	try {
 		cmds[cmdBits[0]].cmd(
 			cmdBits.slice(1),
-			(type, text, format) => {
+			(type, text, ...format) => {
 				if (type === 'SYNTAX') {
 					type = 'error';
 					text = 'malĝusta sintakso, provu `helpo [komando]`';
 				}
-				logCmd(type, cmdBits[0], text, format);
+				logCmd(type, cmdBits[0], text, ...format);
 			}
 		);
 	} catch (e) {
-		logCmd('error', cmdBits[0], 'okazis eraro %j', e);
+		logCmd('error', cmdBits[0], 'okazis eraro: %s', e.stack);
 	}
 }
 
@@ -59,8 +59,8 @@ function readCmd () {
 	});
 }
 
-function logCmd (type, cmd, text, format) {
-	CR.log[type](`${cmd}: ${text}`, format);
+function logCmd (type, cmd, text, ...format) {
+	CR.log[type](`${cmd}: ${text}`, ...format);
 }
 
 export default {
