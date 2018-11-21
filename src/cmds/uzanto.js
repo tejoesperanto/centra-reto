@@ -18,13 +18,29 @@ export async function cmd (bits, log) {
 
 			const email = bits[1];
 
-			// Verify the email
-			const emailResponse = await CRCmd.promptYesNo(`Kreos konton por homo kun la retpoŝtadreso ${email}.`);
-			if (!emailResponse) {
+			// Ensure the email isn't taken
+			const isTaken = User.isEmailTaken(email);
+			if (isTaken) {
+				log('error', 'retpoŝtadreso %s jam uzata', email);
 				return;
 			}
 
-			const user = User.createUser(email);
+			// Ensure the user input the correct email
+			const emailCorrect = await CRCmd.promptYesNoClose(`Kreos konton por homo kun la retpoŝtadreso ${email}.`);
+			if (!emailCorrect) {
+				return;
+			}
+
+			const user = await User.createUser(email);
+			log('info', `Kreis konton. Iru al ${user.getActivationURL()} por aktivigi la konton.`);
+
+			// Offer to send an email with the link
+			const sendEmail = await CRCmd.promptYesNoClose(`Ĉu vi volas sendi invitretmesaĝon kun la aktivigligilo?`, false);
+			if (!sendEmail) {
+				return;
+			}
+
+			// TODO: Send the email
 		}
 	};
 

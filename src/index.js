@@ -1,8 +1,3 @@
-#!/usr/bin/env node
-
-import 'babel-polyfill';
-import 'source-map-support/register'
-
 import winston from 'winston';
 import yargsParser from 'yargs-parser';
 import fs from 'fs-extra';
@@ -122,7 +117,7 @@ import * as CRCmd from './cmd';
 	CR.log.info("Ŝarĝas SQLite-datumbazojn");
 	for (let dbName of DBs) {
 		CR.log.info("... Ŝarĝas %s.db", dbName)
-		CR.db[dbName] = new SQLDatabase(path.join(CR.dataDir, dbName + ".db"));
+		CR.db[dbName] = new SQLDatabase(path.join(CR.dataDir, "db", dbName + ".db"));
 	}
 
 	// Create smtp server
@@ -135,9 +130,14 @@ import * as CRCmd from './cmd';
 	CRCmd.init();
 
 	// Handle shutdown signal
+	let shuttingDown = false;
 	const performCleanup = () => {
+		if (shuttingDown) { return; }
+		shuttingDown = true;
+
 		// This must be done prior to writing the shutting down message
 		CR.reader.close();
+		process.stdout.write('\r\r');
 
 		CR.log.info('Shutting down');
 		// Perform any necessary cleanup
@@ -148,9 +148,8 @@ import * as CRCmd from './cmd';
 		process.exit();
 	};
 
-	const shutDownTriggers = [ 'SIGINT', 'SIGHUP', 'SIGTERM' ];
+	const shutDownTriggers = [ 'exit', 'SIGINT', 'SIGHUP', 'SIGTERM' ];
 	for (let trigger of shutDownTriggers) {
 		process.on(trigger, performCleanup);
-		CR.reader.on(trigger, performCleanup);
 	}
 })();

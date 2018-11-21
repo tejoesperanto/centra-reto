@@ -5,8 +5,32 @@ const csvParse = promisify(_csvParse);
 
 import * as cmds from './cmds';
 
+let activePrompt = null;
+
 export function init () {
+	// Forward signals from reader to process
+	const forwardSignals = [ 'SIGINT', 'SIGHUP', 'SIGTERM' ];
+	for (let signal of forwardSignals) {
+		CR.reader.on(signal, (...args) => { handleSignal(signal, ...args) });
+	}
+
+	// Ignore ^D
+	CR.reader.on('close', () => {
+		if (activePrompt) { process.stdout.write('\n') }
+		CR.reader = readline.createInterface(process.stdin, process.stdout);
+		init();
+	});
+
 	handleCmd();
+}
+
+function handleSignal (signal, ...args) {
+	if (activePrompt) {
+		activePrompt.reject('close');
+		CR.reader.write('\n');
+	} else {
+		process.emit(signal, ...args);
+	}
 }
 
 async function handleCmd () {
@@ -62,14 +86,57 @@ export function logCmd (type, cmd, text, ...format) {
 }
 
 export function prompt (q) {
-	return new Promise((resolve, reject) => {
-		CR.reader.question(q, a => { resolve(a) });
+	const question = new Promise((resolve, reject) => {
+		activePrompt = {
+			resolve: resolve,
+			reject: reject
+		};
+
+		CR.reader.question(q, a => {
+			resolve(a);
+			activePrompt = null;
+		});
+		CR.reader.on('close', () => {
+			reject('close');
+			activePrompt = null;
+		});
 	});
+	return question;
 }
 
-export async function promptYesNo (q) {
-	const response = await prompt(`${q}\nĈu vi volas daŭrigi? [J/n] `);
+/**
+ * Asks the user a question and returns whether the answer was yes.
+ * Rejects as 'close' if SIGINT is called.
+ * @param  {string} q The question to ask
+ * @param  {boolean} [continueText] Whether to append the text “Ĉu vi volas daŭrigi [J/n]
+ * @return {boolean} Whether the user answered yes
+ */
+export async function promptYesNo (q, continueText = true) {
+	if (continueText) { q += '\nĈu vi volas daŭrigi?' }
+	q += ' [J/n] ';
+	const response = await prompt(q);
+	if (response === null) { return false; }
 	const validResponses = [ 'j', 'y', '' ];
 	const isValid = validResponses.indexOf(response.trim().toLowerCase()) > -1
 	return isValid;
+}
+
+/**
+ * Identical to promptYesNo, however instead of rejecting as 'close', false is returned instead.
+ * @param  {string} q The question to ask
+ * @param  {boolean} [continueText] Whether to append the text “Ĉu vi volas daŭrigi [J/n]
+ * @return {boolean} Whether the user answered yes
+ */
+export async function promptYesNoClose (q, continueText = true) {
+	let response;
+	try {
+		response = await promptYesNo(q, continueText);
+	} catch (e) {
+		if (e === 'close') {
+			return false;
+		} else {
+			throw e;
+		}
+	}
+	return response;
 }

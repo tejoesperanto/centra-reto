@@ -3,10 +3,13 @@ const watch = require('gulp-watch');
 const plumber = require('gulp-plumber');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
+const header = require('gulp-header');
 
 const compileSrc = function (source) {
 	return source
 		.pipe(plumber())
+		.pipe(header("import 'babel-polyfill';"))
+		.pipe(header("import 'source-map-support/register';"))
 		.pipe(sourcemaps.init())
 		.pipe(babel({
 				presets: ["@babel/env"],

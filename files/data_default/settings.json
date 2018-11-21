@@ -17,7 +17,7 @@
 		"address": "",
 		"name": ""
 	},
-	"addressPrefix": "",
+	"addressPrefix": "https://reto.tejo.org",
 	"bcryptCost": 10,
 	"trustLocalProxy": true,
 	"loginLimit": {
@@ -25,5 +25,6 @@
 		"time": 900,
 		"delay": 100
 	},
-	"sessionSecret": null
+	"sessionSecret": null,
+	"activationKeySize": 8
 }
