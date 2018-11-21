@@ -67,7 +67,7 @@ export async function init () {
 	CR.app.use(flash());
 
 	// Routing
-	CR.app.use('/api', CRRouters.api());
+	CR.app.use('/api', CRRouters.api.init());
 
 	CR.app.listen(CR.conf.servers.http.port, () => {
 		CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);

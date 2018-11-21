@@ -4,13 +4,14 @@ import url from 'url';
 import path from 'path';
 
 class User {
-	constructor (id, email, enabled, pass) {
+	constructor (id, email, enabled, password) {
 		this.id = id;
 		this.email = email;
-		this.enabled = enabled;
-		this.pass = pass;
+		this.enabled = !!enabled;
+		this.password = password;
 
-		this.activationKey = undefined;
+		this.activationKey = null;
+		this.activationKeyTime = null;
 	}
 
 	/**
@@ -30,6 +31,7 @@ class User {
 
 		const user = new User(info.lastInsertRowId, email, true, null);
 		user.activationKey = activationKey;
+		user.activationKeyTime = activationKeyTime;
 		return user;
 	}
 
@@ -44,6 +46,24 @@ class User {
 
 	getActivationURL () {
 		return url.resolve(CR.conf.addressPrefix, path.join('alighi', this.email, this.activationKey));
+	}
+
+	activate (password) {
+		const stmt = CR.db.users.prepare("update users set password = ?, activation_key = NULL, activation_key_time = NULL where id = ?");
+		stmt.run(password, this.id);
+		this.activationKey = null;
+		this.activationKeyTime = null;
+		this.password = password;
+	}
+
+	static getUserById (id) {
+		const data = CR.db.users.prepare("select email, enabled, password, activation_key, activation_key_time from users where id = ?")
+			.get(id);
+
+		const user = new User(id, data.email, data.enabled, data.password);
+		user.activationKey = data.activation_key;
+		user.activationKeyTime = data.activation_key_time;
+		return user;
 	}
 }
 
