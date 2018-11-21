@@ -8,8 +8,8 @@ import moment from 'moment-timezone';
 import stream from 'stream';
 import readline from 'readline';
 
-import CRHttp from './http';
-import CRSmtp from './smtp';
+import * as CRHttp from './http';
+import * as CRSmtp from './smtp';
 import * as CRCmd from './cmd';
 
 (async () => {

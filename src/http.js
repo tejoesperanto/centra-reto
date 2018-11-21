@@ -8,7 +8,7 @@ import passport from 'passport';
 import flash from 'connect-flash';
 import util from 'util';
 
-async function init () {
+export async function init () {
 	CR.log.info("Pretigas HTTP-servilon");
 	CR.app = express();
 	if (CR.conf.trustLocalProxy) {
@@ -66,8 +66,4 @@ async function init () {
 
 	await util.promisify(CR.app.listen)(CR.conf.servers.http.port);
 	CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);
-}
-
-export default {
-	init: init
 }
