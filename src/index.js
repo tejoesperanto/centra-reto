@@ -131,7 +131,7 @@ import * as CRCmd from './cmd';
 
 	// Handle shutdown signal
 	let shuttingDown = false;
-	const performCleanup = () => {
+	const performCleanup = signal => {
 		if (shuttingDown) { return; }
 		shuttingDown = true;
 
@@ -139,7 +139,7 @@ import * as CRCmd from './cmd';
 		CR.reader.close();
 		process.stdout.write('\r\r');
 
-		CR.log.info('Shutting down');
+		CR.log.info(`Ricevis ${signal}, malŝaltiĝas`);
 		// Perform any necessary cleanup
 		for (let dbName in CR.db) {
 			CR.db[dbName].close();
@@ -150,6 +150,6 @@ import * as CRCmd from './cmd';
 
 	const shutDownTriggers = [ 'exit', 'SIGINT', 'SIGHUP', 'SIGTERM' ];
 	for (let trigger of shutDownTriggers) {
-		process.on(trigger, performCleanup);
+		process.on(trigger, () => { performCleanup(trigger) });
 	}
 })();
