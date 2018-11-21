@@ -5,6 +5,4 @@ Vi estis invitita al Centra Reto de TEJO, la ĉefa interna sistemo por aktivuloj
 
 Bonvolu malfermi la ĉi-suban retadreson por krei konton.
 
-{{create_account_link}}
-
-{{footer}}
+{{&activation_link}}

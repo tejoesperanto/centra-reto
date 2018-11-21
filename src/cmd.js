@@ -49,6 +49,8 @@ async function parseCmd (cmdRaw) {
 		trim: true
 	});
 
+	if (cmdParsed.length === 0) { return; }
+
 	// Trimming doesn't work when the delimiter is a space so we need to remove empty fields manually
 	const cmdBits = cmdParsed[0].filter(bit => bit.length > 0);
 

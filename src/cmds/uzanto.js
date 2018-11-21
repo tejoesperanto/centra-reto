@@ -2,6 +2,7 @@ import readline from 'readline';
 
 import User from '../api/user'
 import * as CRCmd from '../cmd';
+import * as CRMail from '../mail';
 
 export async function cmd (bits, log) {
 	if (bits.length < 1) {
@@ -21,7 +22,7 @@ export async function cmd (bits, log) {
 			// Ensure the email isn't taken
 			const isTaken = User.isEmailTaken(email);
 			if (isTaken) {
-				log('error', 'retpoŝtadreso %s jam uzata', email);
+				log('error', 'retpoŝtadreso %s estas jam uzata.', email);
 				return;
 			}
 
@@ -32,7 +33,8 @@ export async function cmd (bits, log) {
 			}
 
 			const user = await User.createUser(email);
-			log('info', `Kreis konton. Iru al ${user.getActivationURL()} por aktivigi la konton.`);
+			const activationURL = user.getActivationURL();
+			log('info', `Kreis konton. Iru al ${activationURL} por aktivigi la konton.`);
 
 			// Offer to send an email with the link
 			const sendEmail = await CRCmd.promptYesNoClose(`Ĉu vi volas sendi invitretmesaĝon kun la aktivigligilo?`, false);
@@ -40,7 +42,13 @@ export async function cmd (bits, log) {
 				return;
 			}
 
-			// TODO: Send the email
+			await CRMail.renderSendMail('new_account', {
+				activation_link: activationURL
+			}, {
+				to: email
+			});
+
+			log('info', `Sendis invitretmesaĝon al ${email}.`);
 		}
 	};
 

@@ -9,7 +9,7 @@ import stream from 'stream';
 import readline from 'readline';
 
 import * as CRHttp from './http';
-import * as CRSmtp from './smtp';
+import * as CRMail from './mail';
 import * as CRCmd from './cmd';
 
 (async () => {
@@ -20,7 +20,8 @@ import * as CRCmd from './cmd';
 		log: null, // init
 		argv: null, // init
 		dataDir: null, // init
-		defaultDataDir: path.normalize(path.join(__dirname, '../files/data_default')),
+		filesDir: path.normalize(path.join(__dirname, '../files')),
+		defaultDataDir: null, // init
 		config: null, // init
 		db: {}, // init
 		app: null, // init
@@ -29,6 +30,7 @@ import * as CRCmd from './cmd';
 		smtp: null, // init
 		reader: readline.createInterface(process.stdin, process.stdout),
 	};
+	CR.defaultDataDir = path.join(CR.filesDir, 'data_default');
 
 	// Init
 	// Set up logging
@@ -121,7 +123,7 @@ import * as CRCmd from './cmd';
 	}
 
 	// Create smtp server
-	CRSmtp.init();
+	CRMail.init();
 
 	// Create http server
 	await CRHttp.init();
