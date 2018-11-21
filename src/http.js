@@ -8,6 +8,8 @@ import passport from 'passport';
 import flash from 'connect-flash';
 import util from 'util';
 
+import * as CRRouters from './routers';
+
 export async function init () {
 	CR.log.info("Pretigas HTTP-servilon");
 	CR.app = express();
@@ -64,6 +66,10 @@ export async function init () {
 	CR.app.use(passport.session());
 	CR.app.use(flash());
 
-	await util.promisify(CR.app.listen)(CR.conf.servers.http.port);
-	CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);
+	// Routing
+	CR.app.use('/api', CRRouters.api());
+
+	CR.app.listen(CR.conf.servers.http.port, () => {
+		CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);
+	});
 }
