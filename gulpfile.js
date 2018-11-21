@@ -8,8 +8,7 @@ const header = require('gulp-header');
 const compileSrc = function (source) {
 	return source
 		.pipe(plumber())
-		.pipe(header("import 'babel-polyfill';"))
-		.pipe(header("import 'source-map-support/register';"))
+		.pipe(header("import 'babel-polyfill';import 'source-map-support/register';\n"))
 		.pipe(sourcemaps.init())
 		.pipe(babel({
 				presets: ["@babel/env"],
