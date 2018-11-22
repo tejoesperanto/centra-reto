@@ -18,7 +18,7 @@
 		"name": ""
 	},
 	"addressPrefix": "https://reto.tejo.org",
-	"bcryptCost": 10,
+	"bcryptSaltRounds": 10,
 	"trustLocalProxy": true,
 	"loginLimit": {
 		"max": 20,

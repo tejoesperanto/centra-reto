@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
 
 import * as CRApi from '.';
 import User from '../../api/user';
@@ -11,7 +12,7 @@ export default function () {
 	return router;
 }
 
-function activateUser (req, res, next) {
+async function activateUser (req, res, next) {
 	/**
 	 * POST /activate
 	 * Activates an account
@@ -49,9 +50,12 @@ function activateUser (req, res, next) {
 
 	const uid = row.id;
 
+	// Hash the password
+	const hashedPassword = await bcrypt.hash(req.body.password.toString(), CR.conf.bcryptSaltRounds);
+
 	// Activate the user
 	const user = User.getUserById(uid);
-	user.activate(req.body.password);
+	user.activate(hashedPassword);
 
 	CRApi.sendResponse(res, {
 		uid: uid

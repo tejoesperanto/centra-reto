@@ -48,6 +48,10 @@ class User {
 		return url.resolve(CR.conf.addressPrefix, path.join('alighi', this.email, this.activationKey));
 	}
 
+	/**
+	 * Activates a user by setting their activation key to null and applying the provided prehashed password
+	 * @param  {string} password The user's password, already hashed
+	 */
 	activate (password) {
 		const stmt = CR.db.users.prepare("update users set password = ?, activation_key = NULL, activation_key_time = NULL where id = ?");
 		stmt.run(password, this.id);
