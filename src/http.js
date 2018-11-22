@@ -8,8 +8,11 @@ import passport from 'passport';
 import flash from 'connect-flash';
 import util from 'util';
 import path from 'path';
+import bcrypt from 'bcrypt';
+import passportLocal from 'passport-local';
 
 import * as CRRouters from './routers';
+import User from './api/user';
 
 export async function init () {
 	CR.log.info("Pretigas HTTP-servilon");
@@ -75,6 +78,39 @@ export async function init () {
 	// Error handling
 	CR.app.use(CRRouters.web.error404);
 	CR.app.use(CRRouters.web.error500);
+
+	// Passport
+	passport.use(new passportLocal.Strategy({
+		usernameField: 'email',
+		passwordField: 'password'
+	}, async (email, password, cb) => {
+		// Attempt to find the user
+		const user = User.getUserByEmail(email);
+		if (!user) {
+			cb(null, false);
+			return;
+		}
+
+		// Compare the passwords
+		const passwordRight = await bcrypt.compare(password, user.password);
+		if (!passwordRight) {
+			cb(null, false);
+			return;
+		}
+
+		cb(null, user);
+	}));
+	passport.serializeUser((user, done) => {
+		done(null, user.id);
+	});
+	passport.deserializeUser(async (id, done) => {
+		const user = User.getUserById(id);
+		if (!user) {
+			done('USER_NOT_FOUND', false);
+		} else {
+			done(null, user);
+		}
+	});
 
 	CR.app.listen(CR.conf.servers.http.port, () => {
 		CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);

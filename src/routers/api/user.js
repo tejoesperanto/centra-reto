@@ -1,5 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
+import passport from 'passport';
 
 import * as CRApi from '.';
 import User from '../../api/user';
@@ -9,6 +10,7 @@ export default function () {
 	const router = express.Router();
 
 	router.post('/activate', wrap(activateUser));
+	router.post('/login', CR.limiter, wrap(login));
 
 	return router;
 }
@@ -24,7 +26,7 @@ async function activateUser (req, res, next) {
 	 * Parameters:
 	 * activation_key (string) The activation key for the user's account
 	 * email          (string) The user's primary email
-	 * password       (string) The bcrypt hash of the user's new password
+	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
 	 * MISSING_ARGUMENT       [parameter]
@@ -61,4 +63,50 @@ async function activateUser (req, res, next) {
 	CRApi.sendResponse(res, {
 		uid: uid
 	});
+}
+
+async function login (req, res, next) {
+	/**
+	 * POST /login
+	 * Logs in
+	 *
+	 * Login not allowed
+	 *
+	 * Parameters:
+	 * email          (string) The user's primary email
+	 * password       (string) The user's plain text password
+	 *
+	 * Throws:
+	 * MISSING_ARGUMENT [parameter]
+	 * USER_NOT_FOUND   []          The email/password combination was not found
+	 * LOGGED_IN        []          There's already an active log in session which must be terminated prior to login
+	 *
+	 * Returns:
+	 * uid (number) The user's id
+	 */
+	
+	if (req.user) {
+		CRApi.sendError(res, 'LOGGED_IN');
+		return;
+	}
+	
+	const fields = [
+		'email',
+		'password'
+	];
+	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+
+	passport.authenticate('local', (err, user, info) => {
+		if (err) { return next(err); }
+		if (!user) {
+			CRApi.sendError(res, 'USER_NOT_FOUND');
+			return;
+		}
+		req.logIn(user, err => {
+			if (err) { return next(err); }
+			CRApi.sendResponse(res, {
+				uid: user.id
+			});
+		});
+	})(req, res, next);
 }
