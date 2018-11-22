@@ -15,7 +15,17 @@
             var data = $(form).serialize();
             $.post('/api/user/login', data, function (res) {
                 if (!res.success) {
-                    showError(res);
+                    if (res.error === 'USER_NOT_FOUND') {
+                        swal({
+                            title: 'Ensaluto ne sukcesis',
+                            type: 'error',
+                            text: 'La retpoŝtadreso aŭ pasvorto ne ĝustas.',
+                            confirmButtonText: 'Bone'
+                        });
+                    } else {
+                        showError(res);
+                    }
+
                     $('#submit-button').removeAttr('disabled');
                     return;
                 }
