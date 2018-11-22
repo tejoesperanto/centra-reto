@@ -12,6 +12,9 @@ export function init () {
 	// TODO:
 	// /novapasvorto
 	// /kondichoj
+	// /uzanto/:email
+	// /agordoj
+	// /elsaluti
 
 	// Handle regular pages
 	router.get('/', wrap(regularPageIndex));
@@ -25,7 +28,7 @@ export function init () {
 
 // Utility functions
 async function showError (code, msg, req, res) {
-	await sendFullPage(res, 'error', {
+	await sendFullPage(req, res, 'error', {
 		error_code: code,
 		error_message: msg
 	});
@@ -55,19 +58,27 @@ async function renderRegularPage (page, data) {
 	return outer;
 }
 
-function amendView (view) {
+function amendView (req, view) {
+	if (!view) { return; }
 	view.year = moment().format('YYYY');
 	view.version = CR.version;
+	if (req.user) {
+		view.user = {
+			email: req.user.email
+		};
+	} else {
+		view.user = false;
+	}
 }
 
-async function sendRegularPage (res, page, data) {
-	amendView(data);
+async function sendRegularPage (req, res, page, data) {
+	amendView(req, data);
 	const render = await renderRegularPage(page, data);
 	res.send(render);
 }
 
-function sendFullPage (res, page, data) {
-	amendView(data);
+function sendFullPage (req, res, page, data) {
+	amendView(req, data);
 	const file = path.join(CR.filesDir, 'web', 'templates_full', page + '.html');
 	return sendTemplate(res, file, data);
 }
@@ -90,7 +101,7 @@ async function regularPageIndex (req, res, next) {
 	const data = {
 		title: 'Hejmo'
 	};
-	await sendRegularPage(res, 'index', data);
+	await sendRegularPage(req, res, 'index', data);
 }
 
 // Full pages
@@ -109,12 +120,12 @@ async function fullPageAlighi (req, res, next) {
 			activation_key: req.params.activationKey
 		}
 	};
-	await sendFullPage(res, 'alighi', data);
+	await sendFullPage(req, res, 'alighi', data);
 }
 
 async function fullPageEnsaluti (req, res, next) {
 	const data = {
 		
 	};
-	await sendFullPage(res, 'ensaluti', data);
+	await sendFullPage(req, res, 'ensaluti', data);
 }
