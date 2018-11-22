@@ -11,6 +11,7 @@ export default function () {
 
 	router.post('/activate', wrap(activateUser));
 	router.post('/login', CR.loginLimiter, wrap(login));
+	router.all('/logout', wrap(logout));
 
 	return router;
 }
@@ -104,4 +105,18 @@ async function login (req, res, next) {
 			});
 		});
 	})(req, res, next);
+}
+
+async function logout (req, res, next) {
+	/**
+	 * ALL /logout
+	 * Logs out
+	 *
+	 * Login not required
+	 * No permissions required
+	 */
+	
+	req.logout();
+
+	CRApi.sendResponse(res);
 }
