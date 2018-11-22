@@ -3,11 +3,12 @@ import bcrypt from 'bcrypt';
 
 import * as CRApi from '.';
 import User from '../../api/user';
+import { wrap } from '..';
 
 export default function () {
 	const router = express.Router();
 
-	router.post('/activate', activateUser);
+	router.post('/activate', wrap(activateUser));
 
 	return router;
 }

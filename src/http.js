@@ -7,6 +7,7 @@ import expressSession from 'express-session';
 import passport from 'passport';
 import flash from 'connect-flash';
 import util from 'util';
+import path from 'path';
 
 import * as CRRouters from './routers';
 
@@ -68,6 +69,12 @@ export async function init () {
 
 	// Routing
 	CR.app.use('/api', CRRouters.api.init());
+	CR.app.use('/', CRRouters.web.init());
+	CR.app.use(express.static(path.join(CR.filesDir, 'web', 'static')));
+
+	// Error handling
+	CR.app.use(CRRouters.web.error404);
+	CR.app.use(CRRouters.web.error500);
 
 	CR.app.listen(CR.conf.servers.http.port, () => {
 		CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);

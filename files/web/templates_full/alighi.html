@@ -38,7 +38,7 @@
             <div class="body">
                 <!-- TODO: Forward to main site instead of querying api directly -->
                 <form id="sign_up" method="POST" action="/api/alighi">
-                    <input type="hidden" name="activation_key" value="{{.activation_key}}">
+                    <input type="hidden" name="activation_key" value="{{page.activation_key}}">
 
                     <div class="msg">Aliĝi al Centra Reto</div>
                     <div class="input-group">
@@ -46,7 +46,7 @@
                             <i class="material-icons">email</i>
                         </span>
                         <div class="form-line">
-                            <input type="email" class="form-control" placeholder="Retpoŝtadreso" value="{{.email}}" name="email" required readonly>
+                            <input type="email" class="form-control" placeholder="Retpoŝtadreso" value="{{page.email}}" name="email" required readonly>
                             <!-- TODO: Give this a different style to show that it's readonly -->
                         </div>
                     </div>
