@@ -4,7 +4,7 @@ import fs from 'pn/fs';
 import path from 'path';
 import moment from 'moment-timezone';
 
-import { wrap } from '.';
+import { wrap, requireInitialSetup } from '.';
 
 /**
  * Sets up the router

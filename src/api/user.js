@@ -114,6 +114,16 @@ class User {
 	static hashPassword (plaintext) {
 		return bcrypt.hash(plaintext, CR.conf.bcryptSaltRounds);
 	}
+
+	/**
+	 * Returns whether the user has completed inital setup
+	 * @return {Boolean} Whether the user has completed initial setup
+	 */
+	hasCompletedInitialSetup () {
+		const stmt = CR.db.users.prepare("select 1 from users_details where user_id = ?");
+		const row = stmt.get(this.id);
+		return !!row;
+	}
 }
 
 export default User;
