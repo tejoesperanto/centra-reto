@@ -51,7 +51,7 @@ async function activateUser (req, res, next) {
 	const uid = row.id;
 
 	// Hash the password
-	const hashedPassword = await bcrypt.hash(req.body.password.toString(), CR.conf.bcryptSaltRounds);
+	const hashedPassword = await User.hashPassword(req.body.password.toString());
 
 	// Activate the user
 	const user = User.getUserById(uid);

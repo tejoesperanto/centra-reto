@@ -49,6 +49,27 @@ export async function cmd (bits, log) {
 			});
 
 			log('info', `Sendis invitretmesaĝon al ${email}.`);
+		},
+		aktivigi: async function () {
+			if (bits.length != 3) {
+				log('SYNTAX');
+				return;
+			}
+
+			const email = bits[1];
+			const password = bits[2];
+
+			// Obtain the user
+			const user = User.getUserByEmail(email);
+			if (!user) {
+				log('error', 'Uzanto kun indikita retpoŝtadreso ne trovita.');
+				return;
+			}
+
+			const hashedPassword = await User.hashPassword(password);
+			user.activate(hashedPassword);
+
+			log('info', 'Aktivigis uzanton.');
 		}
 	};
 
@@ -65,4 +86,6 @@ export const helpBrief = 'Iloj rilate al uzantoj.';
 export const helpDetailed = `
 - uzanto krei <retpoŝtadreso>
   Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
+- uzanto aktivigi <retpoŝtadreso> <pasvorto>
+  Aktivigas la uzanton kun la indikita retpoŝtadreso kaj agordas la indikitan pasvorton.
 `.trim();

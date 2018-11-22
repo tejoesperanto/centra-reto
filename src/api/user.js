@@ -2,6 +2,7 @@ import crypto from 'pn/crypto';
 import moment from 'moment-timezone';
 import url from 'url';
 import path from 'path';
+import bcrypt from 'bcrypt';
 
 class User {
 	constructor (id, email, enabled, password) {
@@ -60,14 +61,46 @@ class User {
 		this.password = password;
 	}
 
+	/**
+	 * Obtains the user with the provided id, returns null if no user was found
+	 * @param  {number} id The user's id
+	 * @return {User}      The user instance
+	 */
 	static getUserById (id) {
 		const data = CR.db.users.prepare("select email, enabled, password, activation_key, activation_key_time from users where id = ?")
 			.get(id);
+
+		if (!data) {
+			return null;
+		}
 
 		const user = new User(id, data.email, data.enabled, data.password);
 		user.activationKey = data.activation_key;
 		user.activationKeyTime = data.activation_key_time;
 		return user;
+	}
+
+	/**
+	 * Obtains the user with the provided email, returns null if no user was found
+	 * @param  {string}    id The user's email
+	 * @return {User|null}    The user instance
+	 */
+	static getUserByEmail (email) {
+		const data = CR.db.users.prepare("select id, enabled, password, activation_key, activation_key_time from users where email = ?")
+			.get(email);
+
+		if (!data) {
+			return null;
+		}
+
+		const user = new User(data.id, email, data.enabled, data.password);
+		user.activationKey = data.activation_key;
+		user.activationKeyTime = data.activation_key_time;
+		return user;
+	}
+
+	static hashPassword (plaintext) {
+		return bcrypt.hash(plaintext, CR.conf.bcryptSaltRounds);
 	}
 }
 
