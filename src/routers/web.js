@@ -71,13 +71,13 @@ function amendView (req, view) {
 	}
 }
 
-async function sendRegularPage (req, res, page, data) {
+async function sendRegularPage (req, res, page, data = {}) {
 	amendView(req, data);
 	const render = await renderRegularPage(page, data);
 	res.send(render);
 }
 
-function sendFullPage (req, res, page, data) {
+function sendFullPage (req, res, page, data = {}) {
 	amendView(req, data);
 	const file = path.join(CR.filesDir, 'web', 'templates_full', page + '.html');
 	return sendTemplate(res, file, data);
@@ -124,8 +124,5 @@ async function fullPageAlighi (req, res, next) {
 }
 
 async function fullPageEnsaluti (req, res, next) {
-	const data = {
-		
-	};
-	await sendFullPage(req, res, 'ensaluti', data);
+	await sendFullPage(req, res, 'ensaluti');
 }
