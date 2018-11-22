@@ -14,6 +14,9 @@ import passportLocal from 'passport-local';
 import * as CRRouters from './routers';
 import User from './api/user';
 
+/**
+ * Sets up the http server
+ */
 export async function init () {
 	CR.log.info("Pretigas HTTP-servilon");
 	CR.app = express();

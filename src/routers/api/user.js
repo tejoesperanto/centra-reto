@@ -6,12 +6,16 @@ import * as CRApi from '.';
 import User from '../../api/user';
 import { wrap } from '..';
 
+/**
+ * Sets up the router
+ * @return {express.Router} The router
+ */
 export default function () {
 	const router = express.Router();
 
 	router.post('/activate', wrap(activateUser));
 	router.post('/login', CR.loginLimiter, wrap(login));
-	router.all('/logout', wrap(logout));
+	router.post('/logout', wrap(logout));
 
 	return router;
 }
@@ -109,7 +113,7 @@ async function login (req, res, next) {
 
 async function logout (req, res, next) {
 	/**
-	 * ALL /logout
+	 * POST /logout
 	 * Logs out
 	 *
 	 * Login not required

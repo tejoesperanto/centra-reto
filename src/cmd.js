@@ -7,6 +7,9 @@ import * as cmds from './cmds';
 
 let activePrompt = null;
 
+/**
+ * Sets up the command handler
+ */
 export function init () {
 	// Forward signals from reader to process
 	const forwardSignals = [ 'SIGINT', 'SIGHUP', 'SIGTERM' ];
@@ -24,6 +27,11 @@ export function init () {
 	handleCmd();
 }
 
+/**
+ * Handles IPC signals caught by readline and handles them internally or forwards them to the main process
+ * @param  {string}    signal The signal type
+ * @param  {...Object} args   Any args supplied by the signal event
+ */
 function handleSignal (signal, ...args) {
 	if (activePrompt) {
 		activePrompt.reject('close');
@@ -33,6 +41,9 @@ function handleSignal (signal, ...args) {
 	}
 }
 
+/**
+ * Handles the command input loop
+ */
 async function handleCmd () {
 	CR.reader.prompt(true);
 	const cmdRaw = await readCmd();
@@ -42,6 +53,10 @@ async function handleCmd () {
 	handleCmd();
 }
 
+/**
+ * Parses a raw command string and calls the command
+ * @param  {string} cmdRaw The raw command string
+ */
 async function parseCmd (cmdRaw) {
 	// Parse command as csv
 	const cmdParsed = await csvParse(cmdRaw, {
@@ -77,16 +92,33 @@ async function parseCmd (cmdRaw) {
 	}
 }
 
+/**
+ * Prompts the user for a command
+ * @return {string} The raw command string
+ */
 function readCmd () {
 	return new Promise((resolve, reject) => {
 		CR.reader.question('> ', cmdRaw => { resolve(cmdRaw) });
 	});
 }
 
+/**
+ * Logs command output
+ * @param  {string}    type   The winston log type
+ * @param  {string}    cmd    The name of the command responsible for logging
+ * @param  {string}    text   The text to log
+ * @param  {...Object} format Formatting args for text
+ */
 export function logCmd (type, cmd, text, ...format) {
 	CR.log[type](`${cmd}: ${text}`, ...format);
 }
 
+/**
+ * Prompts the user with a question and returns the answer
+ * @param  {string} q The question
+ * @return {string} The answer
+ * @throws {string} { `close` is thrown if the user cancels the question. }
+ */
 export function prompt (q) {
 	const question = new Promise((resolve, reject) => {
 		activePrompt = {

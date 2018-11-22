@@ -6,12 +6,19 @@ import mergeOptions from 'merge-options';
 
 import * as CRUtil from './util';
 
+/**
+ * Sets up the mail system
+ */
 export function init () {
 	CR.log.info("Pretigas SMTP-servilon")
 	CR.smtp = nodemailer.createTransport(CR.conf.servers.smtp);
 	CR.log.info("SMTP-servilo pretas")
 }
 
+/**
+ * Applies necessary headers such as `from`, then sends a mail
+ * @param  {Object} options The options to be sent to nodemailer
+ */
 export async function sendMail (options) {
 	if (!options.from) {
 		options.from = CR.conf.emailFrom;
@@ -20,6 +27,12 @@ export async function sendMail (options) {
 	await CR.smtp.sendMail(options); // might throw an error
 }
 
+/**
+ * Renders an email from a template
+ * @param  {string} template     The name of the email template
+ * @param  {Object} templateData The view for the email render
+ * @return {Object} Contains the keys `string html`, `string text` and `Object data`, which is the amended view including the data in the template json file.
+ */
 export async function renderMail (template, templateData) {
 	if (!CR.cacheEnabled) {
 		Mustache.clearCache();
@@ -58,6 +71,12 @@ export async function renderMail (template, templateData) {
 	return mail;
 }
 
+/**
+ * Renders and sends an email
+ * @param  {string} template     The name of the email template
+ * @param  {Object} templateData The view for the email render
+ * @param  {Object} options      The options to be sent to nodemailer
+ */
 export async function renderSendMail (template, templateData, sendOptions) {
 	// Render the mail
 	const mail = await renderMail(template, templateData);

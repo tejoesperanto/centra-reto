@@ -4,6 +4,9 @@ import url from 'url';
 import path from 'path';
 import bcrypt from 'bcrypt';
 
+/**
+ * Represents a user in CR
+ */
 class User {
 	constructor (id, email, enabled, password) {
 		this.id = id;
@@ -45,6 +48,10 @@ class User {
 		return CR.db.users.prepare("select 1 from users where email = ?").get(email) != undefined;
 	}
 
+	/**
+	 * Gets the URL needed to activate the user's account
+	 * @return {string} The account activation url
+	 */
 	getActivationURL () {
 		return url.resolve(CR.conf.addressPrefix, path.join('alighi', this.email, this.activationKey));
 	}
@@ -99,6 +106,11 @@ class User {
 		return user;
 	}
 
+	/**
+	 * Hashes a plaintext password using bcrypt
+	 * @param  {string} plaintext The plaintext password
+	 * @return {string}           The bcrypt hash
+	 */
 	static hashPassword (plaintext) {
 		return bcrypt.hash(plaintext, CR.conf.bcryptSaltRounds);
 	}
