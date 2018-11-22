@@ -467,3 +467,25 @@ $(function () {
 
     setTimeout(function () { $('.page-loader-wrapper').fadeOut(); }, 50);
 });
+
+//==========================================================================================================================
+// BEGIN Added for CR
+
+function showError (error) {
+    if (typeof error !== 'object') {
+        error = {};
+    }
+    error.frontend_location = window.location.href;
+    error.frontend_useragent = navigator.userAgent;
+    error.frontend_time = moment().format();
+    var errorFormatted = JSON.stringify(error, null, 2);
+    swal({
+        title: 'Okazis eraro',
+        type: 'error',
+        text: '<p>Vi povas provi denove aŭ sendi la suban erarmesaĝon al <a href="mailto:reto@tejo.org">reto@tejo.org</a>.<p><textarea class="cr-code" readonly>' + errorFormatted + '</textarea>',
+        html: true,
+        confirmButtonText: 'Bone'
+    });
+}
+
+// END Added for CR

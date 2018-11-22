@@ -22,6 +22,9 @@
     <!-- Animation Css -->
     <link href="/plugins/animate-css/animate.min.css" rel="stylesheet">
 
+    <!-- Sweetalert Css -->
+    <link href="../../plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+
     <!-- Template Css -->
     <link href="/css/style.min.css" rel="stylesheet">
 
@@ -37,7 +40,7 @@
         <div class="card">
             <div class="body">
                 <!-- TODO: Forward to main site instead of querying api directly -->
-                <form id="sign_up" method="POST" action="/api/alighi">
+                <form id="sign_up">
                     <input type="hidden" name="activation_key" value="{{page.activation_key}}">
 
                     <div class="msg">Aliĝi al Centra Reto</div>
@@ -73,7 +76,7 @@
                         <label for="terms">Mi konsentas je la <a href="/kondichoj">kondiĉoj de uzo</a>.</label>
                     </div>
 
-                    <button class="btn btn-block btn-lg bg-pink waves-effect" type="submit">ALIĜI</button>
+                    <button class="btn btn-block btn-lg bg-pink waves-effect" type="submit" id="submit-button">ALIĜI</button>
                 </form>
             </div>
         </div>
@@ -91,11 +94,18 @@
     <!-- Validation Plugin Js -->
     <script src="/plugins/jquery-validation/jquery.validate.js"></script>
 
+    <!-- SweetAlert Plugin Js -->
+    <script src="/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Moment timezone -->
+    <script src="/plugins/momentjs/moment.min.js"></script>
+    <script src="/plugins/moment-timezone/moment-timezone.min.js"></script>
+
     <!-- Template Js -->
     <script src="/js/admin.js"></script>
 
     <!-- CR Js -->
-    <script src="/js/cr/login.js"></script>
+    <script src="/js/cr/alighi.js"></script>
 </body>
 
 </html>

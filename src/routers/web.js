@@ -9,19 +9,23 @@ import { wrap } from '.';
 export function init () {
 	const router = express.Router();
 
+	// TODO:
+	// /novapasvorto
+	// /kondichoj
+
 	// Handle regular pages
 	router.get('/', wrap(regularPageIndex));
 
 	// Handle full pages
-	router.get('/alighi', wrap(fullPageAlighi));
+	router.get('/alighi/:email/:activationKey', wrap(fullPageAlighi));
 	router.get('/ensaluti', wrap(fullPageEnsaluti));
 
 	return router;
 }
 
 // Utility functions
-function showError (code, msg, req, res) {
-	sendFullPage(res, 'error', {
+async function showError (code, msg, req, res) {
+	await sendFullPage(res, 'error', {
 		error_code: code,
 		error_message: msg
 	});
@@ -91,8 +95,19 @@ async function regularPageIndex (req, res, next) {
 
 // Full pages
 async function fullPageAlighi (req, res, next) {
+	// Verify the params
+	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ?");
+	let row = stmt.get(req.params.email, req.params.activationKey);
+	if (!row) {
+		showError(401, 'Aliĝŝlosilo ne valida', req, res);
+		return;
+	}
+
 	const data = {
-		
+		page: {
+			email: req.params.email,
+			activation_key: req.params.activationKey
+		}
 	};
 	await sendFullPage(res, 'alighi', data);
 }
