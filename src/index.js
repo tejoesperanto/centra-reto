@@ -26,7 +26,7 @@ import * as CRCmd from './cmd';
 		db: {}, // init
 		app: null, // init
 		cacheEnabled: true,
-		limiter: null, // init
+		loginLimiter: null, // init
 		smtp: null, // init
 		reader: readline.createInterface(process.stdin, process.stdout),
 	};

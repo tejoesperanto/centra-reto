@@ -1,6 +1,6 @@
 import express from 'express';
 import helmet from 'helmet';
-import RateLimit from 'express-slow-down';
+import RateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import expressSession from 'express-session';
@@ -40,13 +40,12 @@ export async function init () {
 	} else {
 		CR.log.warn("Ensalutlimigo malŝaltita");
 	}
-	CR.limiter = new RateLimit({
+	CR.loginLimiter = new RateLimit({
 		windowMs: CR.conf.loginLimit.time * 1000,
 		max: limiterMax,
-		delayMs: CR.conf.loginLimit.delay,
 		onLimitReached: (req, res, next) => {
 			res.setHeader('Retry-After', Math.ceil(CR.conf.loginLimit.time));
-			next(new Error('tooManyRequests'))
+			next('TOO_MANY_REQUESTS');
 		},
 		message: 'Tro da ensalutprovoj, bonvolu reprovi poste.'
 	});

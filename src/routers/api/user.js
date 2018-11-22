@@ -10,7 +10,7 @@ export default function () {
 	const router = express.Router();
 
 	router.post('/activate', wrap(activateUser));
-	router.post('/login', CR.limiter, wrap(login));
+	router.post('/login', CR.loginLimiter, wrap(login));
 
 	return router;
 }

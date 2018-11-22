@@ -44,7 +44,13 @@ $(function () {
                     }, function () {
                         window.location = '/';
                     });
+                }).fail(function (err) {
+                    showError(err);
+                    $('#submit-button').removeAttr('disabled');
                 });
+            }).fail(function (err) {
+                showError(err);
+                $('#submit-button').removeAttr('disabled');
             });
         }
     });

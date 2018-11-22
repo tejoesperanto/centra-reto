@@ -22,8 +22,7 @@
 	"trustLocalProxy": true,
 	"loginLimit": {
 		"max": 20,
-		"time": 900,
-		"delay": 100
+		"time": 900
 	},
 	"sessionSecret": null,
 	"activationKeySize": 8

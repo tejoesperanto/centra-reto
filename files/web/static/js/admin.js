@@ -472,17 +472,16 @@ $(function () {
 // BEGIN Added for CR
 
 function showError (error) {
-    if (typeof error !== 'object') {
-        error = {};
+    if (typeof error === 'object') {
+        error.frontend_location = window.location.href;
+        error.frontend_useragent = navigator.userAgent;
+        error.frontend_time = moment().format();
+        error = JSON.stringify(error, null, 2);
     }
-    error.frontend_location = window.location.href;
-    error.frontend_useragent = navigator.userAgent;
-    error.frontend_time = moment().format();
-    var errorFormatted = JSON.stringify(error, null, 2);
     swal({
         title: 'Okazis eraro',
         type: 'error',
-        text: '<p>Vi povas provi denove aŭ sendi la suban erarmesaĝon al <a href="mailto:reto@tejo.org">reto@tejo.org</a>.<p><textarea class="cr-code" readonly>' + errorFormatted + '</textarea>',
+        text: '<p>Vi povas provi denove aŭ sendi la suban erarmesaĝon al <a href="mailto:reto@tejo.org">reto@tejo.org</a>.<p><textarea class="cr-code" readonly>' + error + '</textarea>',
         html: true,
         confirmButtonText: 'Bone'
     });
