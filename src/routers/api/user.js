@@ -70,7 +70,8 @@ async function login (req, res, next) {
 	 * POST /login
 	 * Logs in
 	 *
-	 * Login not allowed
+	 * Login not required
+	 * No permissions required
 	 *
 	 * Parameters:
 	 * email          (string) The user's primary email
@@ -79,16 +80,10 @@ async function login (req, res, next) {
 	 * Throws:
 	 * MISSING_ARGUMENT [parameter]
 	 * USER_NOT_FOUND   []          The email/password combination was not found
-	 * LOGGED_IN        []          There's already an active log in session which must be terminated prior to login
 	 *
 	 * Returns:
 	 * uid (number) The user's id
 	 */
-	
-	if (req.user) {
-		CRApi.sendError(res, 'LOGGED_IN');
-		return;
-	}
 	
 	const fields = [
 		'email',
