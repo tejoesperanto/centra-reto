@@ -1,0 +1,22 @@
+#navbar-logo {
+	height: 200%;
+	margin-top: -11px;
+}
+
+#cr-login-logo {
+	width: 100%
+}
+
+#cr-login-logo-container {
+	margin-bottom: 100px;
+}
+
+.login-page,.signup-page {
+	background-color: #eee;
+}
+
+.cr-error-logo {
+	padding: 45px;
+	max-width: 400px;
+	margin: auto;
+}
