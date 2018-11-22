@@ -88,7 +88,7 @@ export async function init () {
 	}, async (email, password, cb) => {
 		// Attempt to find the user
 		const user = User.getUserByEmail(email);
-		if (!user) {
+		if (!user || !user.enabled) {
 			cb(null, false);
 			return;
 		}
