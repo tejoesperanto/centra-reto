@@ -222,6 +222,10 @@ class User {
 		}
 	}
 
+	/**
+	 * Gets all the user's groups
+	 * @return {Object}
+	 */
 	async getGroups () {
 		if (this.groups) {
 			return this.groups;
@@ -278,8 +282,9 @@ class User {
 
 			if (nextLookup.length == 0) { return; }
 
-			const stmt = CR.db.users.prepare('select id, name_base, name_display, `parent`, `public`, searchable, `members_allowed` from groups where id in (?)');
-			const rows = stmt.all(nextLookup);
+			const params = '?,'.repeat(nextLookup.length).slice(0, -1);
+			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\` from groups where id in (${params})`);
+			const rows = stmt.all(...nextLookup);
 
 			for (let i in rows) {
 				const row = rows[i];
@@ -295,6 +300,78 @@ class User {
 		await recursiveGroupLookup(rows);
 
 		return this.groups;
+	}
+
+	/**
+	 * Gets all the user's permissions
+	 * @return {Object}
+	 */
+	async getPermissions () {
+		if (this.permissions) {
+			return this.permissions;
+		}
+
+		this.permissions = {};
+		const rawPermissions = [];
+
+		// Obtain group permissions
+		const groups = await this.getGroups();
+		const groupIds = [];
+		for (let group of Object.values(groups)) {
+			groupIds.push(group.groupId);
+		}
+
+		const params = '?,'.repeat(groupIds.length).slice(0, -1);
+		let stmt = CR.db.users.prepare(`select permission from groups_permissions where group_id in (${params})`);
+		let rows = stmt.all(...groupIds);
+		for (let row of rows) {
+			rawPermissions.push(row.permission);
+		}
+
+		// Obtain individual permissions
+		stmt = CR.db.users.prepare("select permission from users_permissions where user_id = ?");
+		rows = stmt.all(this.id);
+		for (let row of rows) {
+			rawPermissions.push(row.permission);
+		}
+
+		// Structurize the permissions into this.permissions
+		for (let permission of rawPermissions) {
+			let path = this.permissions;
+			const bits = permission.split('.');
+			for (let i = 0; i < bits.length; i++) {
+				const bit = bits[i];
+				const isLast = i + 1 === bits.length;
+
+				if (isLast) {
+					path[bit] = true;
+				} else {
+					if (!(bit in path)) { path[bit] = {}; }
+					path = path[bit];
+				}
+			}
+		}
+
+		return this.permissions
+	}
+
+	/**
+	 * Returns whether the user has a given permission
+	 * @param  {string}  permission The permission to check
+	 * @return {Boolean}
+	 */
+	async hasPermission (permission) {
+		const permissions = await this.getPermissions();
+
+		let path = permissions;
+		const bits = permission.split('.');
+		for (let bit of bits) {
+			if (!(bit in path)) {
+				return '*' in path;
+			}
+			path = path[bit];
+		}
+		return true;
 	}
 }
 

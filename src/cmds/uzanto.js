@@ -1,4 +1,3 @@
-import readline from 'readline';
 import Table from 'tty-table';
 import moment from 'moment-timezone';
 
@@ -121,6 +120,30 @@ export async function cmd (bits, log) {
 			} else {
 				log('SYNTAX');
 			}
+		},
+		permeso: async function () {
+			if (bits.length != 3) {
+				log('SYNTAX');
+				return;
+			}
+
+			const email = bits[1];
+			const permission = bits[2];
+
+			// Obtain the user
+			const user = User.getUserByEmail(email);
+			if (!user) {
+				log('error', 'Uzanto kun indikita retpoŝtadreso ne trovita.');
+				return;
+			}
+
+			const hasPermission = await user.hasPermission(permission);
+
+			if (hasPermission) {
+				log('info', 'JES');
+			} else {
+				log('info', 'NE');
+			}
 		}
 	};
 
@@ -136,11 +159,14 @@ export const helpBrief = 'Iloj rilate al uzantoj.';
 
 export const helpDetailed = `
 - uzanto aktivigi <retpoŝtadreso> <pasvorto>
-  Aktivigas la uzanton kun la indikita retpoŝtadreso kaj agordas la indikitan pasvorton.
+  Aktivigas uzanton kaj agordas la indikitan pasvorton.
 
 - uzanto grupoj <retpoŝtadreso>
-  Listigas ĉiujn grupojn al kiuj apartenas la uzanto kun la indikita retpoŝtadreso.
+  Listigas ĉiujn grupojn en kiuj membras la uzanto.
 
 - uzanto krei <retpoŝtadreso>
   Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
+
+- uzanto permeso <retpoŝtadreso> <permeso>
+  Kontrolas ĉu uzanto havas la indikitan permeson.
 `.trim();
