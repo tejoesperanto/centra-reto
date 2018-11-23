@@ -9,6 +9,8 @@ import bcrypt from 'bcrypt';
  */
 class User {
 	constructor (id, email, enabled, password) {
+		// The values beneath can be safely accessed at any time
+		// For any values not mentioned here, please use its getter function as they're obtained as needed
 		this.id = id;
 		this.email = email;
 		this.enabled = !!enabled;
@@ -148,6 +150,73 @@ class User {
 			petName: petName,
 			pronouns: pronouns
 		};
+	}
+
+	/**
+	 * Obtains the user's name details
+	 * @return {Object}
+	 */
+	getNameDetails () {
+		if (this.details) {
+			return this.details;
+		}
+
+		const stmt = CR.db.users.prepare("select full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, pronouns from users_details where user_id = ?");
+		const row = stmt.get(this.id);
+
+		if (row) {
+			this.details = {
+				fullNameLatin: row.full_name_latin,
+				fullNameNative: row.full_name_native,
+				fullNameLatinSort: row.full_name_latin_sort,
+				nickname: row.nickname,
+				petName: row.pet_name,
+				pronouns: row.pronouns
+			};
+
+			return this.details;
+		} else {
+			return {};
+		}
+	}
+
+	/**
+	 * Returns the user's full name with the optional pet name in parenthesis at the end
+	 * @return {string}
+	 */
+	getLongName () {
+		const details = this.getNameDetails();
+		let name = details.fullNameLatin;
+		if (details.petName) {
+			name += ` (${details.petName})`;
+		}
+		return name;
+	}
+
+	/**
+	 * Returns the user's short name with the optional pet name in parenthesis at the end
+	 * @return {string}
+	 */
+	getShortName () {
+		const details = this.getNameDetails();
+		let name = details.nickname;
+		if (details.petName) {
+			name += ` (${details.petName})`;
+		}
+		return name;
+	}
+
+	/**
+	 * Returns the user's brief name (pet name if present, otherwise nickname)
+	 * @return {string}
+	 */
+	getBriefName () {
+		const details = this.getNameDetails();
+		if (details.petName) {
+			return details.petName;
+		} else {
+			return details.nickname;
+		}
 	}
 }
 

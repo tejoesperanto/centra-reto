@@ -83,7 +83,11 @@ function amendView (req, view) {
 	view.version = CR.version;
 	if (req.user) {
 		view.user = {
-			email: req.user.email
+			email: req.user.email,
+			longName: req.user.getLongName(),
+			shortName: req.user.getShortName(),
+			briefName: req.user.getBriefName(),
+			details: req.user.getNameDetails()
 		};
 	} else {
 		view.user = false;

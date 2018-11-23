@@ -80,12 +80,12 @@
                         <img src="/images/user.png" width="48" height="48" alt="User" />
                     </div>
                     <div class="info-container">
-                        <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ludoviko</div>
-                        <div class="email">{{user.email}}</div>
+                        <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{longName}}</div>
+                        <div class="email">{{email}}</div>
                         <div class="btn-group user-helper-dropdown">
                             <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">keyboard_arrow_down</i>
                             <ul class="dropdown-menu pull-right">
-                                <li><a href="/uzanto/{{user.email}}"><i class="material-icons">person</i>Profilo</a></li>
+                                <li><a href="/uzanto/{{email}}"><i class="material-icons">person</i>Profilo</a></li>
                                 <li><a href="/agordoj"><i class="material-icons">settings</i>Agordoj</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="/" id="cr-logout"><i class="material-icons">input</i>Elsaluti</a></li>
