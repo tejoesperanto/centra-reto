@@ -49,3 +49,10 @@ textarea.cr-code {
 .cr-pronouns-list>.error {
 	margin-left: -20px;
 }
+
+.cr-user-picture {
+	background: #fff;
+	border-radius:50%;
+    -moz-border-radius:50%;
+    -webkit-border-radius:50%;
+}

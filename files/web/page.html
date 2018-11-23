@@ -77,7 +77,8 @@
                 <!-- User Info -->
                 <div class="user-info">
                     <div class="image">
-                        <img src="/images/user.png" width="48" height="48" alt="User" />
+                        {{#pictureSecret}}<img src="{{pictureSecret}}" width="48" height="48" alt="Bildo de {{longName}}" class="cr-user-picture">{{/pictureSecret}}
+                        {{^pictureSecret}}<svg width="48" height="48" data-jdenticon-value="{{longName}}" class="cr-user-picture"></svg>{{/pictureSecret}}
                     </div>
                     <div class="info-container">
                         <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{longName}}</div>
@@ -146,6 +147,9 @@
         <!-- Moment timezone -->
         <script src="/plugins/momentjs/moment.min.js"></script>
         <script src="/plugins/moment-timezone/moment-timezone.min.js"></script>
+
+        <!-- Jdenticon -->
+        <script src="/plugins/jdenticon/jdenticon-2.1.0.min.js"></script>
 
         <!-- Template Js -->
         <script src="/js/admin.js"></script>
