@@ -55,4 +55,6 @@ textarea.cr-code {
 	border-radius:50%;
     -moz-border-radius:50%;
     -webkit-border-radius:50%;
+    display: block;
+    margin-bottom: -5px; /* hack to solve weird phantom bottom margin beneath svg compared to img */
 }
