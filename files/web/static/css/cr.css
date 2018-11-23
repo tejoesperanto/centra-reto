@@ -58,3 +58,7 @@ textarea.cr-code {
     display: block;
     margin-bottom: -5px; /* hack to solve weird phantom bottom margin beneath svg compared to img */
 }
+
+.user-info {
+	background: #009846 !important;
+}
