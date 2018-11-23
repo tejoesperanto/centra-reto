@@ -77,8 +77,10 @@
                 <!-- User Info -->
                 <div class="user-info">
                     <div class="image">
-                        {{#pictureSecret}}<img src="{{pictureSecret}}" width="48" height="48" alt="Bildo de {{longName}}" class="cr-user-picture">{{/pictureSecret}}
-                        {{^pictureSecret}}<svg width="48" height="48" data-jdenticon-value="{{longName}}" class="cr-user-picture"></svg>{{/pictureSecret}}
+                        <a href="/uzanto/{{email}}">
+                            {{#pictureSecret}}<img src="{{pictureSecret}}" width="48" height="48" alt="Bildo de {{longName}}" class="cr-user-picture">{{/pictureSecret}}
+                            {{^pictureSecret}}<svg width="48" height="48" data-jdenticon-value="{{longName}}" class="cr-user-picture"></svg>{{/pictureSecret}}
+                        </a>
                     </div>
                     <div class="info-container">
                         <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{longName}}</div>
