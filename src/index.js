@@ -29,10 +29,16 @@ import * as CRCmd from './cmd';
 		loginLimiter: null, // init
 		smtp: null, // init
 		reader: readline.createInterface(process.stdin, process.stdout),
+		timeFormats: {
+			dateSimple: 'YYYY-MM-DD',
+			dateTimeSimple: 'YYYY-MM-DD HH:mm:ss'
+		}
 	};
 	CR.defaultDataDir = path.join(CR.filesDir, 'data_default');
 
 	// Init
+	moment.tz.setDefault('UTC');
+
 	// Set up logging
 	const logStream = new stream.Writable({
 		write: (chunk, encoding, callback) => {
@@ -49,7 +55,7 @@ import * as CRCmd from './cmd';
 			winston.format.splat(),
 			winston.format.colorize(),
 			winston.format.timestamp({
-				format: () => moment.tz('UTC').format('YYYY-MM-DD HH:mm:ss:SSS [Z]')
+				format: () => moment().format('YYYY-MM-DD HH:mm:ss:SSS [Z]')
 			}),
 			winston.format.printf(info => `[${info.timestamp}] ${info.level}: ${info.message}`)
 		),

@@ -1,8 +1,11 @@
+import { promisify } from 'util';
 import crypto from 'pn/crypto';
 import moment from 'moment-timezone';
 import url from 'url';
 import path from 'path';
 import bcrypt from 'bcrypt';
+import _csvParse from 'csv-parse';
+const csvParse = promisify(_csvParse);
 
 /**
  * Represents a user in CR
@@ -217,6 +220,81 @@ class User {
 		} else {
 			return details.nickname;
 		}
+	}
+
+	async getGroups () {
+		if (this.groups) {
+			return this.groups;
+		}
+
+		this.groups = {};
+
+		const stmt = CR.db.users.prepare('select group_id as id, `from`, `to`, name_base, name_display, `parent`, `public`, searchable, users_groups.`args`, `members_allowed` from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
+		const rows = stmt.all(this.id);
+
+		const recursiveGroupLookup = async groups => {
+			const nextLookup = [];
+			const children = [];
+			for (let row of groups) {
+				let name = row.name_base;
+				if (row.name_display) {
+					name = row.name_display;
+					const argsStr = row.args || '';
+					const argsArr = await csvParse(argsStr);
+					const args = argsArr[0]; // We're only interested in the first line
+
+					for (let i in argsArr[0]) {
+						const key = '$' + (parseInt(i, 10) + 1);
+						name = name.replace(key, args[i]);
+					}
+				}
+
+				let direct = true;
+				if (row.direct !== undefined) { direct = row.direct; }
+
+				let active = true;
+				if (row.to && row.to < moment().unix()) {
+					active = false;
+				}
+
+				this.groups[row.id] = {
+					groupId: row.id,
+					from: row.from,
+					to: row.to,
+					active: active,
+					nameBase: row.name_base,
+					name: name,
+					direct: direct,
+					parent: row.parent,
+					public: !!row.public,
+					searchable: !!row.searchable
+				};
+
+				if (row.parent) {
+					nextLookup.push(row.parent);
+					children.push(row.id);
+				}
+			}
+
+			if (nextLookup.length == 0) { return; }
+
+			const stmt = CR.db.users.prepare('select id, name_base, name_display, `parent`, `public`, searchable, `members_allowed` from groups where id in (?)');
+			const rows = stmt.all(nextLookup);
+
+			for (let i in rows) {
+				const row = rows[i];
+				const child = children[i];
+				row.direct = false;
+				row.from = this.groups[child].from;
+				row.to   = this.groups[child].to;
+			}
+
+			await recursiveGroupLookup(rows);
+		};
+
+		await recursiveGroupLookup(rows);
+
+		return this.groups;
 	}
 }
 

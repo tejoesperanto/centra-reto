@@ -1,4 +1,6 @@
 import readline from 'readline';
+import Table from 'tty-table';
+import moment from 'moment-timezone';
 
 import User from '../api/user'
 import * as CRCmd from '../cmd';
@@ -70,6 +72,55 @@ export async function cmd (bits, log) {
 			user.activate(hashedPassword);
 
 			log('info', 'Aktivigis uzanton.');
+		},
+		grupoj: async function () {
+			if (bits.length == 1) {
+				log('SYNTAX');
+				return;
+			}
+
+			const email = bits[1];
+
+			// Obtain the user
+			const user = User.getUserByEmail(email);
+			if (!user) {
+				log('error', 'Uzanto kun indikita retpoŝtadreso ne trovita.');
+				return;
+			}
+
+			if (bits.length == 2) {
+				// Get all the user's groups
+				const groups = await user.getGroups();
+				
+				// Display them in a nice table
+				const header = [
+					{ value: '#' },
+					{ value: 'aktiva' },
+					{ value: 'rekta' },
+					{ value: 'nomo' },
+					{ value: 'ekde' },
+					{ value: 'ĝis' }
+				];
+				const rows = [];
+
+				for (let group of Object.values(groups)) {
+					rows.push([
+						group.groupId,
+						group.active ? 'jes' : 'ne',
+						group.direct ? 'jes' : 'ne',
+						group.name,
+						moment.unix(group.from).format(CR.timeFormats.dateTimeSimple),
+						group.to ? moment.unix(group.to).format(CR.timeFormats.dateTimeSimple) : '-'
+					]);
+				}
+
+				const table = Table(header, rows).render();
+
+				log('info', 'La uzanto %s membras en la jenaj grupoj:\n%s', email, table);
+
+			} else {
+				log('SYNTAX');
+			}
 		}
 	};
 
@@ -84,8 +135,12 @@ export async function cmd (bits, log) {
 export const helpBrief = 'Iloj rilate al uzantoj.';
 
 export const helpDetailed = `
-- uzanto krei <retpoŝtadreso>
-  Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
 - uzanto aktivigi <retpoŝtadreso> <pasvorto>
   Aktivigas la uzanton kun la indikita retpoŝtadreso kaj agordas la indikitan pasvorton.
+
+- uzanto grupoj <retpoŝtadreso>
+  Listigas ĉiujn grupojn al kiuj apartenas la uzanto kun la indikita retpoŝtadreso.
+
+- uzanto krei <retpoŝtadreso>
+  Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
 `.trim();
