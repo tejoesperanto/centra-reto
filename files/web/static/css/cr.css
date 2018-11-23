@@ -27,3 +27,25 @@ textarea.cr-code {
 	height: 64px;
 	resize: none;
 }
+
+.cr-initial-setup-page {
+	max-width: 500px;
+}
+
+.cr-form-span {
+	font-weight: 400;
+}
+
+.cr-pronouns-list {
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 25px;
+}
+
+.cr-pronouns-list>span:not(:last-child) {
+	margin-right: 10px;
+}
+
+.cr-pronouns-list>.error {
+	margin-left: -20px;
+}

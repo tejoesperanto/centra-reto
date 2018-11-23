@@ -16,6 +16,7 @@ export default function () {
 	router.post('/activate', wrap(activateUser));
 	router.post('/login', CR.loginLimiter, wrap(login));
 	router.post('/logout', wrap(logout));
+	router.post('/initial_setup', wrap(initialSetup));
 
 	return router;
 }
@@ -26,7 +27,6 @@ async function activateUser (req, res, next) {
 	 * Activates an account
 	 *
 	 * Login not required
-	 * No permissions required
 	 *
 	 * Parameters:
 	 * activation_key (string) The activation key for the user's account
@@ -76,7 +76,6 @@ async function login (req, res, next) {
 	 * Logs in
 	 *
 	 * Login not required
-	 * No permissions required
 	 *
 	 * Parameters:
 	 * email          (string) The user's primary email
@@ -117,10 +116,71 @@ async function logout (req, res, next) {
 	 * Logs out
 	 *
 	 * Login not required
-	 * No permissions required
 	 */
 	
 	req.logout();
+
+	CRApi.sendResponse(res);
+}
+
+async function initialSetup (req, res, next) {
+	/**
+	 * POST /initial_setup
+	 * Performs the initial profile setup procedure
+	 *
+	 * Login required
+	 *
+	 * Parameters:
+	 * full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
+	 * [full_name_native]   (string)      The user's full name written in the native writing system in the native order
+	 * full_name_latin_sort (string)      The user's full name written in the latin alphabet in sorted order
+	 * nickname             (string)      (alvoknomo) The user's nickname (usually the personal name)
+	 * [pet_name]           (string)      (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
+	 * pronouns             (string|null) The user's pronouns (li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
+	 *
+	 * Throws:
+	 * NOT_LOGGED_IN
+	 * MISSING_ARGUMENT [parameter]
+	 * INVALID_PRONOUN  [pronoun]   One of the indicated pronouns isn't in the allowed list
+	 */
+	
+	if (!req.user) {
+		CRApi.sendError(res, 'NOT_LOGGED_IN');
+		return;
+	}
+
+	const fields = [
+		'full_name_latin',
+		'full_name_latin_sort',
+		'nickname',
+		'pronouns'
+	];
+	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+
+	let fullNameLatin = req.body.full_name_latin.toString();
+	let fullNameNative = null;
+	if (req.body.full_name_native) {
+		fullNameNative = req.body.full_name_native.toString();
+	}
+	let fullNameLatinSort = req.body.full_name_latin_sort.toString();
+	let nickname = req.body.nickname.toString();
+	let petName = null;
+	if (req.body.pet_name) {
+		petName = req.body.pet_name.toString();
+	}
+	let pronouns = req.body.pronouns;
+	if (pronouns !== null) {
+		pronouns = pronouns.toString();
+		const pronounsArr = pronouns.split(',');
+		for (let pronoun of pronounsArr) {
+			if (['li','ri','ŝi'].indexOf(pronoun) === -1) {
+				CRApi.sendError(res, 'INVALID_PRONOUN', [pronoun]);
+				return;
+			}
+		}
+	}
+
+	req.user.initialSetup(fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns);
 
 	CRApi.sendResponse(res);
 }

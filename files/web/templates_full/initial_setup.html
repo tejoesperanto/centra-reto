@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="eo">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Fini vian profilon | Centra Reto</title>
+
+    <!-- Favicon-->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap Core Css -->
+    <link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Waves Effect Css -->
+    <link href="/plugins/node-waves/waves.min.css" rel="stylesheet">
+
+    <!-- Animation Css -->
+    <link href="/plugins/animate-css/animate.min.css" rel="stylesheet">
+
+    <!-- Sweetalert Css -->
+    <link href="/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+
+    <!-- Template Css -->
+    <link href="/css/style.min.css" rel="stylesheet">
+
+    <!-- Centra Reto-Css -->
+    <link href="/css/cr.css" rel="stylesheet">
+</head>
+
+<body class="signup-page cr-initial-setup-page">
+    <div class="signup-box">
+        <div class="logo" id="cr-login-logo-container">
+            <img src="/images/tejo_cr.svg" id="cr-login-logo">
+        </div>
+
+        <div class="card">
+            <div class="body">
+                <h1>Bonvenon!</h1>
+                <p class="lead">Antaŭ ol vi povas aliri la funkciojn de Centra Reto vi devas unue fini vian profilon</p>
+                <p>Ĉiu aktivulo en Centra Reto havas profilon, kiu estas publike videbla. Rilate preskaŭ ĉiun informon pri vi estas via elekto ĉu ĝi estu publika, tamen estas kelkaj esencaj informoj kiuj devas esti videblaj de ĉiuj; eĉ homoj sen konto en Centra Reto.</p>
+                <p>Bonvolu enmeti ĉi-sube informojn pri vi kiuj estos publike videblaj.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="body">
+                <form id="finish_profile">
+                    <div class="form-group">
+                        <label for="form-full_name_latin">* Ĉiuj viaj nomoj, laŭ la ordo de via denaska lingvo, per latinaj literoj</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="material-icons">person</i>
+                            </span>
+                            <div class="form-line">
+                                <input class="form-control" name="full_name_latin" placeholder="Plena nomo per latinaj literoj en origina ordo" id="form-full_name_latin" required autofocus>
+                            </div>
+                        </div>    
+                    </div>
+
+                    <div class="form-group">
+                        <p>Se via nomo origine ne estas skribita per la latina skribsistemo:</p>
+                        <label for="form-full_name_native">Via plena nomo per via propra skribsistemo, se ne estas la latina</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="material-icons">person</i>
+                            </span>
+                            <div class="form-line">
+                                <input class="form-control" name="full_name_native" placeholder="Plena nomo per denaska skribsistemo en origina ordo" id="form-full_name_native" autofocus>
+                            </div>
+                        </div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-full_name_latin_sort">* Via nomo per latinaj literoj laŭ sekva ordo: <span class="cr-form-span">familinomo(j), meznomo(j), persona(j) nomo(j), gepatronomo(j), ĉiuj aliaj nomoj, titolo(j)</span></label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="material-icons">person</i>
+                            </span>
+                            <div class="form-line">
+                                <input class="form-control" name="full_name_latin_sort" placeholder="Plena nomo per latinaj literoj en ordigita formo" id="form-full_name_latin_sort" required autofocus>
+                            </div>
+                        </div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label for="form-nickname">* La nomo per kiu oni (formale) alvokas vin, kutime via persona nomo</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="material-icons">person</i>
+                            </span>
+                            <div class="form-line">
+                                <input class="form-control" name="nickname" placeholder="Alvoknomo" id="form-nickname" required autofocus>
+                            </div>
+                        </div>    
+                    </div>
+
+                    <div class="form-group">
+                        <p>Se vi havas apartan kromnomon, kiu ne estas parto de via plena nomo:</p>
+                        <label for="form-pet_name">Via (neformala) kromnomo</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="material-icons">person</i>
+                            </span>
+                            <div class="form-line">
+                                <input class="form-control" name="pet_name" placeholder="Kromnomo" id="form-pet_name" autofocus>
+                            </div>
+                        </div>    
+                    </div>
+
+                    <div class="form-group">
+                        <label>* La pronomoj per kiuj oni priparolu vin</label>
+                        <div class="radio">
+                            <input type="radio" name="pronouns" id="form-pronouns_none" value="none" class="with-gap radio-col-green" required>
+                            <label for="form-pronouns_none">Mi ne volas indiki / Uzu mian nomon</label>
+                        </div>
+                        <div class="radio">
+                            <input type="radio" name="pronouns" id="form-pronouns_list" value="list" class="with-gap radio-col-green" required>
+                            <label for="form-pronouns_list">Uzu la jena(j)n:</label>
+                            <div class="cr-pronouns-list">
+                                <span>
+                                    <input type="checkbox" name="pronouns_list[]" value="li" id="form-pronouns_list_li" class="filled-in chk-col-orange">
+                                    <label for="form-pronouns_list_li">li</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" name="pronouns_list[]" value="ri" id="form-pronouns_list_ri" class="filled-in chk-col-orange">
+                                    <label for="form-pronouns_list_ri">ri</label>
+                                </span>
+                                <span>
+                                    <input type="checkbox" name="pronouns_list[]" value="ŝi" id="form-pronouns_list_shi" class="filled-in chk-col-orange">
+                                    <label for="form-pronouns_list_shi">ŝi</label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-block btn-lg bg-green waves-effect" type="submit" id="submit-button">FINI PROFILON</button>
+
+                    <div class="form-line">
+                        <br>
+                        <span>* deviga</span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery Core Js -->
+    <script src="/plugins/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core Js -->
+    <script src="/plugins/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Waves Effect Plugin Js -->
+    <script src="/plugins/node-waves/waves.min.js"></script>
+
+    <!-- Validation Plugin Js -->
+    <script src="/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="/js/jquery.validate.eo.js"></script>
+
+    <!-- SweetAlert Plugin Js -->
+    <script src="/plugins/sweetalert/sweetalert.min.js"></script>
+
+    <!-- Moment timezone -->
+    <script src="/plugins/momentjs/moment.min.js"></script>
+    <script src="/plugins/moment-timezone/moment-timezone.min.js"></script>
+
+    <!-- Template Js -->
+    <script src="/js/admin.js"></script>
+
+    <!-- CR Js -->
+    <script src="/js/cr/initial_setup.js"></script>
+</body>
+
+</html>

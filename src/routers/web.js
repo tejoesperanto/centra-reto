@@ -20,7 +20,7 @@ export function init () {
 	// /agordoj
 
 	// Handle regular pages
-	router.get('/', wrap(regularPageIndex));
+	router.get('/', wrap(mixedPageIndex));
 
 	// Handle full pages
 	router.get('/alighi/:email/:activationKey', wrap(fullPageAlighi));
@@ -158,13 +158,24 @@ export function error500 (err, req, res, next) {
 	showError(500, 'Okazis interna eraro', req, res);
 }
 
-// Regular pages
-async function regularPageIndex (req, res, next) {
-	const data = {
-		title: 'Hejmo'
-	};
-	await sendRegularPage(req, res, 'index', data);
+// Mixed pages
+async function mixedPageIndex (req, res, next) {
+	if (!req.user || req.user.hasCompletedInitialSetup()) {
+		// For visitors not logged in and those who have completed the initial setup
+		const data = {
+			title: 'Hejmo'
+		};
+		await sendRegularPage(req, res, 'index', data);
+	} else {
+		// For logged in users that haven't completed the initial setup
+		const data = {
+
+		};
+		await sendFullPage(req, res, 'initial_setup', data);
+	}
 }
+
+// Regular pages
 
 // Full pages
 async function fullPageAlighi (req, res, next) {

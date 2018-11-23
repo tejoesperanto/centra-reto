@@ -1,4 +1,7 @@
 $(function () {
+    // Hotfix for broken focus detection in AdminBSB
+    $('#email-input').blur();
+
     $('#sign_up').validate({
         rules: {
             'terms': {

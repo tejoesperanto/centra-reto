@@ -124,6 +124,31 @@ class User {
 		const row = stmt.get(this.id);
 		return !!row;
 	}
+
+	/**
+	 * Performs initial profile setup for the user
+	 * @param  {string}      fullNameLatin     The user's full name written in the latin alphabet in the native order
+	 * @param  {string}      fullNameNative    The user's full name written in the native writing system in the native order
+	 * @param  {string}      fullNameLatinSort The user's full name written in the latin alphabet in sorted order
+	 * @param  {string}      nickname          (alvoknomo) The user's nickname (usually the personal name)
+	 * @param  {string}      petName           (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
+	 * @param  {string|null} pronouns          The user's pronouns in csv format. If null the user's nickname is used in generated text.
+	 */
+	initialSetup (fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns) {
+		const stmt = CR.db.users.prepare(`insert into users_details
+			(user_id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, pronouns)
+			values (?, ?, ?, ?, ?, ?, ?)`);
+		stmt.run(this.id, fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns);
+
+		this.details = {
+			fullNameLatin: fullNameLatin,
+			fullNameNative: fullNameNative,
+			fullNameLatinSort: fullNameLatinSort,
+			nickname: nickname,
+			petName: petName,
+			pronouns: pronouns
+		};
+	}
 }
 
 export default User;
