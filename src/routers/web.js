@@ -247,7 +247,14 @@ async function mixedPageIndex (req, res, next) {
 // Regular pages
 async function regularPageAdministradoUzantoj (req, res, next) {
 	const data = {
-		title: 'Administrado de uzantoj'
+		title: 'Administrado de uzantoj',
+		scripts: [
+			'/plugins/jquery-datatable/jquery.dataTables.js',
+			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js'
+		],
+		stylesheets: [
+			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.boostrap.min.css'
+		]
 	};
 	await sendRegularPage(req, res, 'administrado/uzantoj', data);
 }

@@ -13,28 +13,30 @@
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin-ext" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
 
-        <!-- Bootstrap Core Css -->
+        <!-- Bootstrap Core css -->
         <link href="/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Waves Effect Css -->
+        <!-- Waves Effect css -->
         <link href="/plugins/node-waves/waves.min.css" rel="stylesheet">
 
-        <!-- Animation Css -->
+        <!-- Animation css -->
         <link href="/plugins/animate-css/animate.min.css" rel="stylesheet">
-
-        <!-- Morris Chart Css-->
-        <link href="/plugins/morrisjs/morris.css" rel="stylesheet">
         
-        <!-- Sweetalert Css -->
-        <link href="/plugins/sweetalert/sweetalert.css" rel="stylesheet" />
+        <!-- Sweetalert css -->
+        <link href="/plugins/sweetalert/sweetalert.css" rel="stylesheet">
 
-        <!-- Template Css -->
+        <!-- Page specific css -->
+        {{#stylesheets}}
+        <link href="{{&.}}">
+        {{/stylesheets}}
+
+        <!-- Template css -->
         <link href="/css/style.min.css" rel="stylesheet">
 
         <!-- Custom version of AdminsBSB theme -->
         <link href="/css/cr-theme-tejo.css" rel="stylesheet">
 
-        <!-- Centra Reto-Css -->
+        <!-- Centra Reto css -->
         <link href="/css/cr.css" rel="stylesheet">
 
     </head>
@@ -139,22 +141,19 @@
             {{&page}}
         </section>
 
-        <!-- Jquery Core Js -->
+        <!-- Jquery Core -->
         <script src="/plugins/jquery/jquery.min.js"></script>
 
-        <!-- Bootstrap Core Js -->
+        <!-- Bootstrap Core -->
         <script src="/plugins/bootstrap/js/bootstrap.min.js"></script>
 
-        <!-- Select Plugin Js -->
-        <script src="/plugins/bootstrap-select/js/bootstrap-select.min.js"></script>
-
-        <!-- Slimscroll Plugin Js -->
+        <!-- Slimscroll Plugin -->
         <script src="/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
 
-        <!-- Waves Effect Plugin Js -->
+        <!-- Waves Effect Plugin -->
         <script src="/plugins/node-waves/waves.min.js"></script>
 
-        <!-- SweetAlert Plugin Js -->
+        <!-- SweetAlert Plugin -->
         <script src="/plugins/sweetalert/sweetalert.min.js"></script>
 
         <!-- Moment timezone -->
@@ -164,10 +163,15 @@
         <!-- Jdenticon -->
         <script src="/plugins/jdenticon/jdenticon-2.1.0.min.js"></script>
 
-        <!-- Template Js -->
+        <!-- Page specific js -->
+        {{#scripts}}
+        <script src="{{&.}}"></script>
+        {{/scripts}}
+
+        <!-- Template js -->
         <script src="/js/admin.js"></script>
 
-        <!-- CR Js -->
+        <!-- CR js -->
         <script src="/js/page.js"></script>
     </body>
 </html>
