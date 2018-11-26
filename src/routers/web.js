@@ -18,10 +18,12 @@ export function init () {
 	// /kondichoj
 	// /uzanto/:email
 	// /agordoj
-	// /administrado/uzantoj
+
+	// Handle mixed pages
+	router.get('/', wrap(mixedPageIndex));
 
 	// Handle regular pages
-	router.get('/', wrap(mixedPageIndex));
+	router.get('/administrado/uzantoj', requireInitialSetup, wrap(regularPageAdministradoUzantoj));
 
 	// Handle full pages
 	router.get('/alighi/:email/:activationKey', wrap(fullPageAlighi));
@@ -38,7 +40,21 @@ export function init () {
  * @param  {Function}         next
  */
 function requireInitialSetup (req, res, next) {
-	if (req.user.hasCompletedInitialSetup()) {
+	if (req.user && req.user.hasCompletedInitialSetup()) {
+		next();
+	} else {
+		res.redirect(303, '/');
+	}
+}
+
+/**
+ * Express middleware that redirects any requests to / from users that haven't logged in
+ * @param  {express.Request}  req
+ * @param  {express.Response} res
+ * @param  {Function}         next
+ */
+function requireLogin (req, res, next) {
+	if (req.user) {
 		next();
 	} else {
 		res.redirect(303, '/');
@@ -229,6 +245,12 @@ async function mixedPageIndex (req, res, next) {
 }
 
 // Regular pages
+async function regularPageAdministradoUzantoj (req, res, next) {
+	const data = {
+		title: 'Administrado de uzantoj'
+	};
+	await sendRegularPage(req, res, 'administrado/uzantoj', data);
+}
 
 // Full pages
 async function fullPageAlighi (req, res, next) {
