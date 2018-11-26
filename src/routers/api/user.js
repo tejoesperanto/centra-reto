@@ -132,19 +132,25 @@ async function initialSetup (req, res, next) {
 	 *
 	 * Parameters:
 	 * full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
+	 *                                    Length: 1-80
 	 * [full_name_native]   (string)      The user's full name written in the native writing system in the native order
+	 *                                    Length: 1-80
 	 * full_name_latin_sort (string)      The user's full name written in the latin alphabet in sorted order
+	 *                                    Length: 1-80
 	 * nickname             (string)      (alvoknomo) The user's nickname (usually the personal name)
+	 *                                    Length: 1-80
 	 * [pet_name]           (string)      (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
+	 *                                    Length: 1-80
 	 * pronouns             (string|null) The user's pronouns (li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
 	 *
 	 * Throws:
 	 * NOT_LOGGED_IN
-	 * ALREADY_COMPLETED            The user has already completed the initial setup
-	 * MISSING_ARGUMENT [parameter]
-	 * INVALID_PRONOUN  [pronoun]   One of the indicated pronouns isn't in the allowed list
+	 * ALREADY_COMPLETED             The user has already completed the initial setup
+	 * MISSING_ARGUMENT  [parameter]
+	 * INVALID_ARGUMENT  [parameter]
 	 */
 	
+	/** BEGIN INPUT VALIDATION */
 	if (!req.user) {
 		CRApi.sendError(res, 'NOT_LOGGED_IN');
 		return;
@@ -164,27 +170,53 @@ async function initialSetup (req, res, next) {
 	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
 
 	let fullNameLatin = req.body.full_name_latin.toString();
+	if (fullNameLatin.length < 1 || fullNameLatin.length > 80) {
+		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin']);
+		return;
+	}
+
 	let fullNameNative = null;
 	if (req.body.full_name_native) {
 		fullNameNative = req.body.full_name_native.toString();
+		if (fullNameNative.length < 1 || fullNameNative.length > 80) {
+			CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_native']);
+			return;
+		}
 	}
+
 	let fullNameLatinSort = req.body.full_name_latin_sort.toString();
+	if (fullNameLatinSort.length < 1 || fullNameLatinSort.length > 80) {
+		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin_sort']);
+		return;
+	}
+
 	let nickname = req.body.nickname.toString();
+	if (nickname.length < 1 || nickname.length > 80) {
+		CRApi.sendError(res, 'INVALID_ARGUMENT', ['nickname']);
+		return;
+	}
+
 	let petName = null;
 	if (req.body.pet_name) {
 		petName = req.body.pet_name.toString();
+		if (nickname.length < 1 || nickname.length > 80) {
+			CRApi.sendError(res, 'INVALID_ARGUMENT', ['pet_name']);
+			return;
+		}
 	}
+
 	let pronouns = req.body.pronouns;
 	if (pronouns !== null) {
 		pronouns = pronouns.toString();
 		const pronounsArr = pronouns.split(',');
 		for (let pronoun of pronounsArr) {
 			if (['li','ri','ŝi'].indexOf(pronoun) === -1) {
-				CRApi.sendError(res, 'INVALID_PRONOUN', [pronoun]);
+				CRApi.sendError(res, 'INVALID_ARGUMENT', ['pronouns']);
 				return;
 			}
 		}
 	}
+	/** END INPUT VAIDATION */
 
 	req.user.initialSetup(fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns);
 
