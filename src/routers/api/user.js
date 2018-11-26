@@ -16,7 +16,7 @@ export default function () {
 	router.post('/activate', wrap(activateUser));
 	router.post('/login', CR.loginLimiter, wrap(login));
 	router.post('/logout', wrap(logout));
-	router.post('/initial_setup', wrap(initialSetup));
+	router.post('/initial_setup', CRApi.requireLogin, wrap(initialSetup));
 
 	return router;
 }
@@ -76,6 +76,7 @@ async function login (req, res, next) {
 	 * Logs in
 	 *
 	 * Login not required
+	 * Initial setup not required
 	 *
 	 * Parameters:
 	 * email          (string) The user's primary email
@@ -116,6 +117,7 @@ async function logout (req, res, next) {
 	 * Logs out
 	 *
 	 * Login not required
+	 * Initial setup not required
 	 */
 	
 	req.logout();
@@ -129,6 +131,7 @@ async function initialSetup (req, res, next) {
 	 * Performs the initial profile setup procedure
 	 *
 	 * Login required
+	 * Initial setup not allowed
 	 *
 	 * Parameters:
 	 * full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
@@ -151,11 +154,6 @@ async function initialSetup (req, res, next) {
 	 */
 	
 	/** BEGIN INPUT VALIDATION */
-	if (!req.user) {
-		CRApi.sendError(res, 'NOT_LOGGED_IN');
-		return;
-	}
-
 	if (req.user.hasCompletedInitialSetup()) {
 		CRApi.sendError(res, 'ALREADY_COMPLETED');
 		return;

@@ -55,3 +55,31 @@ export function handleRequiredFields (req, res, fields) {
 	}
 	return true;
 }
+
+/**
+ * Express middleware that sends an API error if the user hasn't logged in
+ * @param  {express.Request}  req
+ * @param  {express.Response} res
+ * @param  {Function}         next
+ */
+export function requireLogin (req, res, next) {
+	if (req.user) {
+		next();
+	} else {
+		sendError(res, 'NOT_LOGGED_IN');
+	}
+}
+
+/**
+ * Express middleware that sends an API error if the user hasn't completed initial setup
+ * @param  {express.Request}  req
+ * @param  {express.Response} res
+ * @param  {Function}         next
+ */
+export function requireInitialSetup (req, res, next) {
+	if (req.user.hasCompletedInitialSetup()) {
+		next();
+	} else {
+		sendError(res, 'INITIAL_SETUP_REQUIRED');
+	}
+}

@@ -4,7 +4,7 @@ import fs from 'pn/fs';
 import path from 'path';
 import moment from 'moment-timezone';
 
-import { wrap, requireInitialSetup } from '.';
+import { wrap } from '.';
 
 /**
  * Sets up the router
@@ -30,6 +30,20 @@ export function init () {
 }
 
 // Utility functions
+/**
+ * Express middleware that redirects any requests to / from users that have not yet completed initial setup
+ * @param  {express.Request}  req
+ * @param  {express.Response} res
+ * @param  {Function}         next
+ */
+function requireInitialSetup (req, res, next) {
+	if (req.user.hasCompletedInitialSetup()) {
+		next();
+	} else {
+		res.redirect(303, '/');
+	}
+}
+
 /**
  * Sends an error page as response
  * @param  {number}           code The http status code
