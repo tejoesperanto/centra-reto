@@ -140,12 +140,18 @@ async function initialSetup (req, res, next) {
 	 *
 	 * Throws:
 	 * NOT_LOGGED_IN
+	 * ALREADY_COMPLETED            The user has already completed the initial setup
 	 * MISSING_ARGUMENT [parameter]
 	 * INVALID_PRONOUN  [pronoun]   One of the indicated pronouns isn't in the allowed list
 	 */
 	
 	if (!req.user) {
 		CRApi.sendError(res, 'NOT_LOGGED_IN');
+		return;
+	}
+
+	if (req.user.hasCompletedInitialSetup()) {
+		CRApi.sendError(res, 'ALREADY_COMPLETED');
 		return;
 	}
 
