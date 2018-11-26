@@ -27,6 +27,11 @@ export default class Group {
 		this.args = args;
 	}
 
+	/**
+	 * Gets the display name of the group for a specific user
+	 * @param  {User} user
+	 * @return {string}
+	 */
 	async getNameForUser (user) {
 		if (!this.nameDisplay) {
 			return this.nameBase;
@@ -46,6 +51,11 @@ export default class Group {
 		return name;
 	}
 
+	/**
+	 * Obtains the time-based validity of the group for a given user
+	 * @param  {User} user
+	 * @return {Object} `{ timeFrom, timeTo, active }`
+	 */
 	getValidityForUser (user) {
 		let stmt = CR.db.users.prepare('select `from`, `to` from users_groups where group_id = ? and user_id = ?');
 		let row = stmt.get(this.id, user.id);
@@ -62,17 +72,34 @@ export default class Group {
 		};
 	}
 
+	/**
+	 * Obtains whether membership in the group is direct for a user
+	 * @param  {User} user
+	 * @return {Boolean}
+	 */
 	isDirectForUser (user) {
 		let stmt = CR.db.users.prepare('select 1 from users_groups where group_id = ? and user_id = ?');
 		let row = stmt.get(this.id, user.id);
 		return !!row; // Return whether a row was found
 	}
 
-	addUser (user, args, timeFrom, timeTo) {
+	/**
+	 * Adds a user to the group
+	 * @param {User}        user
+	 * @param {string}      args     The user's display name args
+	 * @param {number}      timeFrom The time at which the user's membership became valid
+	 * @param {number|null} [timeTo] The time at which the user's membership becomes invalid
+	 */
+	addUser (user, args, timeFrom, timeTo = null) {
 		const stmt = CR.db.users.prepare("insert into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)");
 		stmt.run(user.id, this.id, args, timeFrom, timeTo);
 	}
 
+	/**
+	 * Obtains a group based on it's id
+	 * @param  {number} id
+	 * @return {Group}
+	 */
 	static getById (id) {
 		let stmt = CR.db.users.prepare('select name_base, name_display, `members_allowed`, `parent`, `public`, searchable, args from groups where id = ?');
 		let row = stmt.get(id);
