@@ -90,12 +90,12 @@ async function activateUser (req, res, next) {
  * Returns:
  * data (Object[]) The rows
  *   id                   (number)      The user's id
- *   name                 (string)
- *   full_name_latin      (string)
- *   full_name_native     (string|null)
- *   full_name_latin_sort (string)
- *   nickname             (string)
- *   pet_name             (string|null)
+ *   name                 (string)      The user's full name with the optional pet name in parenthesis at the end
+ *   full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
+ *   full_name_native     (string|null) The user's full name written in the native writing system in the native order
+ *   full_name_latin_sort (string)      The user's full name written in the latin alphabet in sorted order
+ *   nickname             (string)      (alvoknomo) The user's nickname (usually the personal name)
+ *   pet_name             (string|null) (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
  *   email                (string)      The user's primary email address
  *   enabled              (boolean)     Whether the user is enabled
  *   active               (boolean)     Whether the user has activated their account
