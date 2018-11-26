@@ -4,8 +4,10 @@ import moment from 'moment-timezone';
 import url from 'url';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import _csvParse from 'csv-parse';
-const csvParse = promisify(_csvParse);
+import _csvStringify from 'csv-stringify';
+const csvStringify = promisify(_csvStringify);
+
+import Group from './group';
 
 /**
  * Represents a user in CR
@@ -231,48 +233,27 @@ class User {
 			return this.groups;
 		}
 
-		this.groups = {};
+		this.groups = new Map();
 
-		const stmt = CR.db.users.prepare('select group_id as id, `from`, `to`, name_base, name_display, `parent`, `public`, searchable, users_groups.`args`, `members_allowed` from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
+		const stmt = CR.db.users.prepare('select groups.id, `from`, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, groups.`args` from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
 		const rows = stmt.all(this.id);
+
+		const timeNow = moment().unix();
 
 		const recursiveGroupLookup = async groups => {
 			const nextLookup = [];
 			const children = [];
 			for (let row of groups) {
-				let name = row.name_base;
-				if (row.name_display) {
-					name = row.name_display;
-					const argsStr = row.args || '';
-					const argsArr = await csvParse(argsStr);
-					const args = argsArr[0]; // We're only interested in the first line
-
-					for (let i in argsArr[0]) {
-						const key = '$' + (parseInt(i, 10) + 1);
-						name = name.replace(key, args[i]);
-					}
-				}
-
-				let direct = true;
-				if (row.direct !== undefined) { direct = row.direct; }
-
-				let active = true;
-				if (row.to && row.to < moment().unix()) {
-					active = false;
-				}
-
-				this.groups[row.id] = {
-					groupId: row.id,
-					from: row.from,
-					to: row.to,
-					active: active,
+				this.groups.set(row.id, new Group({
+					id: row.id,
 					nameBase: row.name_base,
-					name: name,
-					direct: direct,
+					nameDisplay: row.name_display,
+					membersAllowed: !!row.membersAllowed,
 					parent: row.parent,
-					public: !!row.public,
-					searchable: !!row.searchable
-				};
+					isPublic: !!row.public,
+					searchable: !!row.searchable,
+					args: row.args
+				}));
 
 				if (row.parent) {
 					nextLookup.push(row.parent);
@@ -283,15 +264,14 @@ class User {
 			if (nextLookup.length == 0) { return; }
 
 			const params = '?,'.repeat(nextLookup.length).slice(0, -1);
-			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\` from groups where id in (${params})`);
+			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\`, \`args\` from groups where id in (${params})`);
 			const rows = stmt.all(...nextLookup);
 
 			for (let i in rows) {
 				const row = rows[i];
 				const child = children[i];
-				row.direct = false;
-				row.from = this.groups[child].from;
-				row.to   = this.groups[child].to;
+				row.from = this.groups.get(child).timeFrom;
+				row.to   = this.groups.get(child).timeTo;
 			}
 
 			await recursiveGroupLookup(rows);
@@ -300,6 +280,28 @@ class User {
 		await recursiveGroupLookup(rows);
 
 		return this.groups;
+	}
+
+	/**
+	 * Adds a user to a group
+	 * @param  {number}      groupId    The id of the group
+	 * @param  {string[]}    [args]     An array of name arguments for use with the group's display name (if it accepts arguments)
+	 * @param  {number}      [timeFrom] The time when the user was added to the group, defaults to now
+	 * @param  {number|null} [timeTo]   The time at which the user's membership expires, defaults to never
+	 * @return {Group} The group the user was added to
+	 */
+	async addToGroup (groupId, args = [], timeFrom = undefined, timeTo = null) {
+		if (timeFrom === undefined) {
+			timeFrom = moment().unix();
+		}
+
+		const groups = await this.getGroups();
+
+		const group = Group.getById(groupId);
+		group.addUser(this, args, timeFrom, timeTo);
+		groups.set(groupId, group);
+
+		return group;
 	}
 
 	/**
@@ -317,8 +319,11 @@ class User {
 		// Obtain group permissions
 		const groups = await this.getGroups();
 		const groupIds = [];
-		for (let group of Object.values(groups)) {
-			groupIds.push(group.groupId);
+		for (let group of groups.values()) {
+			const validity = group.getValidityForUser(this);
+			if (validity.active) {
+				groupIds.push(group.id);
+			}
 		}
 
 		const params = '?,'.repeat(groupIds.length).slice(0, -1);

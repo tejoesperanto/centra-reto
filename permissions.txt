@@ -1,0 +1,6 @@
+Permissions overview
+====================
+
+users
+	view:
+	Permits the user to view the list of users from the administration panel

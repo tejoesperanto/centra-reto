@@ -102,14 +102,15 @@ export async function cmd (bits, log) {
 				];
 				const rows = [];
 
-				for (let group of Object.values(groups)) {
+				for (let group of groups.values()) {
+					const validity = group.getValidityForUser(user);
 					rows.push([
-						group.groupId,
-						group.active ? 'jes' : 'ne',
-						group.direct ? 'jes' : 'ne',
-						group.name,
-						moment.unix(group.from).format(CR.timeFormats.dateTimeSimple),
-						group.to ? moment.unix(group.to).format(CR.timeFormats.dateTimeSimple) : '-'
+						group.id,
+						validity.active ? 'jes' : 'ne',
+						group.isDirectForUser(user) ? 'jes' : 'ne',
+						await group.getNameForUser(user),
+						moment.unix(validity.timeFrom).format(CR.timeFormats.dateTimeSimple),
+						validity.timeTo ? moment.unix(validity.timeTo).format(CR.timeFormats.dateTimeSimple) : '-'
 					]);
 				}
 

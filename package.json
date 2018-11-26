@@ -18,6 +18,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "csv-parse": "^4.0.1",
+    "csv-stringify": "^5.0.0",
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
     "express-session": "^1.15.6",

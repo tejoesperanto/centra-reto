@@ -101,12 +101,23 @@
                 <!-- Menu -->
                 <div class="menu">
                     <ul class="list">
-                        <li class="active">
-                            <a href="/">
-                                <i class="material-icons">home</i>
-                                <span>Hejmo</span>
+                        {{#menu}}
+                        <li {{#active}}class="active"{{/active}}>
+                            <a href="{{&href}}{{^href}}javascript:void(0);{{/href}}" {{#children.length}}class="menu-toggle"{{/children.length}}>
+                                <i class="material-icons">{{icon}}</i>
+                                <span>{{name}}</span>
                             </a>
+                            {{#children.length}}
+                            <ul class="ml-menu">
+                                {{#children}}
+                                <li>
+                                    <a href="{{&href}}">{{name}}</a>
+                                </li>
+                                {{/children}}
+                            </ul>
+                            {{/children.length}}
                         </li>
+                        {{/menu}}
                     </ul>
                 </div>
                 <!-- #Menu -->

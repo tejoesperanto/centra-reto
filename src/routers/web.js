@@ -18,6 +18,7 @@ export function init () {
 	// /kondichoj
 	// /uzanto/:email
 	// /agordoj
+	// /administrado/uzantoj
 
 	// Handle regular pages
 	router.get('/', wrap(mixedPageIndex));
@@ -91,10 +92,14 @@ async function sendTemplate (res, file, view) {
  * @param  {express.Request} req
  * @param  {Object}          view The view to amend
  */
-function amendView (req, view) {
+async function amendView (req, view) {
 	if (!view) { return; }
+
+	// Global fields
 	view.year = moment().format('YYYY');
 	view.version = CR.version;
+
+	// User data
 	if (req.user) {
 		view.user = {
 			email: req.user.email,
@@ -105,6 +110,36 @@ function amendView (req, view) {
 		};
 	} else {
 		view.user = false;
+	}
+
+	// Menu
+	view.menu = [
+		{
+			name: 'Hejmo',
+			icon: 'home',
+			href: '/',
+			active: req.url === '/'
+		}
+	];
+
+	const menuAdministration = [];
+
+	if (req.user) {
+		if (await req.user.hasPermission('users.view')) {
+			menuAdministration.push({
+				name: 'Uzantoj',
+				href: '/administrado/uzantoj'
+			});
+		}
+	}
+
+	if (menuAdministration.length > 0) {
+		view.menu.push({
+			name: 'Administrado',
+			icon: 'build',
+			active: /^\/administrado.*/.test(req.url),
+			children: menuAdministration
+		});
 	}
 }
 
@@ -131,7 +166,7 @@ async function renderRegularPage (page, data) {
  * @return {string} The rendered page
  */
 async function sendRegularPage (req, res, page, data = {}) {
-	amendView(req, data);
+	await amendView(req, data);
 	const render = await renderRegularPage(page, data);
 	res.send(render);
 }
@@ -144,10 +179,10 @@ async function sendRegularPage (req, res, page, data = {}) {
  * @param  {Object}           view The view
  * @return {string} The rendered page
  */
-function sendFullPage (req, res, page, view = {}) {
-	amendView(req, view);
+async function sendFullPage (req, res, page, view = {}) {
+	await amendView(req, view);
 	const file = path.join(CR.filesDir, 'web', 'templates_full', page + '.html');
-	return sendTemplate(res, file, view);
+	await sendTemplate(res, file, view);
 }
 
 // Handlers
