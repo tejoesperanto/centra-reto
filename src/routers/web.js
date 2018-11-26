@@ -249,7 +249,9 @@ async function regularPageAdministradoUzantoj (req, res, next) {
 	const data = {
 		title: 'Administrado de uzantoj',
 		scripts: [
+			'/js/cr/main/administrado/uzantoj.js',
 			'/plugins/jquery-datatable/jquery.dataTables.js',
+			'/js/jquery.dataTables.eo.js',
 			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js'
 		],
 		stylesheets: [

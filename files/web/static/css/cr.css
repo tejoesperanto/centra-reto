@@ -62,3 +62,7 @@ textarea.cr-code {
 .user-info {
 	background: #009846 !important;
 }
+
+.datatable {
+	overflow-x: hidden;
+}

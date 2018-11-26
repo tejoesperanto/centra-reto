@@ -1,3 +1,5 @@
+$.fn.dataTable.ext.errMode = 'throw';
+
 $('#cr-logout').click(function(e) {
     e.preventDefault();
     

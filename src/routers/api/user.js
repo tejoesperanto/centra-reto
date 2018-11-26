@@ -14,6 +14,7 @@ export default function () {
 	const router = express.Router();
 
 	router.post('/activate', wrap(activateUser));
+	router.post('/list', CRApi.requireInitialSetup, wrap(listUsers));
 	router.post('/login', CR.loginLimiter, wrap(login));
 	router.post('/logout', wrap(logout));
 	router.post('/initial_setup', CRApi.requireLogin, wrap(initialSetup));
@@ -34,8 +35,8 @@ async function activateUser (req, res, next) {
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
-	 * MISSING_ARGUMENT       [parameter]
-	 * INVALID_ACTIVATION_KEY []          The email and activation key combination was not found
+	 * MISSING_ARGUMENT       [argument]
+	 * INVALID_ACTIVATION_KEY []         The email and activation key combination was not found
 	 *
 	 * Returns:
 	 * uid (number) The user's id
@@ -70,6 +71,98 @@ async function activateUser (req, res, next) {
 	});
 }
 
+/**
+ * POST /list
+ * Lists all users
+ *
+ * Login required
+ * Initial setup required
+ *
+ * Permissions required:
+ * users.view
+ *
+ * Parameters:
+ * See routers/api#generateListQueryStatement
+ *
+ * Permitted cols:
+ * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email, enabled, activation_key_time
+ * 
+ * Returns:
+ * data (Object[]) The rows
+ *   id                   (number)      The user's id
+ *   name                 (string)
+ *   full_name_latin      (string)
+ *   full_name_native     (string|null)
+ *   full_name_latin_sort (string)
+ *   nickname             (string)
+ *   pet_name             (string|null)
+ *   email                (string)      The user's primary email address
+ *   enabled              (boolean)     Whether the user is enabled
+ *   active               (boolean)     Whether the user has activated their account
+ *   set_up               (boolean)     Whether the user has completed the initial setup
+ *   activation_key_time  (number)      The time the user's activation key expires
+ * 
+ * Throws:
+ * MISSING_PERMISSION
+ * MISSING_ARGUMENT [argument]
+ * INVALID_ARGUMENT [argument]
+ * INVALID_WHERE_COLUMN [column]
+ */
+async function listUsers (req, res, next) {
+	if (!(await req.user.hasPermission('users.view'))) {
+		CRApi.sendError(res, 'MISSING_PERMISSION');
+	}
+
+	const table = 'users left join users_details on users_details.user_id = users.id';
+	const stmtData = CRApi.generateListQueryStatement(req, res, table, [
+		'id',
+		'full_name_latin',
+		'full_name_native',
+		'full_name_latin_sort',
+		'nickname',
+		'pet_name',
+		'email',
+		'enabled',
+		'activation_key_time'
+		], [
+		'id',
+		'full_name_latin',
+		'full_name_native',
+		'full_name_latin_sort',
+		'nickname',
+		'pet_name',
+		'email',
+		'enabled',
+		'activation_key_time'
+		]);
+
+	if (!stmtData) { return; }
+
+
+	const stmt = CR.db.users.prepare(stmtData.stmt);
+	const rows = stmt.all(...stmtData.input);
+
+	const output = rows.map(row => {
+		const setUp = !!row.full_name_latin; // This key is only present if the initial set up has been completed
+		return {
+			id: row.id,
+			name: User.formatLongName(row.full_name_latin, row.pet_name),
+			full_name_latin: row.full_name_latin,
+			full_name_native: row.full_name_native,
+			full_name_latin_sort: row.full_name_latin_sort,
+			nickname: row.nickname,
+			pet_name: row.pet_name,
+			email: row.email,
+			enabled: !!row.enabled,
+			active: !row.activation_key_time,
+			set_up: setUp,
+			activation_key_time: row.activation_key_time
+		};
+	});
+
+	CRApi.sendResponse(res, output);
+}
+
 async function login (req, res, next) {
 	/**
 	 * POST /login
@@ -83,8 +176,8 @@ async function login (req, res, next) {
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
-	 * MISSING_ARGUMENT [parameter]
-	 * USER_NOT_FOUND   []          The email/password combination was not found
+	 * MISSING_ARGUMENT [argument]
+	 * USER_NOT_FOUND   []         The email/password combination was not found
 	 *
 	 * Returns:
 	 * uid (number) The user's id
@@ -148,9 +241,9 @@ async function initialSetup (req, res, next) {
 	 *
 	 * Throws:
 	 * NOT_LOGGED_IN
-	 * ALREADY_COMPLETED             The user has already completed the initial setup
-	 * MISSING_ARGUMENT  [parameter]
-	 * INVALID_ARGUMENT  [parameter]
+	 * ALREADY_COMPLETED The user has already completed the initial setup
+	 * MISSING_ARGUMENT  [argument]
+	 * INVALID_ARGUMENT  [argument]
 	 */
 	
 	/** BEGIN INPUT VALIDATION */

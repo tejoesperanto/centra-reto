@@ -191,9 +191,19 @@ class User {
 	 */
 	getLongName () {
 		const details = this.getNameDetails();
-		let name = details.fullNameLatin;
-		if (details.petName) {
-			name += ` (${details.petName})`;
+		return User.formatLongName(details.fullNameLatin, details.petName);
+	}
+
+	/**
+	 * Formats a long name using a full name with the optional pet name in parenthesis at the end
+	 * @param  {string}      fullNameLatin The full name written in the latin alphabet in the native order
+	 * @param  {string|null} [petName]     (kromnomo) The pet name (used as a nickname that's not part of the full name)
+	 * @return {string}
+	 */
+	static formatLongName (fullNameLatin, petName = null) {
+		let name = fullNameLatin;
+		if (petName) {
+			name += ` ${petName}`
 		}
 		return name;
 	}
