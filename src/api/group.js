@@ -96,7 +96,7 @@ export default class Group {
 	}
 
 	/**
-	 * Obtains a group based on it's id
+	 * Obtains a group based on its id
 	 * @param  {number} id
 	 * @return {Group}
 	 */
