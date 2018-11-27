@@ -85,13 +85,14 @@ export function requireInitialSetup (req, res, next) {
 }
 
 /**
- * Generates a safe select statement with user provided values
- * @param  {Express.Request}  req
- * @param  {Express.Response} res
- * @param  {string}           table       The table to select from, optionally with a join statement
- * @param  {string[]}         colsSelect  The cols to select
- * @param  {string[]}         colsAllowed The cols the user is allowed to do anything with
- * @return {Object|null} `{ stmt, input }`
+ * Perform a safe select statement with user provided values
+ * @param  {Express.Request}        req
+ * @param  {Express.Response}       res
+ * @param  {BetterSqlite3.Database} db
+ * @param  {string}                 table       The table to select from, optionally with a join statement
+ * @param  {string[]}               colsSelect  The cols to select
+ * @param  {string[]}               colsAllowed The cols the user is allowed to do anything with
+ * @return {Object|null} `{ data, rowsTotal, rowsFiltered }`
  * 
  * `req` body parameters:
  * [offset]    (number)   The offset of the rows to return.
@@ -111,7 +112,7 @@ export function requireInitialSetup (req, res, next) {
  * INVALID_SEARCH_COLUMN [column]
  * INVALID_ORDER_COLUMN  [column]
  */
-export function generateListQueryStatement (req, res, table, colsSelect, colsAllowed) {
+export function performListQueryStatement (req, res, db, table, colsSelect, colsAllowed) {
 	const requiredFields = [
 		'limit'
 	];
@@ -131,6 +132,9 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 		stmt += col + ',';
 	}
 	stmt = stmt.slice(0, -1);
+
+	let stmtNoLimit = '';
+	let stmtNoLimitStartIndex = stmt.length;
 
 	stmt += ' from ' + table;
 
@@ -223,6 +227,8 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 		stmt += ')';
 	}
 
+	stmtNoLimit = stmt;
+
 	if (req.body.order && req.body.order.length > 0) {
 		stmt += ' order by';
 
@@ -258,5 +264,12 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 		stmt += ' offset ' + req.body.offset;
 	}
 
-	return { stmt: stmt, input: inputData };
+	const data = db.prepare(stmt).all(...inputData);
+
+	const rowsTotal = db.prepare('select count(1) as count from ' + table).get().count;
+
+	stmtNoLimit = 'select count(1) as count' + stmtNoLimit.substr(stmtNoLimitStartIndex);
+	const rowsFiltered = db.prepare(stmtNoLimit).get(...inputData).count;
+
+	return { data: data, rowsTotal: rowsTotal, rowsFiltered: rowsFiltered };
 }

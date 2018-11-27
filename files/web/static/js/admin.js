@@ -588,7 +588,9 @@ function setUpDataTable (selector, url) {
 
                 var res = {
                     draw: jData.draw,
-                    data: resData
+                    data: resData,
+                    recordsTotal: apiRes.rows_total,
+                    recordsFiltered: apiRes.rows_filtered
                 };
 
                 cb(res);

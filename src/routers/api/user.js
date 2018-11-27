@@ -88,7 +88,9 @@ async function activateUser (req, res, next) {
  * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email, enabled, activation_key_time
  * 
  * Returns:
- * data (Object[]) The rows
+ * rows_total    (number)   The amount of rows in the table in total
+ * rows_filtered (number)   The amount of rows in the table after filtering
+ * data          (Object[]) The rows
  *   id                   (number)      The user's id
  *   name                 (string)      The user's full name with the optional pet name in parenthesis at the end
  *   full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
@@ -112,7 +114,7 @@ async function listUsers (req, res, next) {
 	}
 
 	const table = 'users left join users_details on users_details.user_id = users.id';
-	const stmtData = CRApi.generateListQueryStatement(req, res, table, [
+	const dbData = CRApi.performListQueryStatement(req, res, CR.db.users, table, [
 		'id',
 		'full_name_latin',
 		'full_name_native',
@@ -134,13 +136,9 @@ async function listUsers (req, res, next) {
 		'activation_key_time'
 		]);
 
-	if (!stmtData) { return; }
+	if (!dbData) { return; }
 
-
-	const stmt = CR.db.users.prepare(stmtData.stmt);
-	const rows = stmt.all(...stmtData.input);
-
-	const output = rows.map(row => {
+	const output = dbData.data.map(row => {
 		const setUp = !!row.full_name_latin; // This key is only present if the initial set up has been completed
 		return {
 			id: row.id,
@@ -158,7 +156,11 @@ async function listUsers (req, res, next) {
 		};
 	});
 
-	CRApi.sendResponse(res, { data: output });
+	CRApi.sendResponse(res, {
+		data: output,
+		rows_total: dbData.rowsTotal,
+		rows_filtered: dbData.rowsFiltered
+	});
 }
 
 async function login (req, res, next) {
