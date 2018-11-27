@@ -255,7 +255,7 @@ async function regularPageAdministradoUzantoj (req, res, next) {
 			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js'
 		],
 		stylesheets: [
-			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.boostrap.min.css'
+			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css'
 		]
 	};
 	await sendRegularPage(req, res, 'administrado/uzantoj', data);
