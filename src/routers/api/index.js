@@ -100,21 +100,20 @@ export function requireInitialSetup (req, res, next) {
  *                        Value: 1-100
  * [where]     (Object[]) The values to require. `{ col, val, type }`.
  *                        Type can be any of `=`, `like`.
- * [search]    (Object[]) Just like `where` except cols are conbined using the or operator. The `like` operator is always used `{ col, val }`.
- * order_col   (string)   The column to order by.
- * [order_asc] (boolean)  True for ascending order, false for descending order.
- *                        Defaults to true.
+ * [search]    (Object[]) Just like `where` except cols are combined using the or operator. The `like` operator is always used `{ col, val }`.
+ * order       (Object[]) The columns to order by in the provided order. `{ col, type }`
+ *                        Type can be any of 'asc', 'desc'.
  *
  * Throws:
  * MISSING_ARGUMENT      [argument]
  * INVALID_ARGUMENT      [argument]
  * INVALID_WHERE_COLUMN  [column]
  * INVALID_SEARCH_COLUMN [column]
+ * INVALID_ORDER_COLUMN  [column]
  */
 export function generateListQueryStatement (req, res, table, colsSelect, colsAllowed) {
 	const requiredFields = [
-		'limit',
-		'order_col'
+		'limit'
 	];
 	if (!handleRequiredFields(req, res, requiredFields)) { return null; }
 
@@ -125,6 +124,7 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 	const inputData = [];
 	const allowedWhereTypes = ['=', 'like'];
 	const allowedWhereValues = ['number', 'string'];
+	const allowedOrderTypes = ['asc', 'desc'];
 
 	let stmt = 'select ';
 	for (let col of colsSelectEsc) {
@@ -140,6 +140,10 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 	}
 	if (req.body.search && !(req.body.search instanceof Array)) {
 		sendError(res, 'INVALID_ARGUMENT', ['search']);
+		return null;
+	}
+	if (req.body.order && !(req.body.order instanceof Array)) {
+		sendError(res, 'INVALID_ARGUMENT', ['order']);
 		return null;
 	}
 
@@ -219,17 +223,26 @@ export function generateListQueryStatement (req, res, table, colsSelect, colsAll
 		stmt += ')';
 	}
 
-	if (colsAllowed.indexOf(req.body.order_col) === -1) {
-		sendError(res, 'INVALID_ARGUMENT', ['order_col']);
-		return null;
-	}
-	stmt += ' order by ' + escapeCol(req.body.order_col);
+	if (req.body.order && req.body.order.length > 0) {
+		stmt += ' order by';
 
-	let orderMethod = 'ASC';
-	if (req.body.order_asc !== undefined) {
-		orderMethod = req.body.order_asc ? 'ASC' : 'DESC';
+		for (let orderData of req.body.order) {
+			if (typeof orderData !== 'object') {
+				sendError(res, 'INVALID_ORDER_COLUMN', [orderData]);
+				return null;
+			}
+			const i = colsAllowed.indexOf(orderData.col);
+			if (!('col' in orderData) ||
+				i === -1 ||
+				!('type' in orderData) ||
+				allowedOrderTypes.indexOf(orderData.type.toLowerCase()) === -1) {
+				sendError(res, 'INVALID_ORDER_COLUMN', [orderData]);
+				return null;
+			}
+
+			stmt += ` ${colsAllowedEsc[i]} ${orderData.type}`;
+		}
 	}
-	stmt += ' ' + orderMethod;
 
 	if (!Number.isSafeInteger(req.body.limit)) {
 		sendError(res, 'INVALID_ARGUMENT', ['limit']);

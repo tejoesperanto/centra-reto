@@ -104,9 +104,7 @@ async function activateUser (req, res, next) {
  * 
  * Throws:
  * MISSING_PERMISSION
- * MISSING_ARGUMENT [argument]
- * INVALID_ARGUMENT [argument]
- * INVALID_WHERE_COLUMN [column]
+ * See routers/api#generateListQueryStatement
  */
 async function listUsers (req, res, next) {
 	if (!(await req.user.hasPermission('users.view'))) {
@@ -160,7 +158,7 @@ async function listUsers (req, res, next) {
 		};
 	});
 
-	CRApi.sendResponse(res, output);
+	CRApi.sendResponse(res, { data: output });
 }
 
 async function login (req, res, next) {

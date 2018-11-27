@@ -487,4 +487,114 @@ function showError (error) {
     });
 }
 
+function ajaxOptions (url, data, method) {
+    return {
+        url: url,
+        type: method || 'post',
+        data: JSON.stringify(data),
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json'
+    };
+}
+
+function performAPIRequest (url, data, cb, method) {
+    var options = ajaxOptions('/api/user/list', data, method);
+    var handler = function (err, data) {
+        if (err) {
+            showError(err);
+            return;
+        }
+        if (!data.success) {
+            showError(data);
+            return;
+        }
+        cb(data);
+    };
+    $.ajax(options)
+        .done(function(data){ handler(null, data); })
+        .fail(function(jqXHR, status, err) { handler(err, null); });
+}
+
+function setUpDataTable (selector, url) {
+    var el = $(selector);
+    var header = el.find('thead>*').clone();
+    var foot = document.createElement('tfoot');
+    $(foot).append(header);
+    el.append(foot);
+
+    el.DataTable({
+        language: dataTablesEsp,
+        responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: function (jData, cb, settings) {
+            var order = [];
+            for (var i in jData.order) {
+                var reqOrder = jData.order[i];
+                order.push({
+                    col: jData.columns[reqOrder.column].name,
+                    type: reqOrder.dir
+                });
+            }
+
+            var globalSearch = [];
+            var localSearch = [];
+            for (var i in jData.columns) {
+                var reqSearch = jData.columns[i];
+                if (!reqSearch.searchable) { continue; }
+
+                if (jData.search.value.length > 0) {
+                    globalSearch.push({
+                        col: reqSearch.name,
+                        val: '%' + jData.search.value + '%'
+                    });
+                }
+
+                if (reqSearch.search.value.length > 0) {
+                    localSearch.push({
+                        col: reqSearch.name,
+                        val: '%' + reqSearch.search.value + '%',
+                        type: 'like'
+                    });
+                }
+            }
+
+            var data = {
+                offset: jData.start,
+                limit: jData.length,
+                order: order,
+                search: globalSearch,
+                where: localSearch
+            };
+            performAPIRequest(url, data, function (apiRes) {
+                var resData = [];
+                for (var x in apiRes.data) {
+                    var row = apiRes.data[x];
+                    var entry = [];
+
+                    for (var y in jData.columns) {
+                        var col = jData.columns[y];
+                        var val = row[col.name];
+
+                        if (typeof val === 'boolean') {
+                            val = val ? 'Jes' : 'Ne';
+                        }
+                    
+                        entry.push(val);
+                    }
+
+                    resData.push(entry);
+                }
+
+                var res = {
+                    draw: jData.draw,
+                    data: resData
+                };
+
+                cb(res);
+            });
+        }
+    });
+}
+
 // END Added for CR
