@@ -120,6 +120,7 @@ export function logCmd (type, cmd, text, ...format) {
  * @throws {string} { `close` is thrown if the user cancels the question. }
  */
 export function prompt (q) {
+	let closeHandler;
 	const question = new Promise((resolve, reject) => {
 		activePrompt = {
 			resolve: resolve,
@@ -130,10 +131,14 @@ export function prompt (q) {
 			resolve(a);
 			activePrompt = null;
 		});
-		CR.reader.on('close', () => {
+		closeHandler = () => {
 			reject('close');
 			activePrompt = null;
-		});
+		};
+		CR.reader.on('close', closeHandler);
+	});
+	question.finally(() => {
+		CR.reader.removeListener('close', closeHandler);
 	});
 	return question;
 }
