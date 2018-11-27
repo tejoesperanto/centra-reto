@@ -1,4 +1,5 @@
 $(function () {
+	// Existing users
 	var tableData = setUpDataTable('#users-table', '/api/user/list');
 	var table = tableData.table;
 
@@ -49,6 +50,29 @@ $(function () {
 		        content: div[0],
 		        button: 'Fermi'
 		    });
+		});
+	});
+
+	// Create new user
+	$('#create-user-form').submit(function (e) {
+		e.preventDefault();
+
+		var button = $('#create-user-form-button');
+		button.attr('disabled', true);
+
+		var data = serializeToObj(this);
+		if (data.send_email === 'on') {
+			data.send_email = true;
+		} else {
+			data.send_email = false;
+		}
+		
+		performAPIRequest('/api/user/create', data, function (res) {
+			table.draw();
+
+			// Reset the form
+			$('#create-user-form-email').val('');
+			button.removeAttr('disabled');
 		});
 	});
 });

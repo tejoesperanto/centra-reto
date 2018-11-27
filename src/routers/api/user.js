@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 
+import * as CRMail from '../../mail';
 import * as CRApi from '.';
 import User from '../../api/user';
 import { wrap } from '..';
@@ -17,6 +18,7 @@ export default function () {
 	router.post('/list', CRApi.requireInitialSetup, wrap(listUsers));
 	router.post('/login', CR.loginLimiter, wrap(login));
 	router.post('/logout', wrap(logout));
+	router.post('/create', CRApi.requireInitialSetup, wrap(createUser));
 	router.post('/toggle_enabled', CRApi.requireInitialSetup, wrap(toggleEnabled));
 	router.post('/initial_setup', CRApi.requireLogin, wrap(initialSetup));
 
@@ -124,6 +126,7 @@ async function listUsers (req, res, next) {
 		'pet_name',
 		'email',
 		'enabled',
+		'activation_key',
 		'activation_key_time'
 		], [
 		'id',
@@ -134,7 +137,7 @@ async function listUsers (req, res, next) {
 		'pet_name',
 		'email',
 		'enabled',
-		'activation_key_time'
+		'activation_key'
 		]);
 
 	if (!dbData) { return; }
@@ -153,6 +156,7 @@ async function listUsers (req, res, next) {
 			enabled: !!row.enabled,
 			active: !row.activation_key_time,
 			set_up: setUp,
+			activation_key: row.activation_key,
 			activation_key_time: row.activation_key_time
 		};
 	});
@@ -216,6 +220,64 @@ async function logout (req, res, next) {
 	req.logout();
 
 	CRApi.sendResponse(res);
+}
+
+async function createUser (req, res, next) {
+	/**
+	 * POST /create
+	 * Creates a new user
+	 *
+	 * email      (string)  The email of the user
+	 * send_email (boolean) Whether to send an email with the activation link
+	 *
+	 * Login required
+	 * Initial setup required
+	 *
+	 * Permissions required:
+	 * users.create
+	 *
+	 * Throws:
+	 * EMAIL_TAKEN
+	 *
+	 * Returns:
+	 * uid            (number) The user's id
+	 * activation_key (string) The user's activation key
+	 */
+	
+	if (!(await req.user.hasPermission('users.create'))) {
+		CRApi.sendError(res, 'MISSING_PERMISSION');
+		return;
+	}
+
+	const fields = [
+		'email',
+		'send_email'
+	];
+	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+
+	const email = req.body.email.toString();
+
+	const isTaken = User.isEmailTaken(email);
+	if (isTaken) {
+		CRApi.sendError(res, 'EMAIL_TAKEN');
+		return;
+	}
+
+	const user = await User.createUser(email);
+
+	if (req.body.send_email) {
+		const activationURL = user.getActivationURL();
+		await CRMail.renderSendMail('new_account', {
+			activation_link: activationURL
+		}, {
+			to: email
+		});
+	}
+
+	CRApi.sendResponse(res, {
+		uid: user.id,
+		activation_key: user.activationKey
+	});
 }
 
 async function toggleEnabled (req, res, next) {

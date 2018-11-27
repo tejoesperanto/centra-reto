@@ -623,4 +623,14 @@ function cloneTemplate (selector) {
     return el;
 }
 
+function serializeToObj (selector) {
+    var arr = $(selector).serializeArray();
+    var data = {};
+    for (var i in arr) {
+        var row = arr[i];
+        data[row.name] = row.value;
+    }
+    return data;
+}
+
 // END Added for CR
