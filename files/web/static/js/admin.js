@@ -527,7 +527,9 @@ function setUpDataTable (selector, url) {
         responsive: true,
         processing: true,
         serverSide: true,
+        searchDelay: 800, // ms
         ajax: function (jData, cb, settings) {
+            console.log(true);
             var order = [];
             for (var i in jData.order) {
                 var reqOrder = jData.order[i];
