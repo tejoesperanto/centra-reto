@@ -35,8 +35,8 @@ export function init () {
 // Utility functions
 /**
  * Express middleware that redirects any requests to / from users that have not yet completed initial setup
- * @param  {express.Request}  req
- * @param  {express.Response} res
+ * @param  {Express.Request}  req
+ * @param  {Express.Response} res
  * @param  {Function}         next
  */
 function requireInitialSetup (req, res, next) {
@@ -49,8 +49,8 @@ function requireInitialSetup (req, res, next) {
 
 /**
  * Express middleware that redirects any requests to / from users that haven't logged in
- * @param  {express.Request}  req
- * @param  {express.Response} res
+ * @param  {Express.Request}  req
+ * @param  {Express.Response} res
  * @param  {Function}         next
  */
 function requireLogin (req, res, next) {
@@ -59,6 +59,22 @@ function requireLogin (req, res, next) {
 	} else {
 		res.redirect(303, '/');
 	}
+}
+
+/**
+ * Ensures that only users with a given permission may access the page
+ * @param  {Express.request}  req
+ * @param  {Express.response} res
+ * @param  {string}           permission   The necessary permission
+ * @param  {string}           [redirectTo] The url to redirect to in case the permission isn't fulfilled
+ * @return {boolean}
+ */
+async function requirePermission (req, res, permission, redirectTo = '/') {
+	if (!req.user || !await req.user.hasPermission(permission)) {
+		res.redirect(303, redirectTo);
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -246,6 +262,8 @@ async function mixedPageIndex (req, res, next) {
 
 // Regular pages
 async function regularPageAdministradoUzantoj (req, res, next) {
+	if (!await requirePermission(req, res, 'users.view')) { return; }
+
 	const data = {
 		title: 'Administrado de uzantoj',
 		scripts: [
@@ -264,7 +282,7 @@ async function regularPageAdministradoUzantoj (req, res, next) {
 // Full pages
 async function fullPageAlighi (req, res, next) {
 	// Verify the params
-	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ?");
+	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ? and enabled = 1");
 	let row = stmt.get(req.params.email, req.params.activationKey);
 	if (!row) {
 		showError(401, 'Aliĝŝlosilo ne valida', req, res);

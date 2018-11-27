@@ -478,12 +478,13 @@ function showError (error) {
         error.frontend_time = moment().format();
         error = JSON.stringify(error, null, 2);
     }
+    var div = document.createElement('div');
+    div.innerHTML = '<p>Vi povas provi denove aŭ sendi la suban erarmesaĝon al <a href="mailto:reto@tejo.org">reto@tejo.org</a>.<p><textarea class="cr-code" readonly>' + error + '</textarea>';
     swal({
         title: 'Okazis eraro',
-        type: 'error',
-        text: '<p>Vi povas provi denove aŭ sendi la suban erarmesaĝon al <a href="mailto:reto@tejo.org">reto@tejo.org</a>.<p><textarea class="cr-code" readonly>' + error + '</textarea>',
-        html: true,
-        confirmButtonText: 'Bone'
+        icon: 'error',
+        content: div,
+        button: 'Bone'
     });
 }
 
@@ -498,7 +499,7 @@ function ajaxOptions (url, data, method) {
 }
 
 function performAPIRequest (url, data, cb, method) {
-    var options = ajaxOptions('/api/user/list', data, method);
+    var options = ajaxOptions(url, data, method);
     var handler = function (err, data) {
         if (err) {
             showError(err);
@@ -517,19 +518,26 @@ function performAPIRequest (url, data, cb, method) {
 
 function setUpDataTable (selector, url) {
     var el = $(selector);
-    var header = el.find('thead>*').clone();
+    var headerOrg = el.find('thead>*')
+    var header = headerOrg.clone();
     var foot = document.createElement('tfoot');
     $(foot).append(header);
     el.append(foot);
 
-    el.DataTable({
+    var latestData = {};
+
+    var columns = [];
+    headerOrg.children().each(function () {
+        columns.push(this.dataset.name);
+    });
+
+    var table = el.DataTable({
         language: dataTablesEsp,
         responsive: true,
         processing: true,
         serverSide: true,
         searchDelay: 800, // ms
         ajax: function (jData, cb, settings) {
-            console.log(true);
             var order = [];
             for (var i in jData.order) {
                 var reqOrder = jData.order[i];
@@ -569,6 +577,7 @@ function setUpDataTable (selector, url) {
                 where: localSearch
             };
             performAPIRequest(url, data, function (apiRes) {
+                latestData = apiRes;
                 var resData = [];
                 for (var x in apiRes.data) {
                     var row = apiRes.data[x];
@@ -599,6 +608,19 @@ function setUpDataTable (selector, url) {
             });
         }
     });
+
+    return {
+        table: table,
+        columns: columns,
+        getData: function () { return latestData; }
+    };
+}
+
+function cloneTemplate (selector) {
+    var el = $(selector).clone();
+    el.removeClass('template');
+    el.removeAttr('id');
+    return el;
 }
 
 // END Added for CR

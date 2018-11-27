@@ -17,6 +17,7 @@ export default function () {
 	router.post('/list', CRApi.requireInitialSetup, wrap(listUsers));
 	router.post('/login', CR.loginLimiter, wrap(login));
 	router.post('/logout', wrap(logout));
+	router.post('/toggle_enabled', CRApi.requireInitialSetup, wrap(toggleEnabled));
 	router.post('/initial_setup', CRApi.requireLogin, wrap(initialSetup));
 
 	return router;
@@ -35,8 +36,7 @@ async function activateUser (req, res, next) {
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
-	 * MISSING_ARGUMENT       [argument]
-	 * INVALID_ACTIVATION_KEY []         The email and activation key combination was not found
+	 * INVALID_ACTIVATION_KEY The email and activation key combination was not found
 	 *
 	 * Returns:
 	 * uid (number) The user's id
@@ -50,7 +50,7 @@ async function activateUser (req, res, next) {
 	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
 
 	// Validate the account activation key and obtain the user id
-	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ?");
+	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ? and enabled = 1");
 	let row = stmt.get(req.body.email, req.body.activation_key);
 	if (!row) {
 		CRApi.sendError(res, 'INVALID_ACTIVATION_KEY');
@@ -71,46 +71,47 @@ async function activateUser (req, res, next) {
 	});
 }
 
-/**
- * POST /list
- * Lists all users
- *
- * Login required
- * Initial setup required
- *
- * Permissions required:
- * users.view
- *
- * Parameters:
- * See routers/api#generateListQueryStatement
- *
- * Permitted cols:
- * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email, enabled, activation_key_time
- * 
- * Returns:
- * rows_total    (number)   The amount of rows in the table in total
- * rows_filtered (number)   The amount of rows in the table after filtering
- * data          (Object[]) The rows
- *   id                   (number)      The user's id
- *   name                 (string)      The user's full name with the optional pet name in parenthesis at the end
- *   full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
- *   full_name_native     (string|null) The user's full name written in the native writing system in the native order
- *   full_name_latin_sort (string)      The user's full name written in the latin alphabet in sorted order
- *   nickname             (string)      (alvoknomo) The user's nickname (usually the personal name)
- *   pet_name             (string|null) (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
- *   email                (string)      The user's primary email address
- *   enabled              (boolean)     Whether the user is enabled
- *   active               (boolean)     Whether the user has activated their account
- *   set_up               (boolean)     Whether the user has completed the initial setup
- *   activation_key_time  (number)      The time the user's activation key expires
- * 
- * Throws:
- * MISSING_PERMISSION
- * See routers/api#generateListQueryStatement
- */
 async function listUsers (req, res, next) {
+	/**
+	 * POST /list
+	 * Lists all users
+	 *
+	 * Login required
+	 * Initial setup required
+	 *
+	 * Permissions required:
+	 * users.view
+	 *
+	 * Parameters:
+	 * See routers/api#generateListQueryStatement
+	 *
+	 * Permitted cols:
+	 * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email, enabled, activation_key_time
+	 * 
+	 * Returns:
+	 * rows_total    (number)   The amount of rows in the table in total
+	 * rows_filtered (number)   The amount of rows in the table after filtering
+	 * data          (Object[]) The rows
+	 *   id                   (number)      The user's id
+	 *   name                 (string)      The user's full name with the optional pet name in parenthesis at the end
+	 *   full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
+	 *   full_name_native     (string|null) The user's full name written in the native writing system in the native order
+	 *   full_name_latin_sort (string)      The user's full name written in the latin alphabet in sorted order
+	 *   nickname             (string)      (alvoknomo) The user's nickname (usually the personal name)
+	 *   pet_name             (string|null) (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
+	 *   email                (string)      The user's primary email address
+	 *   enabled              (boolean)     Whether the user is enabled
+	 *   active               (boolean)     Whether the user has activated their account
+	 *   set_up               (boolean)     Whether the user has completed the initial setup
+	 *   activation_key_time  (number)      The time the user's activation key expires
+	 * 
+	 * Throws:
+	 * See routers/api#generateListQueryStatement
+	 */
+	
 	if (!(await req.user.hasPermission('users.view'))) {
 		CRApi.sendError(res, 'MISSING_PERMISSION');
+		return;
 	}
 
 	const table = 'users left join users_details on users_details.user_id = users.id';
@@ -176,8 +177,7 @@ async function login (req, res, next) {
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
-	 * MISSING_ARGUMENT [argument]
-	 * USER_NOT_FOUND   []         The email/password combination was not found
+	 * USER_NOT_FOUND The email/password combination was not found
 	 *
 	 * Returns:
 	 * uid (number) The user's id
@@ -218,6 +218,45 @@ async function logout (req, res, next) {
 	CRApi.sendResponse(res);
 }
 
+async function toggleEnabled (req, res, next) {
+	/**
+	 * POST /toggle_enabled
+	 * Toggles the enabled state of a user
+	 *
+	 * Login required
+	 * Initial setup required
+	 * 
+	 * Permissions required:
+	 * users.modify
+	 *
+	 * Parameters:
+	 * user_id (number)
+	 *
+	 * Throws:
+	 * USER_NOT_FOUND
+	 */
+	
+	if (!await req.user.hasPermission('users.modify')) {
+		CRApi.sendError(res, 'MISSING_PERMISSION');
+		return;
+	}
+
+	const fields = [
+		'user_id'
+	];
+	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+
+	const user = User.getUserById(req.body.user_id);
+	if (!user) {
+		CRApi.sendError(res, 'USER_NOT_FOUND');
+		return;
+	}
+
+	user.toggleEnabled();
+
+	CRApi.sendResponse(res);
+}
+
 async function initialSetup (req, res, next) {
 	/**
 	 * POST /initial_setup
@@ -240,10 +279,7 @@ async function initialSetup (req, res, next) {
 	 * pronouns             (string|null) The user's pronouns (li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
 	 *
 	 * Throws:
-	 * NOT_LOGGED_IN
 	 * ALREADY_COMPLETED The user has already completed the initial setup
-	 * MISSING_ARGUMENT  [argument]
-	 * INVALID_ARGUMENT  [argument]
 	 */
 	
 	/** BEGIN INPUT VALIDATION */

@@ -56,6 +56,16 @@ class User {
 	}
 
 	/**
+	 * Enabled or disables the user
+	 * @return {boolean} The new enabled state
+	 */
+	toggleEnabled () {
+		CR.db.users.prepare('update users set enabled = not enabled where id = ?').run(this.id);
+		this.enabled = !this.enabled;
+		return this.enabled;
+	}
+
+	/**
 	 * Gets the URL needed to activate the user's account
 	 * @return {string} The account activation url
 	 */

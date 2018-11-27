@@ -26,6 +26,7 @@ textarea.cr-code {
 	width: 100%;
 	height: 64px;
 	resize: none;
+	font-family: monospace;
 }
 
 .cr-initial-setup-page {
@@ -65,4 +66,12 @@ textarea.cr-code {
 
 .datatable {
 	overflow-x: hidden;
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.template {
+	display: none;
 }

@@ -41,10 +41,10 @@ $(function () {
 
                     swal({
                         title: 'Bonvenon',
-                        type: 'success',
+                        icon: 'success',
                         text: 'Vi sukcesis aliĝis al Centra Reto.',
-                        confirmButtonText: 'Bone'
-                    }, function () {
+                        button: 'Bone'
+                    }).then(function () {
                         window.location = '/';
                     });
                 }).fail(function (err) {

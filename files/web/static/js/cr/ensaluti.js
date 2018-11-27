@@ -18,9 +18,9 @@
                     if (res.error === 'USER_NOT_FOUND') {
                         swal({
                             title: 'Ensaluto ne sukcesis',
-                            type: 'error',
+                            icon: 'error',
                             text: 'La retpoŝtadreso aŭ pasvorto ne ĝustas.',
-                            confirmButtonText: 'Bone'
+                            button: 'Bone'
                         });
                     } else {
                         showError(res);
