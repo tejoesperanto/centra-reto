@@ -181,9 +181,9 @@ export async function renderRegularPage (page, data) {
 
 /**
  * Handles an HTTP 404 error
- * @param  {express.Request}  req
- * @param  {express.Response} res
- * @param  {Function}         next
+ * @param {express.Request}  req
+ * @param {express.Response} res
+ * @param {Function}         next
  */
 export async function handleError404 (req, res, next) {
 	res.status(404);
@@ -192,10 +192,10 @@ export async function handleError404 (req, res, next) {
 
 /**
  * Handles an HTTP 500 error
- * @param  {Object}           err
- * @param  {express.Request}  req
- * @param  {express.Response} res
- * @param  {Function}         next
+ * @param {Object}           err
+ * @param {express.Request}  req
+ * @param {express.Response} res
+ * @param {Function}         next
  */
 export async function handleError500 (err, req, res, next) {
 	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);

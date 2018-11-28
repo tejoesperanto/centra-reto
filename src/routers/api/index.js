@@ -18,6 +18,10 @@ export function init () {
 	// Routing
 	router.use('/user', routerUser());
 
+	// Error handling
+	router.use(handleError404);
+	router.use(handleError500);
+
 	return router;
 }
 
@@ -118,6 +122,30 @@ export const middleware = {
 		}
 	}
 };
+
+/**
+ * Handles an HTTP 404 error
+ * @param {express.Request}  req
+ * @param {express.Response} res
+ * @param {Function}         next
+ */
+function handleError404 (req, res, next) {
+	res.status(404);
+	res.sendAPIError('HTTP', [404]);
+}
+
+/**
+ * Handles an HTTP 500 error
+ * @param {Object}           err
+ * @param {express.Request}  req
+ * @param {express.Response} res
+ * @param {Function}         next
+ */
+function handleError500 (err, req, res, next) {
+	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);
+	res.status(500);
+	res.sendAPIError('HTTP', [500]);
+}
 
 /**
  * Perform a safe select statement with user provided values
