@@ -35,6 +35,7 @@ function middlewareSendAPIError (req, res, next) {
 		res.json({
 			success: false,
 			error: err,
+			url: req.originalUrl,
 			info: info
 		});
 	};
