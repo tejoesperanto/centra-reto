@@ -74,12 +74,13 @@ export async function init () {
 
 	// Routing
 	CR.app.use('/api', CRRouters.api.init());
-	CR.app.use('/', CRRouters.web.init());
+	CR.app.use('/',    CRRouters.web.init());
+	
 	CR.app.use(express.static(path.join(CR.filesDir, 'web', 'static')));
 
 	// Error handling
-	CR.app.use(CRRouters.web.error404);
-	CR.app.use(CRRouters.web.error500);
+	CR.app.use(CRRouters.web.handleError404);
+	CR.app.use(CRRouters.web.handleError500);
 
 	// Passport
 	passport.use(new passportLocal.Strategy({

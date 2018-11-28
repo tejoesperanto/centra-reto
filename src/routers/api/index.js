@@ -1,6 +1,6 @@
 import express from 'express';
 
-import user from './user';
+import routerUser from './user';
 
 /**
  * Sets up the router
@@ -16,7 +16,7 @@ export function init () {
 	router.use(middlewareRequirePermissions);
 
 	// Routing
-	router.use('/user', user());
+	router.use('/user', routerUser());
 
 	return router;
 }
