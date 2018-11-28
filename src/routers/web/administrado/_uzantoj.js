@@ -11,6 +11,9 @@ async function administrado_uzantoj (req, res, next) {
 		],
 		stylesheets: [
 			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css'
+		],
+		permissionsCheck: [
+			'users.modify', 'users.create', 'users.delete'
 		]
 	};
 	await res.sendRegularPage('administrado/uzantoj', data);

@@ -224,8 +224,33 @@ async function amendView (req, view) {
 			briefName: req.user.getBriefName(),
 			details: req.user.getNameDetails()
 		};
+
+		if (!view.permissionsCheck) { view.permissionsCheck = []; }
+		const permissions = {};
+		view.permissions = {}
+		for (let perm of view.permissionsCheck) {
+			const hasPerm = await req.user.hasPermission(perm);
+			permissions[perm] = hasPerm;
+
+			let path = view.permissions;
+			const permsBits = perm.split('.');
+			for (let i in permsBits) {
+				const bit = permsBits[i];
+				const isLast = i + 1 === permsBits.length;
+				if (!(bit in path)) {
+					if (isLast) {
+						path[bit] = hasPerm;
+					} else {
+						path[bit] = {};
+					}
+				}
+				path = path[bit];
+			}
+		}
+		view.permissionsJSON = JSON.stringify(permissions);
 	} else {
 		view.user = false;
+		view.permissionsJSON = '{}';
 	}
 
 	// Menu

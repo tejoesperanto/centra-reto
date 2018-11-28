@@ -11,86 +11,58 @@ $(function () {
 	var table = tableData.table;
 
 	table.on('draw', function () {
-		// Apply click listeners to all rows
-		var rows = table.rows().nodes().to$();
-		rows.addClass('clickable');
-		rows.on('click', function () {
-			// The listener is automatically removed upon the next draw
-			var data = tableData.getData();
-			var row = table.row(this);
-			var _rowDataRaw = row.data();
-			var _rowData = {};
-			for (var i in _rowDataRaw) {
-				var val = _rowDataRaw[i];
-				var key = tableData.columns[i];
-				_rowData[key] = val;
-			}
-			var id = _rowData.id;
-			var rowData;
-			for (var i in data.data) {
-				if (data.data[i].id === _rowData.id) {
-					rowData = data.data[i];
-					break;
+		if (userPerms['users.modify']) {
+			// Apply click listeners to all rows
+			var rows = table.rows().nodes().to$();
+			rows.addClass('clickable');
+			rows.on('click', function () {
+				// The listener is automatically removed upon the next draw
+				var data = tableData.getData();
+				var row = table.row(this);
+				var _rowDataRaw = row.data();
+				var _rowData = {};
+				for (var i in _rowDataRaw) {
+					var val = _rowDataRaw[i];
+					var key = tableData.columns[i];
+					_rowData[key] = val;
 				}
-			}
-
-			var div = cloneTemplate('#template-user-modal');
-
-			// TODO: Don't let users click on a row if they don't have users.modify
-			if (rowData.enabled) {
-				div.find('.user-modal-enable-login').remove();
-				var modalTitle  = 'Malŝalto de uzanto';
-				var modalText   = 'Ĉu vi certas, ke vi volas malŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
-				var modalButton = 'Malŝalti';
-			} else {
-				div.find('.user-modal-disable-login').remove();
-				var modalTitle  = 'Ŝalto de uzanto';
-				var modalText   = 'Ĉu vi certas, ke vi volas ŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
-				var modalButton = 'Ŝalti';
-			}
-
-			div.find('.user-modal-enable-button').on('click', function () {
-				swal({
-					title: modalTitle,
-					text: modalText,
-					buttons: [
-						'Nuligi',
-						{
-							text: modalButton,
-							closeModal: false
-						}
-					]
-
-				}).then(function () {
-					return performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id });
-
-				}).then(function (res) {
-					table.draw();
-					swal.stopLoading();
-
-					if (res.success) {
-						swal.close();
+				var id = _rowData.id;
+				var rowData;
+				for (var i in data.data) {
+					if (data.data[i].id === _rowData.id) {
+						rowData = data.data[i];
+						break;
 					}
-				});
-			});
+				}
 
-			if (rowData.set_up) {
-				div.find('.user-modal-delete-user-row').remove();
-			} else {
-				div.find('.user-modal-delete-user').on('click', function () {
+				var div = cloneTemplate('#template-user-modal');
+
+				if (rowData.enabled) {
+					div.find('.user-modal-enable-login').remove();
+					var modalTitle  = 'Malŝalto de uzanto';
+					var modalText   = 'Ĉu vi certas, ke vi volas malŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
+					var modalButton = 'Malŝalti';
+				} else {
+					div.find('.user-modal-disable-login').remove();
+					var modalTitle  = 'Ŝalto de uzanto';
+					var modalText   = 'Ĉu vi certas, ke vi volas ŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
+					var modalButton = 'Ŝalti';
+				}
+
+				div.find('.user-modal-enable-button').on('click', function () {
 					swal({
-						title: 'Forigo de uzanto',
-						text: 'Ĉu vi certas, ke vi volas forigi la uzanton kun la retpoŝtadreso ' + rowData.email + '?',
+						title: modalTitle,
+						text: modalText,
 						buttons: [
 							'Nuligi',
 							{
-								text: 'Forigi',
+								text: modalButton,
 								closeModal: false
 							}
 						]
 
 					}).then(function () {
-						return performAPIRequest('post', '/api/user/delete_uninitiated', { user_id: rowData.id });
+						return performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id });
 
 					}).then(function (res) {
 						table.draw();
@@ -101,14 +73,43 @@ $(function () {
 						}
 					});
 				});
-			}
 
-			swal({
-		        title: 'Uzanto ' + rowData.email,
-		        content: div[0],
-		        button: 'Fermi'
-		    });
-		});
+				if (rowData.set_up || !userPerms['users.delete']) {
+					div.find('.user-modal-delete-user-row').remove();
+				} else {
+					div.find('.user-modal-delete-user').on('click', function () {
+						swal({
+							title: 'Forigo de uzanto',
+							text: 'Ĉu vi certas, ke vi volas forigi la uzanton kun la retpoŝtadreso ' + rowData.email + '?',
+							buttons: [
+								'Nuligi',
+								{
+									text: 'Forigi',
+									closeModal: false
+								}
+							]
+
+						}).then(function () {
+							return performAPIRequest('post', '/api/user/delete_uninitiated', { user_id: rowData.id });
+
+						}).then(function (res) {
+							table.draw();
+							swal.stopLoading();
+
+							if (res.success) {
+								swal.close();
+							}
+						});
+					});
+				}
+
+				swal({
+			        title: 'Uzanto ' + rowData.email,
+			        content: div[0],
+			        button: 'Fermi'
+			    });
+			});
+		}
 	});
 
 	// Create new user

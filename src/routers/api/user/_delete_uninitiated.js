@@ -8,7 +8,7 @@ async function delete_uninitiated (req, res, next) {
 	 * Login required
 	 * Initial setup required
 	 *
-	 * Permission required:
+	 * Permissions required:
 	 * users.delete
 	 * 
 	 * Parameters:
