@@ -72,6 +72,9 @@ export async function init () {
 	CR.app.use(passport.session());
 	CR.app.use(flash());
 
+	// Global middleware
+	CR.app.use(CRRouters.middlewareKillDisabledUsers);
+
 	// Routing
 	CR.app.use('/api', CRRouters.api.init());
 	CR.app.use('/',    CRRouters.web.init());

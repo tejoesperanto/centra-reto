@@ -14,3 +14,13 @@ export function wrap (fn) {
 		}
 	};
 }
+
+/**
+ * Express middleware that kills the sessions of users that have been disabled
+ */
+export function middlewareKillDisabledUsers (req, res, next) {
+	if (req.user && !req.user.enabled) {
+		req.logout();
+	}
+	next();
+}
