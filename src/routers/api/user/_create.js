@@ -7,11 +7,12 @@ async function user_create (req, res, next) {
 	 * POST /create
 	 * Creates a new user
 	 *
-	 * email      (string)  The email of the user
-	 * send_email (boolean) Whether to send an email with the activation link
-	 *
 	 * Login required
 	 * Initial setup required
+	 * 
+	 * Parameters:
+	 * email      (string)  The email of the user
+	 * send_email (boolean) Whether to send an email with the activation link
 	 *
 	 * Permissions required:
 	 * users.create

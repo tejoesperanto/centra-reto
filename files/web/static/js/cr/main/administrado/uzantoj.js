@@ -37,6 +37,7 @@ $(function () {
 			} else {
 				div.find('.user-modal-disable-login').remove();
 			}
+
 			div.find('.user-modal-enable-button').on('click', function () {
 				performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id })
 					.then(function (res) {
@@ -47,6 +48,21 @@ $(function () {
 						}
 					});
 			});
+
+			if (rowData.set_up) {
+				div.find('.user-modal-delete-user-row').remove();
+			} else {
+				div.find('.user-modal-delete-user-row').on('click', function () {
+					performAPIRequest('post', '/api/user/delete_uninitiated', { user_id: rowData.id })
+						.then(function (res) {
+							table.draw();
+
+							if (res.success) {
+								swal.close();
+							}
+						});
+				})
+			}
 
 			swal({
 		        title: 'Uzanto ' + rowData.email,

@@ -5,6 +5,7 @@ import { wrap } from '../..';
 
 import apiActivate from './_activate';
 import apiCreate from './_create';
+import apiDeleteUninitiated from './_delete_uninitiated';
 import apiInitialSetup from './_initial_setup';
 import apiList from './_list';
 import apiLogin from './_login';
@@ -27,6 +28,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiCreate));
+
+	router.post('/delete_uninitiated',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiDeleteUninitiated));
 
 	router.post('/initial_setup',
 		middleware.requireLogin,
