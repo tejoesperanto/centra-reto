@@ -521,7 +521,7 @@ function performAPIRequest (method, url, data) {
     });
 }
 
-function setUpDataTable (selector, method, url, select, replaceOrder) {
+function setUpDataTable (selector, method, url, select, defaultOrder, replaceOrder) {
     if (!replaceOrder) { replaceOrder = {}; }
 
     var el = $(selector);
@@ -540,6 +540,7 @@ function setUpDataTable (selector, method, url, select, replaceOrder) {
 
     var table = el.DataTable({
         language: dataTablesEsp,
+        order: defaultOrder,
         responsive: true,
         processing: true,
         serverSide: true,

@@ -2,7 +2,7 @@ $(function () {
 	// Existing users
 	var tableData = setUpDataTable('#users-table', 'post', '/api/user/list', [
 		'id', 'full_name_latin', 'pet_name', 'email', 'enabled', 'active', 'set_up'
-	], { 'full_name_latin': 'full_name_latin_sort' });
+	], [ 1, 'asc' ], { 'full_name_latin': 'full_name_latin_sort' });
 	var table = tableData.table;
 
 	table.on('draw', function () {
