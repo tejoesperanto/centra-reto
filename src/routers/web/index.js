@@ -22,7 +22,7 @@ export function init () {
 	// TODO:
 	// /novapasvorto
 	// /kondichoj
-	// /uzanto/:email
+	// /aktivulo/:email
 	// /agordoj
 	
 	// Middleware for this router only
