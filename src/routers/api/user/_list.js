@@ -42,26 +42,34 @@ async function user_list (req, res, next) {
 	if (!await req.requirePermissions('users.view')) { return; }
 
 	const table = 'users left join users_details on users_details.user_id = users.id';
-	const dbData = CRApi.performListQueryStatement(req, res, CR.db.users, table, [
-		'id',
-		'full_name_latin',
-		'full_name_native',
-		'full_name_latin_sort',
-		'nickname',
-		'pet_name',
-		'email',
-		'enabled',
-		'activation_key',
-		'activation_key_time'
-		], [
-		'full_name_latin',
-		'pet_name',
-		'activation_key_time'
-		], [
-		'name',
-		'active',
-		'set_up'
-		]);
+	const dbData = CRApi.performListQueryStatement({
+		req: req,
+		res: res,
+		db: CR.db.users,
+		table: table,
+		colsAllowed: [
+			'id',
+			'full_name_latin',
+			'full_name_native',
+			'full_name_latin_sort',
+			'nickname',
+			'pet_name',
+			'email',
+			'enabled',
+			'activation_key',
+			'activation_key_time'
+		],
+		alwaysSelect: [
+			'full_name_latin',
+			'pet_name',
+			'activation_key_time'
+		],
+		customCols: [
+			'name',
+			'active',
+			'set_up'
+		]
+	});
 
 	if (!dbData) { return; }
 

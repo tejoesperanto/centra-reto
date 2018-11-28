@@ -149,13 +149,14 @@ function handleError500 (err, req, res, next) {
 
 /**
  * Perform a safe select statement with user provided values
- * @param  {Express.Request}        req
- * @param  {Express.Response}       res
- * @param  {BetterSqlite3.Database} db
- * @param  {string}                 table        The table to select from, optionally with a join statement
- * @param  {string[]}               colsAllowed  The cols the user is allowed to do anything with
- * @param  {string[]}               alwaysSelect An array of cols that will always be selected regardless of whether the user chose to select them
- * @param  {string[]}               [customCols] An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
+ * @param  {Object}                 options
+ * @param  {Express.Request}        options.req
+ * @param  {Express.Response}       options.res
+ * @param  {BetterSqlite3.Database} options.db
+ * @param  {string}                 options.table          The table to select from, optionally with a join statement
+ * @param  {string[]}               options.colsAllowed    The cols the user is allowed to do anything with
+ * @param  {string[]}               [options.alwaysSelect] An array of cols that will always be selected regardless of whether the user chose to select them
+ * @param  {string[]}               [options.customCols]   An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
  * @return {Object|null} `{ data, rowsTotal, rowsFiltered, select }`
  * 
  * `req.body` parameters:
@@ -178,7 +179,15 @@ function handleError500 (err, req, res, next) {
  * INVALID_SEARCH_COLUMN  [column]
  * INVALID_ORDER_COLUMN   [column]
  */
-export function performListQueryStatement (req, res, db, table, colsAllowed, alwaysSelect, customCols = []) {
+export function performListQueryStatement ({
+	req,
+	res,
+	db,
+	table,
+	colsAllowed,
+	alwaysSelect = [],
+	customCols = []
+} = {}) {
 	const requiredFields = [
 		'select',
 		'limit'
