@@ -521,7 +521,9 @@ function performAPIRequest (method, url, data) {
     });
 }
 
-function setUpDataTable (selector, method, url, select) {
+function setUpDataTable (selector, method, url, select, replaceOrder) {
+    if (!replaceOrder) { replaceOrder = {}; }
+
     var el = $(selector);
     var headerOrg = el.find('thead>*')
     var header = headerOrg.clone();
@@ -546,11 +548,16 @@ function setUpDataTable (selector, method, url, select) {
             var order = [];
             for (var i in jData.order) {
                 var reqOrder = jData.order[i];
+                var col = jData.columns[reqOrder.column].name;
+                if (replaceOrder[col]) { col = replaceOrder[col]; }
+
                 order.push({
-                    col: jData.columns[reqOrder.column].name,
+                    col: col,
                     type: reqOrder.dir
                 });
             }
+
+            console.log(order);
 
             var globalSearch = [];
             var localSearch = [];
