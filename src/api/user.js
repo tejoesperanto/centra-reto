@@ -4,8 +4,6 @@ import moment from 'moment-timezone';
 import url from 'url';
 import path from 'path';
 import bcrypt from 'bcrypt';
-import _csvStringify from 'csv-stringify';
-const csvStringify = promisify(_csvStringify);
 
 import Group from './group';
 
@@ -268,7 +266,7 @@ class User {
 					id: row.id,
 					nameBase: row.name_base,
 					nameDisplay: row.name_display,
-					membersAllowed: !!row.membersAllowed,
+					membersAllowed: !!row.members_allowed,
 					parent: row.parent,
 					isPublic: !!row.public,
 					searchable: !!row.searchable,
@@ -315,10 +313,10 @@ class User {
 			timeFrom = moment().unix();
 		}
 
-		const groups = await this.getGroups();
-
-		const group = Group.getById(groupId);
+		const group = Group.getGroupById(groupId);
 		group.addUser(this, args, timeFrom, timeTo);
+		
+		const groups = await this.getGroups();
 		groups.set(groupId, group);
 
 		return group;

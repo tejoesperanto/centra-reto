@@ -5,6 +5,22 @@ import User from '../api/user'
 import * as CRCmd from '../cmd';
 import * as CRMail from '../mail';
 
+export const helpBrief = 'Iloj rilate al uzantoj.';
+
+export const helpDetailed = `
+- uzanto aktivigi <retpoŝtadreso> <pasvorto>
+  Aktivigas uzanton kaj agordas la indikitan pasvorton.
+
+- uzanto grupoj <retpoŝtadreso>
+  Listigas ĉiujn grupojn en kiuj membras la uzanto.
+
+- uzanto krei <retpoŝtadreso>
+  Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
+
+- uzanto permeso <retpoŝtadreso> <permeso>
+  Kontrolas ĉu uzanto havas la indikitan permeson.
+`.trim();
+
 export async function cmd (bits, log) {
 	if (bits.length < 1) {
 		log('SYNTAX');
@@ -155,19 +171,3 @@ export async function cmd (bits, log) {
 
 	await commands[bits[0]]();
 }
-
-export const helpBrief = 'Iloj rilate al uzantoj.';
-
-export const helpDetailed = `
-- uzanto aktivigi <retpoŝtadreso> <pasvorto>
-  Aktivigas uzanton kaj agordas la indikitan pasvorton.
-
-- uzanto grupoj <retpoŝtadreso>
-  Listigas ĉiujn grupojn en kiuj membras la uzanto.
-
-- uzanto krei <retpoŝtadreso>
-  Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
-
-- uzanto permeso <retpoŝtadreso> <permeso>
-  Kontrolas ĉu uzanto havas la indikitan permeson.
-`.trim();
