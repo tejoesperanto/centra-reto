@@ -521,7 +521,7 @@ function performAPIRequest (method, url, data) {
     });
 }
 
-function setUpDataTable (selector, method, url) {
+function setUpDataTable (selector, method, url, select) {
     var el = $(selector);
     var headerOrg = el.find('thead>*')
     var header = headerOrg.clone();
@@ -575,6 +575,7 @@ function setUpDataTable (selector, method, url) {
             }
 
             var data = {
+                select: select,
                 offset: jData.start,
                 limit: jData.length,
                 order: order,

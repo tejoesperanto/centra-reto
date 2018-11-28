@@ -1,6 +1,8 @@
 $(function () {
 	// Existing users
-	var tableData = setUpDataTable('#users-table', 'post', '/api/user/list');
+	var tableData = setUpDataTable('#users-table', 'post', '/api/user/list', [
+		'id', 'full_name_latin', 'pet_name', 'email', 'enabled', 'active', 'set_up'
+	]);
 	var table = tableData.table;
 
 	table.on('draw', function () {

@@ -152,47 +152,72 @@ function handleError500 (err, req, res, next) {
  * @param  {Express.Request}        req
  * @param  {Express.Response}       res
  * @param  {BetterSqlite3.Database} db
- * @param  {string}                 table       The table to select from, optionally with a join statement
- * @param  {string[]}               colsSelect  The cols to select
- * @param  {string[]}               colsAllowed The cols the user is allowed to do anything with
- * @return {Object|null} `{ data, rowsTotal, rowsFiltered }`
+ * @param  {string}                 table        The table to select from, optionally with a join statement
+ * @param  {string[]}               colsAllowed  The cols the user is allowed to do anything with
+ * @param  {string[]}               alwaysSelect An array of cols that will always be selected regardless of whether the user chose to select them
+ * @param  {string[]}               [customCols] An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
+ * @return {Object|null} `{ data, rowsTotal, rowsFiltered, select }`
  * 
- * `req` body parameters:
- * [offset]    (number)   The offset of the rows to return.
- *                        Defaults to 0.
- * limit       (number)   The limit of the rows to return.
- *                        Value: 1-100
- * [where]     (Object[]) The values to require. `{ col, val, type }`.
- *                        Type can be any of `=`, `like`.
- * [search]    (Object[]) Just like `where` except cols are combined using the or operator. The `like` operator is always used `{ col, val }`.
- * order       (Object[]) The columns to order by in the provided order. `{ col, type }`
- *                        Type can be any of 'asc', 'desc'.
+ * `req.body` parameters:
+ * select   (string[]) The columns to return.
+ * [offset] (number)   The offset of the rows to return.
+ *                     Defaults to 0.
+ * limit    (number)   The limit of the rows to return.
+ *                     Value: 1-100
+ * [where]  (Object[]) The values to require. `{ col, val, type }`.
+ *                     Type can be any of `=`, `like`.
+ * [search] (Object[]) Just like `where` except cols are combined using the or operator. The `like` operator is always used `{ col, val }`.
+ * order    (Object[]) The columns to order by in the provided order. `{ col, type }`
+ *                     Type can be any of 'asc', 'desc'.
  *
  * Throws:
- * MISSING_ARGUMENT      [argument]
- * INVALID_ARGUMENT      [argument]
- * INVALID_WHERE_COLUMN  [column]
- * INVALID_SEARCH_COLUMN [column]
- * INVALID_ORDER_COLUMN  [column]
+ * MISSING_ARGUMENT       [argument]
+ * INVALID_ARGUMENT       [argument]
+ * INVALID_SELECT_COLUMN  [column]
+ * INVALID_WHERE_COLUMN   [column]
+ * INVALID_SEARCH_COLUMN  [column]
+ * INVALID_ORDER_COLUMN   [column]
  */
-export function performListQueryStatement (req, res, db, table, colsSelect, colsAllowed) {
+export function performListQueryStatement (req, res, db, table, colsAllowed, alwaysSelect, customCols = []) {
 	const requiredFields = [
+		'select',
 		'limit'
 	];
 	if (!req.handleRequiredFields(requiredFields)) { return null; }
 
 	const escapeCol = c => '`' + c + '`';
-	const colsSelectEsc  = colsSelect.map(escapeCol);
 	const colsAllowedEsc = colsAllowed.map(escapeCol);
 
 	const inputData = [];
 	const allowedWhereTypes = ['=', 'like'];
 	const allowedWhereValues = ['number', 'string'];
 	const allowedOrderTypes = ['asc', 'desc'];
+	const userSelectRows = req.body.select;
 
 	let stmt = 'select ';
-	for (let col of colsSelectEsc) {
-		stmt += col + ',';
+
+	if (!(userSelectRows instanceof Array) || userSelectRows === 0) {
+		res.sendAPIError('INVALID_ARGUMENT', ['select']);
+		return null;
+	}
+
+	for (let col of alwaysSelect) {
+		if (userSelectRows.indexOf(col) === -1) {
+			userSelectRows.push(col);
+		}
+	}
+
+	for (let col of userSelectRows) {
+		const i = colsAllowed.indexOf(col);
+		if (i === -1) {
+			if (customCols.indexOf(col) === -1){
+				res.sendAPIError('INVALID_SELECT_COLUMN', [col]);
+				return null;
+			} else {
+				continue;
+			}
+		}
+		stmt += colsAllowedEsc[i] + ',';
 	}
 	stmt = stmt.slice(0, -1);
 
@@ -334,5 +359,10 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 	stmtNoLimit = 'select count(1) as count' + stmtNoLimit.substr(stmtNoLimitStartIndex);
 	const rowsFiltered = db.prepare(stmtNoLimit).get(...inputData).count;
 
-	return { data: data, rowsTotal: rowsTotal, rowsFiltered: rowsFiltered };
+	return {
+		data: data,
+		rowsTotal: rowsTotal,
+		rowsFiltered: rowsFiltered,
+		select: req.body.select
+	};
 }

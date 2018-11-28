@@ -54,36 +54,39 @@ async function user_list (req, res, next) {
 		'activation_key',
 		'activation_key_time'
 		], [
-		'id',
 		'full_name_latin',
-		'full_name_native',
-		'full_name_latin_sort',
-		'nickname',
 		'pet_name',
-		'email',
-		'enabled',
-		'activation_key'
+		'activation_key_time'
+		], [
+		'name',
+		'active',
+		'set_up'
 		]);
 
 	if (!dbData) { return; }
 
 	const output = dbData.data.map(row => {
-		const setUp = !!row.full_name_latin; // This key is only present if the initial set up has been completed
-		return {
-			id: row.id,
-			name: User.formatLongName(row.full_name_latin, row.pet_name),
-			full_name_latin: row.full_name_latin,
-			full_name_native: row.full_name_native,
-			full_name_latin_sort: row.full_name_latin_sort,
-			nickname: row.nickname,
-			pet_name: row.pet_name,
-			email: row.email,
-			enabled: !!row.enabled,
-			active: !row.activation_key_time,
-			set_up: setUp,
-			activation_key: row.activation_key,
-			activation_key_time: row.activation_key_time
-		};
+		const rowOutput = {};
+		for (let col of dbData.select) {
+			const val = row[col];
+
+			if (col === 'name') {
+				rowOutput[col] = User.formatLongName(row.full_name_latin, row.pet_name);
+
+			} else if (col === 'enabled') {
+				rowOutput[col] = !!val;
+
+			} else if (col === 'active') {
+				rowOutput[col] = !row.activation_key_time;
+
+			} else if (col === 'set_up') {
+				rowOutput[col] = !!row.full_name_latin; // This key is only present if the initial set up has been completed
+
+			} else if (dbData.select.indexOf(col) > -1) {
+				rowOutput[col] = val;
+			}
+		}
+		return rowOutput;
 	});
 
 	res.sendAPIResponse({
