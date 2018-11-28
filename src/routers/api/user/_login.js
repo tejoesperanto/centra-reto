@@ -5,19 +5,24 @@ async function user_login (req, res, next) {
 	 * POST /login
 	 * Logs in
 	 *
-	 * Login not required
-	 * Initial setup not required
+	 * Must not be logged in
 	 *
 	 * Parameters:
 	 * email          (string) The user's primary email
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
+	 * ALREADY_LOGGED_IN
 	 * USER_NOT_FOUND The email/password combination was not found
 	 *
 	 * Returns:
 	 * uid (number) The user's id
 	 */
+
+	 if (req.user) {
+	 	res.sendAPIError('ALREADY_LOGGED_IN');
+	 	return;
+	 }
 	
 	const fields = [
 		'email',
