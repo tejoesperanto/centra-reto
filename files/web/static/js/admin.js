@@ -499,20 +499,37 @@ function ajaxOptions (url, data, method) {
     };
 }
 
-function performAPIRequest (method, url, data) {
+// This wrapper function is necessary as promise-polyfill prepends an argument to the function
+function performAPIRequest (method, url, data, handleErrors) {
+    if (handleErrors === undefined) { handleErrors = true; }
+
+    return _performAPIRequest(method, url, data, handleErrors);
+}
+
+function _performAPIRequest (method, url, data, handleErrors) {
     return new Promise(function (resolve, reject) {
         var options = ajaxOptions(url, data, method);
         var handler = function (err, data) {
             if (err) {
-                showError(err);
-                resolve(data);
+                if (handleErrors) {
+                    showError(err);
+                    resolve(data);
+                } else {
+                    reject(err);
+                }
                 return;
             }
+
             if (!data.success) {
-                showError(data);
-                resolve(data);
+                if (handleErrors) {
+                    showError(data);
+                    resolve(data);
+                } else {
+                    reject(data);
+                }
                 return;
             }
+
             resolve(data);
         };
         $.ajax(options)

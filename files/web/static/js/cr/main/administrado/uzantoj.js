@@ -138,21 +138,29 @@ $(function () {
 		}).then(function () {
 			button.attr('disabled', true);
 
-			return performAPIRequest('post', '/api/user/create', data,);
+			return performAPIRequest('post', '/api/user/create', data, false);
 
 		}).then(function (res) {
+			swal.close();
+		}).catch(function (err) {
+			if (err.error === 'EMAIL_TAKEN') {
+
+				swal({
+			        title: 'Retpoŝtadreso jam uzata',
+			        icon: 'error',
+			        button: 'Bone'
+			    });
+
+			} else {
+				showError(err);
+			}
+		}).finally(function () {
 			table.draw();
 			swal.stopLoading();
-
-			// TODO: Handle email taken error
 
 			// Reset the form
 			$('#create-user-form-email').val('');
 			button.removeAttr('disabled');
-
-			if (res.success) {
-				swal.close();
-			}
 		});
 	});
 });
