@@ -6,6 +6,7 @@ import * as CRMail from '../../mail';
 import * as CRApi from '.';
 import User from '../../api/user';
 import { wrap } from '..';
+import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../util';
 
 /**
  * Sets up the router
@@ -255,7 +256,7 @@ async function createUser (req, res, next) {
 	];
 	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
 
-	const email = req.body.email.toString();
+	const email = removeUnsafeCharsOneLine(req.body.email);
 
 	const isTaken = User.isEmailTaken(email);
 	if (isTaken) {
@@ -358,7 +359,7 @@ async function initialSetup (req, res, next) {
 	];
 	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
 
-	let fullNameLatin = req.body.full_name_latin.toString();
+	let fullNameLatin = removeUnsafeCharsOneLine(req.body.full_name_latin);
 	if (fullNameLatin.length < 1 || fullNameLatin.length > 80) {
 		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin']);
 		return;
@@ -366,20 +367,20 @@ async function initialSetup (req, res, next) {
 
 	let fullNameNative = null;
 	if (req.body.full_name_native) {
-		fullNameNative = req.body.full_name_native.toString();
+		fullNameNative = removeUnsafeCharsOneLine(req.body.full_name_native);
 		if (fullNameNative.length < 1 || fullNameNative.length > 80) {
 			CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_native']);
 			return;
 		}
 	}
 
-	let fullNameLatinSort = req.body.full_name_latin_sort.toString();
+	let fullNameLatinSort = removeUnsafeCharsOneLine(req.body.full_name_latin_sort);
 	if (fullNameLatinSort.length < 1 || fullNameLatinSort.length > 80) {
 		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin_sort']);
 		return;
 	}
 
-	let nickname = req.body.nickname.toString();
+	let nickname = removeUnsafeCharsOneLine(req.body.nickname);
 	if (nickname.length < 1 || nickname.length > 80) {
 		CRApi.sendError(res, 'INVALID_ARGUMENT', ['nickname']);
 		return;
@@ -387,7 +388,7 @@ async function initialSetup (req, res, next) {
 
 	let petName = null;
 	if (req.body.pet_name) {
-		petName = req.body.pet_name.toString();
+		petName = removeUnsafeCharsOneLine(req.body.pet_name);
 		if (nickname.length < 1 || nickname.length > 80) {
 			CRApi.sendError(res, 'INVALID_ARGUMENT', ['pet_name']);
 			return;

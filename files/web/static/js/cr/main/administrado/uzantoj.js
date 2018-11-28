@@ -67,6 +67,7 @@ $(function () {
 			data.send_email = false;
 		}
 		
+		// TODO: Show dialog with key and loading bar (see: https://gurayyarar.github.io/AdminBSBMaterialDesign/pages/ui/dialogs.html)
 		performAPIRequest('/api/user/create', data, function (res) {
 			table.draw();
 
