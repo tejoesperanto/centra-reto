@@ -1,6 +1,6 @@
 $(function () {
 	// Existing users
-	var tableData = setUpDataTable('#users-table', '/api/user/list');
+	var tableData = setUpDataTable('#users-table', 'post', '/api/user/list');
 	var table = tableData.table;
 
 	table.on('draw', function () {
@@ -36,13 +36,14 @@ $(function () {
 				div.find('.user-modal-disable-login').remove();
 			}
 			div.find('.user-modal-enable-button').on('click', function () {
-				performAPIRequest('/api/user/toggle_enabled', { user_id: rowData.id }, function (res) {
-					table.draw();
+				performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id })
+					.then(function (res) {
+						table.draw();
 
-					if (res.success) {
-						swal.close();
-					}
-				});
+						if (res.success) {
+							swal.close();
+						}
+					});
 			});
 
 			swal({
@@ -57,23 +58,39 @@ $(function () {
 	$('#create-user-form').submit(function (e) {
 		e.preventDefault();
 
-		var button = $('#create-user-form-button');
-		button.attr('disabled', true);
-
 		var data = serializeToObj(this);
 		if (data.send_email === 'on') {
 			data.send_email = true;
 		} else {
 			data.send_email = false;
 		}
-		
-		// TODO: Show dialog with key and loading bar (see: https://gurayyarar.github.io/AdminBSBMaterialDesign/pages/ui/dialogs.html)
-		performAPIRequest('/api/user/create', data, function (res) {
+
+		var button = $('#create-user-form-button');
+
+		swal({
+			text: 'Ĉu vi certas, ke vi volas krei uzanton kun la retpoŝtadreso ' + data.email + '?',
+			buttons: [
+				'Nuligi',
+				{
+					text: 'Krei',
+					closeModal: false
+				}
+			]
+		}).then(function () {
+			button.attr('disabled', true);
+
+			return performAPIRequest('post', '/api/user/create', data,);
+		}).then(function (res) {
 			table.draw();
 
 			// Reset the form
 			$('#create-user-form-email').val('');
 			button.removeAttr('disabled');
+
+			if (res.success) {
+				swal.stopLoading();
+				swal.close();
+			}
 		});
 	});
 });

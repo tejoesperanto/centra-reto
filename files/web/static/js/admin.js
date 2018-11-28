@@ -472,7 +472,7 @@ $(function () {
 // BEGIN Added for CR
 
 function showError (error) {
-    if (typeof error === 'object') {
+    if (typeof error === 'object' && !(error instanceof Error)) {
         error.frontend_location = window.location.href;
         error.frontend_useragent = navigator.userAgent;
         error.frontend_time = moment().format();
@@ -486,37 +486,42 @@ function showError (error) {
         content: div,
         button: 'Bone'
     });
+    console.error(error);
 }
 
 function ajaxOptions (url, data, method) {
     return {
         url: url,
-        type: method || 'post',
+        type: method,
         data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
         dataType: 'json'
     };
 }
 
-function performAPIRequest (url, data, cb, method) {
-    var options = ajaxOptions(url, data, method);
-    var handler = function (err, data) {
-        if (err) {
-            showError(err);
-            return;
-        }
-        if (!data.success) {
-            showError(data);
-            return;
-        }
-        cb(data);
-    };
-    $.ajax(options)
-        .done(function(data){ handler(null, data); })
-        .fail(function(jqXHR, status, err) { handler(err, null); });
+function performAPIRequest (method, url, data) {
+    return new Promise(function (resolve, reject) {
+        var options = ajaxOptions(url, data, method);
+        var handler = function (err, data) {
+            if (err) {
+                showError(err);
+                resolve(data);
+                return;
+            }
+            if (!data.success) {
+                showError(data);
+                resolve(data);
+                return;
+            }
+            resolve(data);
+        };
+        $.ajax(options)
+            .done(function(data){ handler(null, data); })
+            .fail(function(jqXHR, status, err) { handler(err, null); });
+    });
 }
 
-function setUpDataTable (selector, url) {
+function setUpDataTable (selector, method, url) {
     var el = $(selector);
     var headerOrg = el.find('thead>*')
     var header = headerOrg.clone();
@@ -576,7 +581,7 @@ function setUpDataTable (selector, url) {
                 search: globalSearch,
                 where: localSearch
             };
-            performAPIRequest(url, data, function (apiRes) {
+            performAPIRequest(method, url, data).then(function (apiRes) {
                 latestData = apiRes;
                 var resData = [];
                 for (var x in apiRes.data) {
