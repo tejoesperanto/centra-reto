@@ -1,8 +1,13 @@
 $(function () {
 	// Existing users
-	var tableData = setUpDataTable('#users-table', 'post', '/api/user/list', [
-		'id', 'full_name_latin', 'pet_name', 'email', 'enabled', 'active', 'set_up'
-	], [ 1, 'asc' ], { 'full_name_latin': 'full_name_latin_sort' });
+	var tableData = setUpDataTable({
+		el: '#users-table',
+		method: 'post'	,
+		url: '/api/user/list',
+		select: [ 'id', 'full_name_latin', 'pet_name', 'email', 'enabled', 'active', 'set_up' ],
+		defaultOrder: [ 1, 'asc' ],
+		replaceOrder: { 'full_name_latin': 'full_name_latin_sort' }
+	});
 	var table = tableData.table;
 
 	table.on('draw', function () {

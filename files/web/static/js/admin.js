@@ -521,8 +521,13 @@ function performAPIRequest (method, url, data) {
     });
 }
 
-function setUpDataTable (selector, method, url, select, defaultOrder, replaceOrder) {
-    if (!replaceOrder) { replaceOrder = {}; }
+function setUpDataTable (options) {
+    var selector     = options.el;
+    var method       = options.method;
+    var url          = options.url;
+    var select       = options.select;
+    var defaultOrder = options.defaultOrder || [];
+    var replaceOrder = options.replaceOrder || {};
 
     var el = $(selector);
     var headerOrg = el.find('thead>*')
