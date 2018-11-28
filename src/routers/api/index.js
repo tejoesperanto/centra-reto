@@ -9,80 +9,115 @@ import user from './user';
 export function init () {
 	const router = express.Router();
 
+	// Middleware for this router only
+	router.use(middlewareSendAPIError);
+	router.use(middlewareSendAPIResponse);
+	router.use(middlewareHandleRequiredFields);
+	router.use(middlewareRequirePermissions);
+
+	// Routing
 	router.use('/user', user());
 
 	return router;
 }
 
-/**
- * Sends an API error
- * @param  {express.Response} res
- * @param  {string}           err    The API error code
- * @param  {Array}            [info] An info array adding detail to the error
- */
-export function sendError (res, err, info = []) {
-	res.json({
-		success: false,
-		error: err,
-		info: info
-	});
+function middlewareSendAPIError (req, res, next) {
+	/**
+	 * Express middleware to send an API error
+	 * @param  {string} err    The API error code
+	 * @param  {Array}  [info] An info array adding detail to the error
+	 */
+	res.sendAPIError = function sendAPIError (err, info = []) {
+		res.json({
+			success: false,
+			error: err,
+			info: info
+		});
+	};
+	next();
 }
 
-/**
- * Sends an API response
- * @param  {express.Response} res
- * @param  {Object}           obj The response object to send
- */
-export function sendResponse (res, obj = {}) {
-	obj.success = true;
-	res.json(obj);
+function middlewareSendAPIResponse (req, res, next) {
+	/**
+	 * Express middleware to send an API response
+	 * @param  {Object} obj The response object to send
+	 */
+	res.sendAPIResponse = function sendAPIResponse (obj = {}) {
+		obj.success = true;
+		res.json(obj);
+	};
+	next();
 }
 
-/**
- * Ensures that the request contains all the needed parameters (`req.body`).
- * If not, an error is sent as response and false is returned. Otherwise returns true.
- * @param  {express.Request}  req
- * @param  {express.Response} res
- * @param  {string[]}         fields An array of required parameters
- * @return {boolean} Whether all required fields are present
- */
-export function handleRequiredFields (req, res, fields) {
-	for (let field of fields) {
-		if (!(field in req.body)) {
-			sendError(res, 'MISSING_ARGUMENT', [field]);
-			return false;
+function middlewareHandleRequiredFields (req, res, next) {
+	/**
+	 * Express middleware to ensure that the request contains all the needed parameters in `req.body`.
+	 * If not, an error is sent as response and false is returned. Otherwise returns true.
+	 * 
+	 * @param  {string[]} fields An array of required parameters
+	 * @return {boolean} Whether all required fields are present
+	 */
+	req.handleRequiredFields = function handleRequiredFields (fields) {
+		for (let field of fields) {
+			if (!(field in req.body)) {
+				res.sendAPIError('MISSING_ARGUMENT', [field]);
+				return false;
+			}
+		}
+		return true;
+	};
+	next();
+}
+
+function middlewareRequirePermissions (req, res, next) {
+	/**
+	 * Express middleware to ensure that the user has a set of permissions.
+	 * If not, an error is sent as response and false is returned. Otherwise returns true.
+	 * 
+	 * @param  {...string} perms The permissions to check
+	 * @return {boolean} Whether all required permissions are present
+	 */
+	req.requirePermissions = async function requirePermissions (...perms) {
+		for (let perm of perms) {
+			if (!await req.user.hasPermission(perm)) {
+				res.sendAPIError('MISSING_PERMISSION', [perm]);
+				return false;
+			}
+		}
+		return true;
+	};
+	next();
+}
+
+export const middleware = {
+	/**
+	 * Express middleware that sends an API error if the user hasn't logged in
+	 * @param  {express.Request}  req
+	 * @param  {express.Response} res
+	 * @param  {Function}         next
+	 */
+	requireLogin: function middlewareRequireLogin (req, res, next) {
+		if (req.user) {
+			next();
+		} else {
+			res.sendAPIError('NOT_LOGGED_IN');
+		}
+	},
+
+	/**
+	 * Express middleware that sends an API error if the user hasn't completed initial setup
+	 * @param  {express.Request}  req
+	 * @param  {express.Response} res
+	 * @param  {Function}         next
+	 */
+	requireInitialSetup: function middlewareRequireInitialSetup (req, res, next) {
+		if (!req.user || req.user.hasCompletedInitialSetup()) {
+			next();
+		} else {
+			res.sendAPIError('INITIAL_SETUP_REQUIRED');
 		}
 	}
-	return true;
-}
-
-/**
- * Express middleware that sends an API error if the user hasn't logged in
- * @param  {express.Request}  req
- * @param  {express.Response} res
- * @param  {Function}         next
- */
-export function requireLogin (req, res, next) {
-	if (req.user) {
-		next();
-	} else {
-		sendError(res, 'NOT_LOGGED_IN');
-	}
-}
-
-/**
- * Express middleware that sends an API error if the user hasn't completed initial setup
- * @param  {express.Request}  req
- * @param  {express.Response} res
- * @param  {Function}         next
- */
-export function requireInitialSetup (req, res, next) {
-	if (req.user.hasCompletedInitialSetup()) {
-		next();
-	} else {
-		sendError(res, 'INITIAL_SETUP_REQUIRED');
-	}
-}
+};
 
 /**
  * Perform a safe select statement with user provided values
@@ -116,7 +151,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 	const requiredFields = [
 		'limit'
 	];
-	if (!handleRequiredFields(req, res, requiredFields)) { return null; }
+	if (!req.handleRequiredFields(requiredFields)) { return null; }
 
 	const escapeCol = c => '`' + c + '`';
 	const colsSelectEsc  = colsSelect.map(escapeCol);
@@ -139,15 +174,15 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 	stmt += ' from ' + table;
 
 	if (req.body.where && !(req.body.where instanceof Array)) {
-		sendError(res, 'INVALID_ARGUMENT', ['where']);
+		res.sendAPIError('INVALID_ARGUMENT', ['where']);
 		return null;
 	}
 	if (req.body.search && !(req.body.search instanceof Array)) {
-		sendError(res, 'INVALID_ARGUMENT', ['search']);
+		res.sendAPIError('INVALID_ARGUMENT', ['search']);
 		return null;
 	}
 	if (req.body.order && !(req.body.order instanceof Array)) {
-		sendError(res, 'INVALID_ARGUMENT', ['order']);
+		res.sendAPIError('INVALID_ARGUMENT', ['order']);
 		return null;
 	}
 
@@ -161,7 +196,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 		stmt += '(';
 		for (let whereData of req.body.where) {
 			if (typeof whereData !== 'object') {
-				sendError(res, 'INVALID_WHERE_COLUMN', [whereData]);
+				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
 				return null;
 			}
 			const i = colsAllowed.indexOf(whereData.col);
@@ -170,7 +205,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 				!('val' in whereData) ||
 				!('type' in whereData) ||
 				allowedWhereTypes.indexOf(whereData.type) === -1) {
-				sendError(res, 'INVALID_WHERE_COLUMN', [whereData]);
+				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
 				return null;
 			}
 
@@ -178,7 +213,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 				whereData.val = +whereData.val; // cast to number
 			}
 			if (allowedWhereValues.indexOf(typeof whereData.val) === -1) {
-				sendError(res, 'INVALID_WHERE_COLUMN', [whereData]);
+				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
 				return null;
 			}
 			
@@ -198,14 +233,14 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 		stmt += '(';
 		for (let searchData of req.body.search) {
 			if (typeof searchData !== 'object') {
-				sendError(res, 'INVALID_SEARCH_COLUMN', [searchData]);
+				res.sendAPIError('INVALID_SEARCH_COLUMN', [searchData]);
 				return null;
 			}
 			const i = colsAllowed.indexOf(searchData.col);
 			if (!('col' in searchData) ||
 				i === -1 ||
 				!('val' in searchData)) {
-				sendError(res, 'INVALID_SEARCH_COLUMN', [searchData]);
+				res.sendAPIError('INVALID_SEARCH_COLUMN', [searchData]);
 				return null;
 			}
 
@@ -213,7 +248,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 				searchData.val = +searchData.val; // cast to number
 			}
 			if (allowedWhereValues.indexOf(typeof searchData.val) === -1) {
-				sendError(res, 'INVALID_SEARCH_COLUMN', [searchData]);
+				res.sendAPIError('INVALID_SEARCH_COLUMN', [searchData]);
 				return null;
 			}
 			
@@ -234,7 +269,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 
 		for (let orderData of req.body.order) {
 			if (typeof orderData !== 'object') {
-				sendError(res, 'INVALID_ORDER_COLUMN', [orderData]);
+				res.sendAPIError('INVALID_ORDER_COLUMN', [orderData]);
 				return null;
 			}
 			const i = colsAllowed.indexOf(orderData.col);
@@ -242,7 +277,7 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 				i === -1 ||
 				!('type' in orderData) ||
 				allowedOrderTypes.indexOf(orderData.type.toLowerCase()) === -1) {
-				sendError(res, 'INVALID_ORDER_COLUMN', [orderData]);
+				res.sendAPIError('INVALID_ORDER_COLUMN', [orderData]);
 				return null;
 			}
 
@@ -251,14 +286,14 @@ export function performListQueryStatement (req, res, db, table, colsSelect, cols
 	}
 
 	if (!Number.isSafeInteger(req.body.limit)) {
-		sendError(res, 'INVALID_ARGUMENT', ['limit']);
+		res.sendAPIError('INVALID_ARGUMENT', ['limit']);
 		return null;
 	}
 	stmt += ' limit ' + req.body.limit;
 
 	if (req.body.offset) {
 		if (!Number.isSafeInteger(req.body.offset)) {
-			sendError(res, 'INVALID_ARGUMENT', ['offset']);
+			res.sendAPIError('INVALID_ARGUMENT', ['offset']);
 			return null;
 		}
 		stmt += ' offset ' + req.body.offset;

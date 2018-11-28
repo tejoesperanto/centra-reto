@@ -20,19 +20,23 @@ import apiToggleEnabled from './_toggle_enabled';
 export default function () {
 	const router = express.Router();
 
+	const middleware = CRApi.middleware;
+
 	router.post('/activate',
 		wrap(apiActivate));
 
 	router.post('/create',
-		CRApi.requireInitialSetup,
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
 		wrap(apiCreate));
 
 	router.post('/initial_setup',
-		CRApi.requireLogin,
+		middleware.requireLogin,
 		wrap(apiInitialSetup));
 
 	router.post('/list',
-		CRApi.requireInitialSetup,
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
 		wrap(apiList));
 
 	router.post('/login',
@@ -43,7 +47,8 @@ export default function () {
 		wrap(apiLogout));
 
 	router.post('/toggle_enabled',
-		CRApi.requireInitialSetup,
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
 		wrap(apiToggleEnabled));
 
 	return router;

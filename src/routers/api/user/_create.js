@@ -1,4 +1,3 @@
-import * as CRApi from '..';
 import * as CRMail from '../../../mail';
 import User from '../../../api/user';
 import { removeUnsafeCharsOneLine } from '../../../util';
@@ -25,22 +24,19 @@ async function user_create (req, res, next) {
 	 * activation_key (string) The user's activation key
 	 */
 	
-	if (!(await req.user.hasPermission('users.create'))) {
-		CRApi.sendError(res, 'MISSING_PERMISSION');
-		return;
-	}
+	if (!await req.requirePermissions('users.create')) { return; }
 
 	const fields = [
 		'email',
 		'send_email'
 	];
-	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+	if (!req.handleRequiredFields(fields)) { return; }
 
 	const email = removeUnsafeCharsOneLine(req.body.email);
 
 	const isTaken = User.isEmailTaken(email);
 	if (isTaken) {
-		CRApi.sendError(res, 'EMAIL_TAKEN');
+		res.sendAPIError('EMAIL_TAKEN');
 		return;
 	}
 
@@ -55,7 +51,7 @@ async function user_create (req, res, next) {
 		});
 	}
 
-	CRApi.sendResponse(res, {
+	res.sendAPIResponse({
 		uid: user.id,
 		activation_key: user.activationKey
 	});

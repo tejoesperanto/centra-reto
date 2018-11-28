@@ -1,4 +1,3 @@
-import * as CRApi from '..';
 import { removeUnsafeCharsOneLine } from '../../../util';
 
 async function user_initial_setup (req, res, next) {
@@ -28,7 +27,7 @@ async function user_initial_setup (req, res, next) {
 	
 	/** BEGIN INPUT VALIDATION */
 	if (req.user.hasCompletedInitialSetup()) {
-		CRApi.sendError(res, 'ALREADY_COMPLETED');
+		res.sendAPIError('ALREADY_COMPLETED');
 		return;
 	}
 
@@ -38,11 +37,11 @@ async function user_initial_setup (req, res, next) {
 		'nickname',
 		'pronouns'
 	];
-	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+	if (!req.handleRequiredFields(fields)) { return; }
 
 	let fullNameLatin = removeUnsafeCharsOneLine(req.body.full_name_latin);
 	if (fullNameLatin.length < 1 || fullNameLatin.length > 80) {
-		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin']);
+		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin']);
 		return;
 	}
 
@@ -50,20 +49,20 @@ async function user_initial_setup (req, res, next) {
 	if (req.body.full_name_native) {
 		fullNameNative = removeUnsafeCharsOneLine(req.body.full_name_native);
 		if (fullNameNative.length < 1 || fullNameNative.length > 80) {
-			CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_native']);
+			res.sendAPIError('INVALID_ARGUMENT', ['full_name_native']);
 			return;
 		}
 	}
 
 	let fullNameLatinSort = removeUnsafeCharsOneLine(req.body.full_name_latin_sort);
 	if (fullNameLatinSort.length < 1 || fullNameLatinSort.length > 80) {
-		CRApi.sendError(res, 'INVALID_ARGUMENT', ['full_name_latin_sort']);
+		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin_sort']);
 		return;
 	}
 
 	let nickname = removeUnsafeCharsOneLine(req.body.nickname);
 	if (nickname.length < 1 || nickname.length > 80) {
-		CRApi.sendError(res, 'INVALID_ARGUMENT', ['nickname']);
+		res.sendAPIError('INVALID_ARGUMENT', ['nickname']);
 		return;
 	}
 
@@ -71,7 +70,7 @@ async function user_initial_setup (req, res, next) {
 	if (req.body.pet_name) {
 		petName = removeUnsafeCharsOneLine(req.body.pet_name);
 		if (nickname.length < 1 || nickname.length > 80) {
-			CRApi.sendError(res, 'INVALID_ARGUMENT', ['pet_name']);
+			res.sendAPIError('INVALID_ARGUMENT', ['pet_name']);
 			return;
 		}
 	}
@@ -82,7 +81,7 @@ async function user_initial_setup (req, res, next) {
 		const pronounsArr = pronouns.split(',');
 		for (let pronoun of pronounsArr) {
 			if (['li','ri','ŝi'].indexOf(pronoun) === -1) {
-				CRApi.sendError(res, 'INVALID_ARGUMENT', ['pronouns']);
+				res.sendAPIError('INVALID_ARGUMENT', ['pronouns']);
 				return;
 			}
 		}
@@ -91,7 +90,7 @@ async function user_initial_setup (req, res, next) {
 
 	req.user.initialSetup(fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns);
 
-	CRApi.sendResponse(res);
+	res.sendAPIResponse();
 }
 
 export default user_initial_setup;

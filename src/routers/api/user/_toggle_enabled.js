@@ -1,4 +1,3 @@
-import * as CRApi from '..';
 import User from '../../../api/user';
 
 async function user_toggle_enabled (req, res, next) {
@@ -19,25 +18,22 @@ async function user_toggle_enabled (req, res, next) {
 	 * USER_NOT_FOUND
 	 */
 	
-	if (!await req.user.hasPermission('users.modify')) {
-		CRApi.sendError(res, 'MISSING_PERMISSION');
-		return;
-	}
+	if (!await req.requirePermissions('users.modify')) { return; }
 
 	const fields = [
 		'user_id'
 	];
-	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+	if (!req.handleRequiredFields(fields)) { return; }
 
 	const user = User.getUserById(req.body.user_id);
 	if (!user) {
-		CRApi.sendError(res, 'USER_NOT_FOUND');
+		res.sendAPIError('USER_NOT_FOUND');
 		return;
 	}
 
 	user.toggleEnabled();
 
-	CRApi.sendResponse(res);
+	res.sendAPIResponse();
 }
 
 export default user_toggle_enabled;

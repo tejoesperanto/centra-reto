@@ -1,7 +1,5 @@
 import passport from 'passport';
 
-import * as CRApi from '..';
-
 async function user_login (req, res, next) {
 	/**
 	 * POST /login
@@ -25,17 +23,17 @@ async function user_login (req, res, next) {
 		'email',
 		'password'
 	];
-	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+	if (!req.handleRequiredFields(fields)) { return; }
 
 	passport.authenticate('local', (err, user, info) => {
 		if (err) { return next(err); }
 		if (!user) {
-			CRApi.sendError(res, 'USER_NOT_FOUND');
+			res.sendAPIError('USER_NOT_FOUND');
 			return;
 		}
 		req.logIn(user, err => {
 			if (err) { return next(err); }
-			CRApi.sendResponse(res, {
+			res.sendAPIResponse({
 				uid: user.id
 			});
 		});

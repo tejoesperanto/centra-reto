@@ -1,4 +1,3 @@
-import * as CRApi from '..';
 import User from '../../../api/user';
 
 async function user_activate (req, res, next) {
@@ -25,13 +24,13 @@ async function user_activate (req, res, next) {
 		'email',
 		'password'
 	];
-	if (!CRApi.handleRequiredFields(req, res, fields)) { return; }
+	if (!req.handleRequiredFields(fields)) { return; }
 
 	// Validate the account activation key and obtain the user id
 	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ? and enabled = 1");
 	let row = stmt.get(req.body.email, req.body.activation_key);
 	if (!row) {
-		CRApi.sendError(res, 'INVALID_ACTIVATION_KEY');
+		res.sendAPIError('INVALID_ACTIVATION_KEY');
 		return;
 	}
 
@@ -44,7 +43,7 @@ async function user_activate (req, res, next) {
 	const user = User.getUserById(uid);
 	user.activate(hashedPassword);
 
-	CRApi.sendResponse(res, {
+	res.sendAPIResponse({
 		uid: uid
 	});
 }

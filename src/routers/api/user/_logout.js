@@ -1,5 +1,3 @@
-import * as CRApi from '..';
-
 async function user_logout (req, res, next) {
 	/**
 	 * POST /logout
@@ -10,8 +8,7 @@ async function user_logout (req, res, next) {
 	 */
 	
 	req.logout();
-
-	CRApi.sendResponse(res);
+	res.sendAPIResponse();
 }
 
 export default user_logout;

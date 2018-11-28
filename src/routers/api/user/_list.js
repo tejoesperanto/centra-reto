@@ -39,10 +39,7 @@ async function user_list (req, res, next) {
 	 * See routers/api#generateListQueryStatement
 	 */
 	
-	if (!(await req.user.hasPermission('users.view'))) {
-		CRApi.sendError(res, 'MISSING_PERMISSION');
-		return;
-	}
+	if (!await req.requirePermissions('users.view')) { return; }
 
 	const table = 'users left join users_details on users_details.user_id = users.id';
 	const dbData = CRApi.performListQueryStatement(req, res, CR.db.users, table, [
@@ -89,7 +86,7 @@ async function user_list (req, res, next) {
 		};
 	});
 
-	CRApi.sendResponse(res, {
+	res.sendAPIResponse({
 		data: output,
 		rows_total: dbData.rowsTotal,
 		rows_filtered: dbData.rowsFiltered
