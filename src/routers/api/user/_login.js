@@ -16,7 +16,7 @@ async function user_login (req, res, next) {
 	 * USER_NOT_FOUND The email/password combination was not found
 	 *
 	 * Returns:
-	 * uid (number) The user's id
+	 * id (number) The user's id
 	 */
 
 	 if (req.user) {
@@ -39,7 +39,7 @@ async function user_login (req, res, next) {
 		req.logIn(user, err => {
 			if (err) { return next(err); }
 			res.sendAPIResponse({
-				uid: user.id
+				id: user.id
 			});
 		});
 	})(req, res, next);
