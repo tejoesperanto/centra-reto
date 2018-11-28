@@ -83,18 +83,15 @@ $(function () {
         		data.pronouns = data.pronouns.join(',');
         	}
 
-        	$.post('/api/user/initial_setup', data, function (res) {
-                if (!res.success) {
-                    showError(res);
-                    $('#submit-button').removeAttr('disabled');
-                    return;
-                }
+            performAPIRequest('post', '/api/user/initial_setup', data)
+                .then(function(res) {
+                    if (!res.success) {
+                        $('#submit-button').removeAttr('disabled');
+                        return;
+                    }
 
-                window.location.reload();
-            }).fail(function (err) {
-                showError(err);
-                $('#submit-button').removeAttr('disabled');
-            });
+                    window.location.reload();
+                });
         }
     });
 });

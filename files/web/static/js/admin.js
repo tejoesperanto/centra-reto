@@ -557,8 +557,6 @@ function setUpDataTable (selector, method, url, select, replaceOrder) {
                 });
             }
 
-            console.log(order);
-
             var globalSearch = [];
             var localSearch = [];
             for (var i in jData.columns) {
