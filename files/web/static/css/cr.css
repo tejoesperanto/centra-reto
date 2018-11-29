@@ -83,3 +83,16 @@ textarea.cr-code {
 .tagsinput-group>.bootstrap-tagsinput {
 	flex-grow: 1;
 }
+
+.tagsinput-noform {
+	text-align: left;
+	padding: 16px;
+}
+
+.bootstrap-tagsinput {
+	line-height: 31px;
+}
+
+.tagsinput-group>label {
+	margin-top: 8px;
+}
