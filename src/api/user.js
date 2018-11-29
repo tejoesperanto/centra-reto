@@ -349,7 +349,7 @@ class User {
 		}
 
 		if (typeof group === 'number') {
-			group = Group.getGroupById(groupId);
+			group = await Group.getGroupById(groupId);
 		}
 
 		const wasAdded = await group.addUser(this, args, timeFrom, timeTo);

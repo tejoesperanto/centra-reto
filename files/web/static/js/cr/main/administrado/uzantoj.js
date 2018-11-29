@@ -113,6 +113,87 @@ $(function () {
 	});
 
 	// Create new user
+	// Tags input
+	var groupsSearch = new Bloodhound({
+		local: pageData.groups,
+		identify: function (obj) { return obj.id; },
+		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('nameBase'),
+		queryTokenizer: Bloodhound.tokenizers.whitespace
+	});
+	var groupsInput = $('#create-user-form-groups');
+	groupsInput.tagsinput({
+		itemValue: 'id',
+		itemText: 'nameBase',
+		typeaheadjs: {
+			name: 'groups',
+			displayKey: 'nameBase',
+			source: groupsSearch.ttAdapter()
+		}
+	});
+	groupsInput.on('beforeItemAdd', function (e) {
+		if (e.item.nameDisplay) {
+			var div = cloneTemplate('#template-group-modal');
+			div.find('.val-name-base').text(e.item.nameBase);
+
+			var form = div.find('.template-group-modal-form');
+			var formGroup = div.find('.form-group');
+			var firstInput = null;
+			for (var i in e.item.args) {
+				var arg = e.item.args[i];
+				var el = cloneTemplate('#template-group-arg-input');
+				formGroup.append(el);
+				el.find('label').text(arg);
+				var input = el.find('input');
+				if (!firstInput) { firstInput = input; }
+				input.attr('name', i);
+				input.on('input', function () {
+					var valid = form[0].checkValidity();
+					$('.swal-button--confirm').attr('disabled', !valid);
+				});
+			}
+
+			form.submit(function (e) {
+				e.preventDefault();
+				$('.swal-button--confirm').click();
+			});
+
+			$.AdminBSB.input.activate(div);
+
+			window.setTimeout(function () {
+				firstInput.focus();
+				$('.swal-button--confirm').attr('disabled', true);
+			}, 0); // Run when the thread becomes idle
+
+			swal({
+				title: 'Aldono de grupo',
+				content: div[0],
+				button: 'Aldoni grupon'
+
+			}).then(function () {
+				groupsInput.tagsinput('remove', e.item);
+				$('.tt-input').focus();
+
+				var values = [];
+				var allSet = true;
+				formGroup.find('input[name]').each(function () {
+					values[this.name] = this.value.trim();
+					if (values[this.name].length === 0) { allSet = false; }
+				});
+
+				if (allSet) {
+					var formattedName = e.item.nameDisplay;
+					for (var i = 0; i < e.item.args.length; i++) {
+						var key = '$' + (i + 1);
+						formattedName = formattedName.replace(key, values[i]);
+					}
+					var item = { id: e.item.id, nameBase: formattedName, userArgs: values };
+					groupsInput.tagsinput('add', item);
+				}
+			});
+		}
+
+	});
+
 	$('#create-user-form').submit(function (e) {
 		e.preventDefault();
 

@@ -4553,11 +4553,10 @@ section.content {
         background-color: rgba(0, 0, 0, 0.12); }
 
 /* Labels ====================================== */
+
 .label {
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -ms-border-radius: 0;
-  border-radius: 0; }
+  font-size: 100%;
+}
 
 .label-primary {
   background-color: #1f91f3; }

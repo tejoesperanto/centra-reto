@@ -17,6 +17,12 @@
 								<label class="form-label" for="create-user-form-email">Retpoŝtadreso</label>
 							</div>
 						</div>
+						<div class="form-group">
+							<div class="form-line tagsinput-group">
+								<label for="create-user-form-groups">Grupoj:</label>
+								<select multiple class="form-control" id="create-user-form-groups"></select>
+							</div>
+						</div>
 
 						<div>
 							<input type="checkbox" id="create-user-form-send_email" name="send_email" class="filled-in" checked>
@@ -77,5 +83,19 @@
 				Forigi
 			</button>
 		</div>
+	</div>
+</div>
+<div class="template" id="template-group-modal">
+	<p>Membroj de la grupo <span class="val-name-base"></span> bezonas kelkajn agordojn:</p>
+
+	<form class="template-group-modal-form">
+		<div class="form-group form-float m-t-15">
+		</div>
+	</form>
+</div>
+<div class="template" id="template-group-arg-input">
+	<div class="form-line">
+		<input type="text" class="form-control" required>
+		<label class="form-label"></label>
 	</div>
 </div>

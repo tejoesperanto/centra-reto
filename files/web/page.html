@@ -162,8 +162,8 @@
         <!-- Jdenticon -->
         <script src="/plugins/jdenticon/jdenticon-2.1.0.min.js"></script>
 
-        <!-- Load permissions -->
-        <script>window.userPerms={{&permissionsJSON}};</script>
+        <!-- Load permissions and page data -->
+        <script>window.userPerms={{&permissionsJSON}};{{#pageDataJSON}}window.pageData={{&.}};{{/pageDataJSON}}</script>
 
         <!-- Page specific js -->
         {{#scripts}}

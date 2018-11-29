@@ -151,7 +151,7 @@ export async function cmd (bits, log) {
 					}
 
 					const groupId = bits[3];
-					const group = Group.getGroupById(groupId);
+					const group = await Group.getGroupById(groupId);
 					if (!group) {
 						log('error', 'Grupo ne trovita.');
 						return;

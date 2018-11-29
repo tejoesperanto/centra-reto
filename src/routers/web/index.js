@@ -215,6 +215,11 @@ async function amendView (req, view) {
 	view.year = moment().format('YYYY');
 	view.version = CR.version;
 
+	// Page data
+	if (view.pageDataObj) {
+		view.pageDataJSON = JSON.stringify(view.pageDataObj);
+	}
+
 	// User data
 	if (req.user) {
 		view.user = {

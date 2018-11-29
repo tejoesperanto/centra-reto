@@ -12,7 +12,7 @@ export async function cmd (bits, log) {
 		return;
 	}
 
-	const groups = Group.getAllGroups();
+	const groups = await Group.getAllGroups();
 
 	// Display them in a nice table
 	const header = [

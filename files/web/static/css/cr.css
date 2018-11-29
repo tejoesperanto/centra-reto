@@ -75,3 +75,11 @@ textarea.cr-code {
 .template {
 	display: none;
 }
+
+.tagsinput-group {
+	display: flex;
+}
+
+.tagsinput-group>.bootstrap-tagsinput {
+	flex-grow: 1;
+}

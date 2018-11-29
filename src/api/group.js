@@ -2,6 +2,8 @@ import { promisify } from 'util';
 import moment from 'moment-timezone';
 import _csvStringify from 'csv-stringify';
 const csvStringify = promisify(_csvStringify);
+import _csvParse from 'csv-parse';
+const csvParse = promisify(_csvParse);
 
 /**
  * Represents a group in CR
@@ -50,11 +52,14 @@ export default class Group {
 	 * @param  {number} id
 	 * @return {Group|null} The group or null if not found.
 	 */
-	static getGroupById (id) {
+	static async getGroupById (id) {
 		let stmt = CR.db.users.prepare('select name_base, name_display, `members_allowed`, `parent`, `public`, searchable, args from groups where id = ?');
 		let row = stmt.get(id);
 
 		if (!row) { return null; }
+
+		const argsStr = row.args || '';
+		const argsArr = (await csvParse(argsStr))[0];
 
 		return new Group({
 			id: id,
@@ -64,7 +69,7 @@ export default class Group {
 			parent: row.parent,
 			isPublic: !!row.public,
 			searchable: !!row.searchable,
-			args: row.args
+			args: argsArr
 		});
 	}
 
@@ -72,12 +77,15 @@ export default class Group {
 	 * Obtains a Map of all groups
 	 * @return {Map<number>{Group}}
 	 */
-	static getAllGroups () {
+	static async getAllGroups () {
 		const stmt = CR.db.users.prepare('select id, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, args from groups');
 		const rows = stmt.all();
 
 		const groups = new Map();
 		for (let row of rows) {
+			const argsStr = row.args || '';
+			const argsArr = (await csvParse(argsStr))[0];
+
 			const group = new Group({
 				id: row.id,
 				nameBase: row.name_base,
@@ -86,7 +94,7 @@ export default class Group {
 				parent: row.parent,
 				isPublic: !!row.public,
 				searchable: !!row.searchable,
-				args: row.args
+				args: argsArr
 			});
 			groups.set(row.id, group);
 		}
