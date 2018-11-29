@@ -4,6 +4,8 @@ import moment from 'moment-timezone';
 import url from 'url';
 import path from 'path';
 import bcrypt from 'bcrypt';
+import _csvParse from 'csv-parse';
+const csvParse = promisify(_csvParse);
 
 import Group from './group';
 
@@ -253,7 +255,7 @@ class User {
 
 		this.groups = new Map();
 
-		const stmt = CR.db.users.prepare('select groups.id, `from`, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, groups.`args` from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
+		const stmt = CR.db.users.prepare('select groups.id, `from`, `to`, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, groups.`args` as group_args, users_groups.`args` as user_args from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
 		const rows = stmt.all(this.id);
 
 		const timeNow = moment().unix();
@@ -262,16 +264,48 @@ class User {
 			const nextLookup = [];
 			const children = [];
 			for (let row of groups) {
-				this.groups.set(row.id, new Group({
-					id: row.id,
-					nameBase: row.name_base,
-					nameDisplay: row.name_display,
-					membersAllowed: !!row.members_allowed,
-					parent: row.parent,
-					isPublic: !!row.public,
-					searchable: !!row.searchable,
-					args: row.args
-				}));
+				let active = true;
+				if (row.to   && row.to   < timeNow) { active = false; }
+				if (            row.from > timeNow) { active = false; }
+
+				let direct = true;
+				if (row.direct === false) { direct = false; }
+
+				const userArgsStr = row.user_args || '';
+				const userArgsArr = (await csvParse(userArgsStr))[0];
+
+				const groupArgsStr = row.group_args || '';
+				const groupArgsArr = (await csvParse(groupArgsStr))[0];
+
+				let nameForUser = row.name_base;
+				if (row.name_display) {
+					nameForUser = row.name_display;
+					for (let i = 0; i < userArgsArr.length; i++) {
+						const key = '$' + (i + 1);
+						nameForUser = nameForUser.replace(key, userArgsArr[i]);
+					}
+				}
+
+				this.groups.set(row.id, {
+					group: new Group({
+						id: row.id,
+						nameBase: row.name_base,
+						nameDisplay: row.name_display,
+						membersAllowed: !!row.members_allowed,
+						parent: row.parent,
+						isPublic: !!row.public,
+						searchable: !!row.searchable,
+						args: groupArgsArr
+					}),
+					user: {
+						args: userArgsArr,
+						from: row.from,
+						to: row.to,
+						active: active,
+						direct: direct,
+						name: nameForUser
+					}
+				});
 
 				if (row.parent) {
 					nextLookup.push(row.parent);
@@ -282,14 +316,15 @@ class User {
 			if (nextLookup.length == 0) { return; }
 
 			const params = '?,'.repeat(nextLookup.length).slice(0, -1);
-			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\`, \`args\` from groups where id in (${params})`);
+			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\`, \`args\` as group_args from groups where id in (${params})`);
 			const rows = stmt.all(...nextLookup);
 
 			for (let i in rows) {
 				const row = rows[i];
 				const child = children[i];
-				row.from = this.groups.get(child).timeFrom;
-				row.to   = this.groups.get(child).timeTo;
+				row.direct = false;
+				row.from = this.groups.get(child).user.from;
+				row.to   = this.groups.get(child).user.to;
 			}
 
 			await recursiveGroupLookup(rows);
@@ -302,22 +337,50 @@ class User {
 
 	/**
 	 * Adds a user to a group
-	 * @param  {number}      groupId    The id of the group
-	 * @param  {string[]}    [args]     An array of name arguments for use with the group's display name (if it accepts arguments)
-	 * @param  {number}      [timeFrom] The time when the user was added to the group, defaults to now
-	 * @param  {number|null} [timeTo]   The time at which the user's membership expires, defaults to never
-	 * @return {Group} The group the user was added to
+	 * @param  {number|Group} groupId    The group or its id
+	 * @param  {string[]}     [args]     An array of name arguments for use with the group's display name (if it accepts arguments)
+	 * @param  {number}       [timeFrom] The time when the user was added to the group, defaults to now
+	 * @param  {number|null}  [timeTo]   The time at which the user's membership expires, defaults to never
+	 * @return {Group|boolean} The group the user was added to or false if the group doesn't permit members
 	 */
-	async addToGroup (groupId, args = [], timeFrom = undefined, timeTo = null) {
+	async addToGroup (group, args = [], timeFrom = undefined, timeTo = null) {
 		if (timeFrom === undefined) {
 			timeFrom = moment().unix();
 		}
 
-		const group = Group.getGroupById(groupId);
-		group.addUser(this, args, timeFrom, timeTo);
+		if (typeof group === 'number') {
+			group = Group.getGroupById(groupId);
+		}
+
+		const wasAdded = await group.addUser(this, args, timeFrom, timeTo);
+		if (!wasAdded) { return false; }
 		
+		const timeNow = moment().unix();
+		let active = true;
+		if (timeTo && timeTo   < timeNow) { active = false; }
+		if (          timeFrom > timeNow) { active = false; }
+
+		let nameForUser = group.nameBase;
+		if (group.nameDisplay) {
+			nameForUser = group.nameDisplay;
+			for (let i = 0; i < args.length; i++) {
+				const key = '$' + (i + 1);
+				nameForUser = nameForUser.replace(key, args[i]);
+			}
+		}
+
 		const groups = await this.getGroups();
-		groups.set(groupId, group);
+		groups.set(group.id, {
+			group: group,
+			user: {
+				args: args,
+				from: timeFrom,
+				to: timeTo,
+				active: active,
+				direct: true,
+				name: nameForUser
+			}
+		});
 
 		return group;
 	}
@@ -338,9 +401,8 @@ class User {
 		const groups = await this.getGroups();
 		const groupIds = [];
 		for (let group of groups.values()) {
-			const validity = group.getValidityForUser(this);
-			if (validity.active) {
-				groupIds.push(group.id);
+			if (group.user.active) {
+				groupIds.push(group.group.id);
 			}
 		}
 

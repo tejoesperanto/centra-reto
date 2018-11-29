@@ -1,7 +1,11 @@
+import { promisify } from 'util';
 import Table from 'tty-table';
 import moment from 'moment-timezone';
+import _csvParse from 'csv-parse';
+const csvParse = promisify(_csvParse);
 
-import User from '../api/user'
+import User from '../api/user';
+import Group from '../api/group';
 import * as CRCmd from '../cmd';
 import * as CRMail from '../mail';
 
@@ -13,6 +17,12 @@ export const helpDetailed = `
 
 - uzanto grupoj <retpoŝtadreso>
   Listigas ĉiujn grupojn en kiuj membras la uzanto.
+
+- uzanto grupoj <retpoŝtadreso> aldoni <grupo> [argumentoj] [ekde] [ĝis]
+  Aldonas uzanton al la indikita grupo.
+  argumentoj estas csv-listo de argumentoj por la grupo. Skribu - por havi neniun valoron.
+  ekde estas la tempo ekde kiam la membreco en la grupo validas. Skribu ISO-tempon aŭ la specialan valoron 'nun'.
+  ĝis estas la tempo je kiu la membreco en la grupo ĉesas validi. Skribu ISO-tempon aŭ la specialan valoron 'ĉiam'.
 
 - uzanto krei <retpoŝtadreso>
   Kreas novan uzanton kun la indikita retpoŝtadreso. Poste estas donita aktivigligilo, kiu povas esti sendita al la uzanto per retpoŝto.
@@ -119,20 +129,64 @@ export async function cmd (bits, log) {
 				const rows = [];
 
 				for (let group of groups.values()) {
-					const validity = group.getValidityForUser(user);
 					rows.push([
-						group.id,
-						validity.active ? 'jes' : 'ne',
-						group.isDirectForUser(user) ? 'jes' : 'ne',
-						await group.getNameForUser(user),
-						moment.unix(validity.timeFrom).format(CR.timeFormats.dateTimeSimple),
-						validity.timeTo ? moment.unix(validity.timeTo).format(CR.timeFormats.dateTimeSimple) : '-'
+						group.group.id,
+						group.user.active ? 'jes' : 'ne',
+						group.user.direct ? 'jes' : 'ne',
+						group.user.name,
+						moment.unix(group.user.from).format(CR.timeFormats.dateTimeSimple),
+						group.user.to ? moment.unix(group.user.to).format(CR.timeFormats.dateTimeSimple) : '-'
 					]);
 				}
 
 				const table = Table(header, rows).render();
 
 				log('info', 'La uzanto %s membras en la jenaj grupoj:\n%s', email, table);
+
+			} else if (bits.length >= 3) {
+				if (bits[2] === 'aldoni') {
+					if (bits.length < 4 || bits.length > 7) {
+						log('SYNTAX');
+						return;
+					}
+
+					const groupId = bits[3];
+					const group = Group.getGroupById(groupId);
+					if (!group) {
+						log('error', 'Grupo ne trovita.');
+						return;
+					}
+
+					let argsArr = [];
+					if (bits[4] && bits[4] !== '-') {
+						argsArr = (await csvParse(bits[4]))[0]; // First line only
+					}
+
+					let timeFrom = bits[5];
+					if (!timeFrom || timeFrom === 'nun') {
+						timeFrom = moment().unix();
+					} else {
+						timeFrom = moment(timeFrom).unix();
+					}
+
+					let timeTo = bits[6];
+					if (!timeTo || timeTo === 'ĉiam') {
+						timeTo = null;
+					} else {
+						timeTo = moment(timeTo).unix();
+					}
+
+					const wasAdded = await user.addToGroup(group, argsArr, timeFrom, timeTo);
+					if (!wasAdded) {
+						log('error', 'La indikita grupo ne permesas rektajn membrojn.');
+						return;
+					}
+
+					log('info', "Aldonis %s al grupo n-ro %s. Uzu la komandon `uzanto grupoj %s` por vidi ĉiujn grupojn de la uzanto.", user.email, user.email, group.id);
+
+				} else {
+					log('SYNTAX');
+				}
 
 			} else {
 				log('SYNTAX');
