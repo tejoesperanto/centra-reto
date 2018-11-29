@@ -182,7 +182,7 @@ export async function cmd (bits, log) {
 						return;
 					}
 
-					log('info', "Aldonis %s al grupo n-ro %s. Uzu la komandon `uzanto grupoj %s` por vidi ĉiujn grupojn de la uzanto.", user.email, user.email, group.id);
+					log('info', "Aldonis %s al grupo n-ro %s. Uzu la komandon `uzanto grupoj %s` por vidi ĉiujn grupojn de la uzanto.", user.email, group.id, user.email);
 
 				} else {
 					log('SYNTAX');
