@@ -130,6 +130,15 @@ $(function () {
 			source: groupsSearch.ttAdapter()
 		}
 	});
+
+	// Disable submitting by pressing enter in tags input field
+	$('#create-user-form .tt-input').keypress(function (e) {
+		if (e.which == 13) {
+			e.preventDefault();
+		}
+	});
+
+	// Handle display name formatting
 	groupsInput.on('beforeItemAdd', function (e) {
 		if (e.item.nameDisplay) {
 			var div = cloneTemplate('#template-group-modal');
@@ -171,7 +180,7 @@ $(function () {
 
 			}).then(function () {
 				groupsInput.tagsinput('remove', e.item);
-				$('.tt-input').focus();
+				$('#create-user-form .tt-input').focus();
 
 				var values = [];
 				var allSet = true;
@@ -206,6 +215,19 @@ $(function () {
 
 		var button = $('#create-user-form-button');
 
+		var createUserFinally = function (partialReset) {
+			swal.stopLoading();
+			button.removeAttr('disabled');
+
+			if (!partialReset) {
+				table.draw();
+
+				// Reset the form
+				$('#create-user-form-email').val('').blur();
+				groupsInput.tagsinput('removeAll');
+			}
+		};
+
 		swal({
 			title: 'Kreado de uzanto',
 			text: 'Ĉu vi certas, ke vi volas krei uzanton kun la retpoŝtadreso ' + data.email + '?',
@@ -217,32 +239,51 @@ $(function () {
 				}
 			]
 
-		}).then(function () {
+		}).then(function (e) {
+			if (!e) { return; }
+
 			button.attr('disabled', true);
 
-			return performAPIRequest('post', '/api/user/create', data, false);
+			performAPIRequest('post', '/api/user/create', data, false)
+				.then(function (res) {
+					var groupsOrg = groupsInput.tagsinput('items');
+					var groups = [];
+					for (var i in groupsOrg) {
+						var group = groupsOrg[i];
+						groups.push({
+							id: group.id,
+							args: group.userArgs,
+							from: null,
+							to: null
+						});
+					}
 
-		}).then(function (res) {
-			swal.close();
-		}).catch(function (err) {
-			if (err.error === 'EMAIL_TAKEN') {
+					var data = {
+						user_id: res.uid,
+						groups: groups
+					};
 
-				swal({
-			        title: 'Retpoŝtadreso jam uzata',
-			        icon: 'error',
-			        button: 'Bone'
-			    });
+					performAPIRequest('post', '/api/user/add_groups', data)
+						.then(function (res) {
+							if (res.success) {
+								swal.close();
+							}
 
-			} else {
-				showError(err);
-			}
-		}).finally(function () {
-			table.draw();
-			swal.stopLoading();
-
-			// Reset the form
-			$('#create-user-form-email').val('');
-			button.removeAttr('disabled');
-		});
+							createUserFinally();
+						});
+				}).catch(function (err) {
+					if (err.error === 'EMAIL_TAKEN') {
+						swal({
+					        title: 'Retpoŝtadreso jam uzata',
+					        icon: 'error',
+					        button: 'Bone'
+					    });
+						createUserFinally(true);
+					} else {
+						showError(err);
+						createUserFinally();
+					}
+				});
+		})
 	});
 });

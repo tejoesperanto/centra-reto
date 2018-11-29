@@ -40,7 +40,7 @@ class User {
 		const stmt = CR.db.users.prepare("insert into users (email, activation_key, activation_key_time) values (?, ?, ?)");
 		const info = stmt.run(email, activationKey, activationKeyTime);
 
-		const user = new User(info.lastInsertRowId, email, true, null);
+		const user = new User(info.lastInsertRowid, email, true, null);
 		user.activationKey = activationKey;
 		user.activationKeyTime = activationKeyTime;
 		return user;

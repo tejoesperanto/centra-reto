@@ -4,6 +4,7 @@ import * as CRApi from '..';
 import { wrap } from '../..';
 
 import apiActivate from './_activate';
+import apiAddGroups from './_add_groups';
 import apiCreate from './_create';
 import apiDeleteUninitiated from './_delete_uninitiated';
 import apiInitialSetup from './_initial_setup';
@@ -23,6 +24,11 @@ export default function () {
 
 	router.post('/activate',
 		wrap(apiActivate));
+
+	router.post('/add_groups',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiAddGroups));
 
 	router.post('/create',
 		middleware.requireLogin,
