@@ -351,108 +351,110 @@ $(function () {
 	});
 
 	// Create new user
-	// Tags input
-	var groupsInput = $('#create-user-form-groups');
-	groupsInput.tagsinput({
-		itemValue: 'id',
-		itemText: 'nameBase',
-		typeaheadjs: {
-			name: 'groups',
-			displayKey: 'nameBase',
-			source: groupsSearch.ttAdapter()
-		}
-	});
-	setUpGroupsInput(groupsInput);
-
-	// Handle display name formatting
-	groupsInput.on('itemAdded', function (e) {
-		if (e.item.nameDisplay) {
-			handleGroupDisplayName(groupsInput, e, true);
-		}
-	});
-
-	// Create user submit
-	$('#create-user-form').submit(function (e) {
-		e.preventDefault();
-
-		var data = serializeToObj(this);
-		if (data.send_email === 'on') {
-			data.send_email = true;
-		} else {
-			data.send_email = false;
-		}
-
-		var button = $('#create-user-form-button');
-
-		var createUserFinally = function (partialReset) {
-			swal.stopLoading();
-			button.removeAttr('disabled');
-
-			if (!partialReset) {
-				table.draw();
-
-				// Reset the form
-				$('#create-user-form-email').val('').blur();
-				groupsInput.tagsinput('removeAll');
+	if (userPerms['users.create']) {
+		// Tags input
+		var groupsInput = $('#create-user-form-groups');
+		groupsInput.tagsinput({
+			itemValue: 'id',
+			itemText: 'nameBase',
+			typeaheadjs: {
+				name: 'groups',
+				displayKey: 'nameBase',
+				source: groupsSearch.ttAdapter()
 			}
-		};
+		});
+		setUpGroupsInput(groupsInput);
 
-		swal({
-			title: 'Kreado de uzanto',
-			text: 'Ĉu vi certas, ke vi volas krei uzanton kun la retpoŝtadreso ' + data.email + '?',
-			buttons: [
-				'Nuligi',
-				{
-					text: 'Krei',
-					closeModal: false
+		// Handle display name formatting
+		groupsInput.on('itemAdded', function (e) {
+			if (e.item.nameDisplay) {
+				handleGroupDisplayName(groupsInput, e, true);
+			}
+		});
+
+		// Create user submit
+		$('#create-user-form').submit(function (e) {
+			e.preventDefault();
+
+			var data = serializeToObj(this);
+			if (data.send_email === 'on') {
+				data.send_email = true;
+			} else {
+				data.send_email = false;
+			}
+
+			var button = $('#create-user-form-button');
+
+			var createUserFinally = function (partialReset) {
+				swal.stopLoading();
+				button.removeAttr('disabled');
+
+				if (!partialReset) {
+					table.draw();
+
+					// Reset the form
+					$('#create-user-form-email').val('').blur();
+					groupsInput.tagsinput('removeAll');
 				}
-			]
+			};
 
-		}).then(function (e) {
-			if (!e) { return; }
-
-			button.attr('disabled', true);
-
-			performAPIRequest('post', '/api/user/create', data, false)
-				.then(function (res) {
-					var groupsOrg = groupsInput.tagsinput('items');
-					var groups = [];
-					for (var i in groupsOrg) {
-						var group = groupsOrg[i];
-						groups.push({
-							id: group.id,
-							args: group.userArgs,
-							from: null,
-							to: null
-						});
+			swal({
+				title: 'Kreado de uzanto',
+				text: 'Ĉu vi certas, ke vi volas krei uzanton kun la retpoŝtadreso ' + data.email + '?',
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Krei',
+						closeModal: false
 					}
+				]
 
-					var data = {
-						user_id: res.uid,
-						groups: groups
-					};
+			}).then(function (e) {
+				if (!e) { return; }
 
-					performAPIRequest('post', '/api/user/add_groups', data)
-						.then(function (res) {
-							if (res.success) {
-								swal.close();
-							}
+				button.attr('disabled', true);
 
+				performAPIRequest('post', '/api/user/create', data, false)
+					.then(function (res) {
+						var groupsOrg = groupsInput.tagsinput('items');
+						var groups = [];
+						for (var i in groupsOrg) {
+							var group = groupsOrg[i];
+							groups.push({
+								id: group.id,
+								args: group.userArgs,
+								from: null,
+								to: null
+							});
+						}
+
+						var data = {
+							user_id: res.uid,
+							groups: groups
+						};
+
+						performAPIRequest('post', '/api/user/add_groups', data)
+							.then(function (res) {
+								if (res.success) {
+									swal.close();
+								}
+
+								createUserFinally();
+							});
+					}).catch(function (err) {
+						if (err.error === 'EMAIL_TAKEN') {
+							swal({
+						        title: 'Retpoŝtadreso jam uzata',
+						        icon: 'error',
+						        button: 'Bone'
+						    });
+							createUserFinally(true);
+						} else {
+							showError(err);
 							createUserFinally();
-						});
-				}).catch(function (err) {
-					if (err.error === 'EMAIL_TAKEN') {
-						swal({
-					        title: 'Retpoŝtadreso jam uzata',
-					        icon: 'error',
-					        button: 'Bone'
-					    });
-						createUserFinally(true);
-					} else {
-						showError(err);
-						createUserFinally();
-					}
-				});
-		})
-	});
+						}
+					});
+			})
+		});
+	}
 });

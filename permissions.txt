@@ -2,5 +2,7 @@ Permissions overview
 ====================
 
 users
-	view:
-	Permits the user to view the list of users from the administration panel
+	view: Permits the user to get a list of users
+	create: Permits the user to create new users
+	modify: (SHOULD NEVER BE GIVEN WITHOUT users.create) Permits the user to modify users' enabled state and manage their groups
+	delete: Permits the user to remove uninitiated users
