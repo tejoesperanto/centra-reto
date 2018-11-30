@@ -46,9 +46,8 @@ export default class Group {
 			argsStr = null;
 		}
 
-		// TODO: If the user is already, override and set new values
-
-		const stmt = CR.db.users.prepare("insert into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)");
+		// If the user is already in the group we'll replace the entry
+		const stmt = CR.db.users.prepare("insert or replace into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)");
 		stmt.run(user.id, this.id, argsStr, timeFrom, timeTo);
 		return true;
 	}
