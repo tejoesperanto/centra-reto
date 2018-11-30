@@ -6,6 +6,7 @@ import moment from 'moment-timezone';
 
 import { wrap } from '..';
 
+import routerCirkuleroj from './cirkuleroj';
 import routerAdministrado from './administrado';
 
 import pageIndex from './_index';
@@ -33,6 +34,7 @@ export function init () {
 	router.use(middlewareSendFullPage);
 
 	// Routing
+	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/administrado', routerAdministrado());
 
 	// Pages
@@ -53,10 +55,10 @@ export const middleware = {
 	 * Express middleware to redirect any requests to / from users that have not yet completed initial setup
 	 */
 	requireInitialSetup: function middlewareRequireInitialSetup (req, res, next) {
-		if (req.user && req.user.hasCompletedInitialSetup()) {
-			next();
-		} else {
+		if (req.user && !req.user.hasCompletedInitialSetup()) {
 			res.redirect(303, '/');
+		} else {
+			next();
 		}
 	},
 
@@ -214,6 +216,7 @@ async function amendView (req, view) {
 	// Global fields
 	view.year = moment().format('YYYY');
 	view.version = CR.version;
+	view.pagePath = req.originalUrl;
 
 	// Page data
 	if (view.pageDataObj) {
@@ -264,27 +267,33 @@ async function amendView (req, view) {
 			name: 'Hejmo',
 			icon: 'home',
 			href: '/',
-			active: req.url === '/'
+			active: req.originalUrl === '/'
+		},
+		{
+			name: 'Cirkuleroj',
+			icon: 'assignment',
+			href: '/cirkuleroj',
+			active: /^\/cirkuleroj/.test(req.originalUrl)
 		}
 	];
 
-	const menuAdministration = [];
+	const menuAdmin = [];
 
 	if (req.user) {
 		if (await req.user.hasPermission('users.view')) {
-			menuAdministration.push({
+			menuAdmin.push({
 				name: 'Uzantoj',
 				href: '/administrado/uzantoj'
 			});
 		}
 	}
 
-	if (menuAdministration.length > 0) {
+	if (menuAdmin.length > 0) {
 		view.menu.push({
 			name: 'Administrado',
 			icon: 'build',
-			active: /^\/administrado.*/.test(req.url),
-			children: menuAdministration
+			active: /^\/administrado/.test(req.originalUrl),
+			children: menuAdmin
 		});
 	}
 }

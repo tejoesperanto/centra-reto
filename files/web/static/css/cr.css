@@ -96,3 +96,7 @@ textarea.cr-code {
 .tagsinput-group>label {
 	margin-top: 8px;
 }
+
+.menu-login {
+	padding: 10px 13px;
+}

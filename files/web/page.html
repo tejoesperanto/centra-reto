@@ -94,8 +94,13 @@
                         </div>
                     </div>
                 </div>
-                {{/user}}
                 <!-- #User Info -->
+                {{/user}}
+                {{^user}}
+                <div class="menu-login">
+                    <p><b>Vi ne estas ensalutinta</b><br/><a href="/ensaluti?{{pagePath}}">Ensaluti</a></p>
+                </div>
+                {{/user}}
                 <!-- Menu -->
                 <div class="menu">
                     <ul class="list">

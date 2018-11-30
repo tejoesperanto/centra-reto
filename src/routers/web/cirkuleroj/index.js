@@ -3,7 +3,7 @@ import express from 'express';
 import { middleware } from '..';
 import { wrap } from '../..';
 
-import pageUzantoj from './_uzantoj';
+import pageIndex from './_index.js'
 
 /**
  * Sets up the router
@@ -13,9 +13,8 @@ export default function () {
 	const router = express.Router();
 	router.use(middleware.requireInitialSetup);
 
-	router.get('/uzantoj',
-		middleware.requireLogin,
-		wrap(pageUzantoj));
+	router.get('/',
+		wrap(pageIndex));
 
 	return router;
 }
