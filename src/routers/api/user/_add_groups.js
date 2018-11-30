@@ -1,9 +1,4 @@
-import { promisify } from 'util';
 import moment from 'moment-timezone';
-import _csvParse from 'csv-parse';
-const csvParse = promisify(_csvParse);
-import _csvStringify from 'csv-stringify';
-const csvStringify = promisify(_csvStringify);
 
 import User from '../../../api/user';
 import Group from '../../../api/group';
@@ -26,7 +21,7 @@ async function add_groups (req, res, next) {
 	 *                    id is the group's id
 	 *                    args is an array of the user's role formatting arguments
 	 *                    from is the time from which the group membership is valid, must be a unix time or null to default to the current time
-	 *                    to is the time until which the group membership is valid, must be a unix time or null to default to the current time
+	 *                    to is the time until which the group membership is valid, must be a unix time or null for it to never expire
 	 *
 	 * Throws:
 	 * USER_NOT_FOUND
@@ -68,9 +63,8 @@ async function add_groups (req, res, next) {
 		groupIds.push(group.id);
 
 		if (group.from === null) { group.from = moment().unix(); }
-		if (group.to   === null) { group.to   = moment().unix(); }
 
-		if (!group.args || group.args.length === 0) { group.args === null; }
+		if (!group.args || group.args.length === 0) { group.args === []; }
 	}
 
 	// Get all the groups
@@ -78,16 +72,12 @@ async function add_groups (req, res, next) {
 		return Group.getGroupById(groupInput.id);
 	}));
 
-	// Ensure all groups exist and that their arg length matches the supplied arg length
+	// Ensure all groups exist
 	for (let i = 0; i < groups.length; i ++) {
 		const group = groups[i];
 		const groupInput = groupsInput[i];
 		if (group === null) {
 			res.sendAPIError('GROUP_NOT_FOUND', [groupInput]);
-			return;
-		}
-		if (groups.args && group.args.length !== groupInput.args.length) {
-			res.sendAPIError('INVALID_ARGUMENT', ['groups']);
 			return;
 		}
 	}

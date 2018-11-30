@@ -272,10 +272,12 @@ class User {
 				if (row.direct === false) { direct = false; }
 
 				const userArgsStr = row.user_args || '';
-				const userArgsArr = (await csvParse(userArgsStr))[0];
+				let userArgsArr = await csvParse(userArgsStr);
+				if (userArgsArr.length > 0) { userArgsArr = userArgsArr[0]; }
 
 				const groupArgsStr = row.group_args || '';
-				const groupArgsArr = (await csvParse(groupArgsStr))[0];
+				const groupArgsArr = await csvParse(groupArgsStr);
+				if (groupArgsArr.length > 0) { groupArgsArr = groupArgsArr[0]; }
 
 				let nameForUser = row.name_base;
 				if (row.name_display) {
@@ -337,10 +339,10 @@ class User {
 
 	/**
 	 * Adds a user to a group
-	 * @param  {number|Group} groupId    The group or its id
-	 * @param  {string[]}     [args]     An array of name arguments for use with the group's display name (if it accepts arguments)
-	 * @param  {number}       [timeFrom] The time when the user was added to the group, defaults to now
-	 * @param  {number|null}  [timeTo]   The time at which the user's membership expires, defaults to never
+	 * @param  {number|Group}  groupId    The group or its id
+	 * @param  {string[]|null} [args]     An array of name arguments for use with the group's display name (if it accepts arguments)
+	 * @param  {number}        [timeFrom] The time when the user was added to the group, defaults to now
+	 * @param  {number|null}   [timeTo]   The time at which the user's membership expires, defaults to never
 	 * @return {Group|boolean} The group the user was added to or false if the group doesn't permit members
 	 */
 	async addToGroup (group, args = [], timeFrom = undefined, timeTo = null) {
@@ -351,6 +353,8 @@ class User {
 		if (typeof group === 'number') {
 			group = await Group.getGroupById(groupId);
 		}
+
+		if (args === null) { args = []; }
 
 		const wasAdded = await group.addUser(this, args, timeFrom, timeTo);
 		if (!wasAdded) { return false; }

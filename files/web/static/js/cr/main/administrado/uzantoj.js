@@ -1,4 +1,91 @@
 $(function () {
+	// Group data
+	var groupsSearch = new Bloodhound({
+		local: pageData.groups,
+		identify: function (obj) { return obj.id; },
+		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('nameBase'),
+		queryTokenizer: Bloodhound.tokenizers.whitespace
+	});
+
+	// Format name when adding group with display name
+	var setUpGroupsInput = function (groupsInput) {
+		var ttInput = groupsInput.parent().find('.tt-input');
+
+		// Disable submitting by pressing enter in tags input field
+		ttInput.keypress(function (e) {
+			if (e.which == 13) {
+				e.preventDefault();
+			}
+		});
+	};
+
+	var handleGroupDisplayName = function (groupsInput, e, cb) {
+		if (!cb) { cb = function(){}; }
+
+		var ttInput = groupsInput.parent().find('.tt-input');
+
+		var div = cloneTemplate('#template-group-modal');
+		div.find('.val-name-base').text(e.item.nameBase);
+
+		var form = div.find('.template-group-modal-form');
+		var formGroup = div.find('.form-group');
+		var firstInput = null;
+		for (var i in e.item.args) {
+			var arg = e.item.args[i];
+			var el = cloneTemplate('#template-group-arg-input');
+			formGroup.append(el);
+			el.find('label').text(arg);
+			var input = el.find('input');
+			if (!firstInput) { firstInput = input; }
+			input.attr('name', i);
+			input.on('input', function () {
+				var valid = form[0].checkValidity();
+				$('.swal-button--confirm').attr('disabled', !valid);
+			});
+		}
+
+		form.submit(function (e) {
+			e.preventDefault();
+			$('.swal-button--confirm').click();
+		});
+
+		$.AdminBSB.input.activate(div);
+
+		swal({
+			title: 'Aldono de grupo',
+			content: div[0],
+			button: 'Aldoni grupon'
+
+		}).then(function () {
+			groupsInput.tagsinput('remove', e.item);
+			ttInput.focus();
+
+			var values = [];
+			var allSet = true;
+			formGroup.find('input[name]').each(function () {
+				values[this.name] = this.value.trim();
+				if (values[this.name].length === 0) { allSet = false; }
+			});
+
+			if (allSet) {
+				var formattedName = e.item.nameDisplay;
+				for (var i = 0; i < e.item.args.length; i++) {
+					var key = '$' + (i + 1);
+					formattedName = formattedName.replace(key, values[i]);
+				}
+				var item = { id: e.item.id, nameBase: formattedName, userArgs: values };
+				groupsInput.tagsinput('add', item);
+			}
+
+			cb(item);
+		});
+
+		window.setTimeout(function () {
+			firstInput.focus();
+			$('.swal-button--confirm').attr('disabled', true);
+		}, 0); // Run when the thread becomes idle
+	}
+
 	// Existing users
 	var tableData = setUpDataTable({
 		el: '#users-table',
@@ -10,13 +97,14 @@ $(function () {
 	});
 	var table = tableData.table;
 
+	var loaderTemplate = cloneTemplate('#template-loader');
+
 	table.on('draw', function () {
 		if (userPerms['users.modify']) {
 			// Apply click listeners to all rows
 			var rows = table.rows().nodes().to$();
 			rows.addClass('clickable');
-			rows.on('click', function () {
-				// The listener is automatically removed upon the next draw
+			rows.on('click', function () { // The listener is automatically removed upon the next draw
 				var data = tableData.getData();
 				var row = table.row(this);
 				var _rowDataRaw = row.data();
@@ -35,91 +123,191 @@ $(function () {
 					}
 				}
 
-				var div = cloneTemplate('#template-user-modal');
-
-				if (rowData.enabled) {
-					div.find('.user-modal-enable-login').remove();
-					var modalTitle  = 'Malŝalto de uzanto';
-					var modalText   = 'Ĉu vi certas, ke vi volas malŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
-					var modalButton = 'Malŝalti';
-				} else {
-					div.find('.user-modal-disable-login').remove();
-					var modalTitle  = 'Ŝalto de uzanto';
-					var modalText   = 'Ĉu vi certas, ke vi volas ŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
-					var modalButton = 'Ŝalti';
-				}
-
-				div.find('.user-modal-enable-button').on('click', function () {
-					swal({
-						title: modalTitle,
-						text: modalText,
-						buttons: [
-							'Nuligi',
-							{
-								text: modalButton,
-								closeModal: false
-							}
-						]
-
-					}).then(function () {
-						return performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id });
-
-					}).then(function (res) {
-						table.draw();
-						swal.stopLoading();
-
-						if (res.success) {
-							swal.close();
-						}
-					});
-				});
-
-				if (rowData.set_up || !userPerms['users.delete']) {
-					div.find('.user-modal-delete-user-row').remove();
-				} else {
-					div.find('.user-modal-delete-user').on('click', function () {
-						swal({
-							title: 'Forigo de uzanto',
-							text: 'Ĉu vi certas, ke vi volas forigi la uzanton kun la retpoŝtadreso ' + rowData.email + '?',
-							buttons: [
-								'Nuligi',
-								{
-									text: 'Forigi',
-									closeModal: false
-								}
-							]
-
-						}).then(function () {
-							return performAPIRequest('post', '/api/user/delete_uninitiated', { user_id: rowData.id });
-
-						}).then(function (res) {
-							table.draw();
-							swal.stopLoading();
-
-							if (res.success) {
-								swal.close();
-							}
-						});
-					});
-				}
+				var modalTitle = 'Uzanto ' + rowData.email;
 
 				swal({
-			        title: 'Uzanto ' + rowData.email,
-			        content: div[0],
-			        button: 'Fermi'
-			    });
+					title: modalTitle,
+					content: loaderTemplate[0],
+					buttons: false
+				});
+
+				performAPIRequest('post', '/api/user/get_groups', { user_id: rowData.id })
+					.then(function (res) {
+						if (!res.success) { return; }
+
+						var div = cloneTemplate('#template-user-modal');
+
+						if (rowData.enabled) {
+							div.find('.user-modal-enable-login').remove();
+							var enabledModalTitle  = 'Malŝalto de uzanto';
+							var modalText   = 'Ĉu vi certas, ke vi volas malŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
+							var modalButton = 'Malŝalti';
+						} else {
+							div.find('.user-modal-disable-login').remove();
+							var enabledModalTitle  = 'Ŝalto de uzanto';
+							var modalText   = 'Ĉu vi certas, ke vi volas ŝalti la uzanton kun la retpoŝtadreso ' + rowData.email + '?';
+							var modalButton = 'Ŝalti';
+						}
+
+						var groupsInput = div.find('.user-modal-groups');
+						groupsInput.tagsinput({
+							itemValue: 'id',
+							itemText: 'nameBase',
+							typeaheadjs: {
+								name: 'groups',
+								displayKey: 'nameBase',
+								source: groupsSearch.ttAdapter()
+							}
+						});
+
+						for (var i = 0; i < res.groups.length; i++) {
+							var group = res.groups[i];
+							if (!group.user.direct) { continue; }
+							if (!group.user.active) { continue; }
+
+							groupsInput.tagsinput('add', {
+								id: group.group.id,
+								nameBase: group.user.name
+							});
+						}
+
+						setUpGroupsInput(groupsInput);
+
+						var showUserModal = function (focusTTInput) {
+							swal({
+						        title: modalTitle,
+						        content: div[0],
+						        button: 'Fermi'
+						    });
+
+						    if (focusTTInput) {
+						    	window.setTimeout(function () {
+						    		div.find('.tt-input').focus();
+						    	}, 0);
+						    }
+						};
+
+						groupsInput.on('itemAdded', function (e) {
+							var promptConfirmAddGroup = function (item) {
+								swal({
+									title: 'Aldono al grupo',
+									text: 'Ĉu vi certas, ke vi volas aldoni ' + rowData.email + ' al la grupo ' + item.nameBase + '?',
+									buttons: [
+										'Nuligi',
+										{
+											text: 'Aldoni',
+											closeModal: false
+										}
+									]
+
+								}).then(function (modalE) {
+									if (!modalE) {
+										groupsInput.tagsinput('remove', item);
+										showUserModal(true);
+										return;
+									}
+
+									const data = {
+										user_id: rowData.id,
+										groups: [
+											{
+												id: item.id,
+												args: item.userArgs,
+												from: null,
+												to: null
+											}
+										]
+									};
+									performAPIRequest('post', '/api/user/add_groups', data)
+										.then(function (res) {
+											swal.stopLoading();
+
+											if (!res.success) { return; }
+
+											if (!item.userArgs) {
+												groupsInput.tagsinput('add', {
+													id: item.id,
+													nameBase: item.nameBase
+												});
+											}
+											showUserModal(true);
+										});
+								});
+							};
+
+							if (e.item.nameDisplay) {
+								handleGroupDisplayName(groupsInput, e, promptConfirmAddGroup);
+							} else {
+								promptConfirmAddGroup(e.item);
+							}
+						});
+
+						div.find('.user-modal-enable-button').on('click', function () {
+							swal({
+								title: enabledModalTitle,
+								text: modalText,
+								buttons: [
+									'Nuligi',
+									{
+										text: modalButton,
+										closeModal: false
+									}
+								]
+
+							}).then(function (e) {
+								if (!e) { return; }
+
+								performAPIRequest('post', '/api/user/toggle_enabled', { user_id: rowData.id })
+									.then(function (res) {
+										table.draw();
+										swal.stopLoading();
+
+										if (res.success) {
+											swal.close();
+										}
+									});
+							});
+						});
+
+						if (rowData.set_up || !userPerms['users.delete']) {
+							div.find('.user-modal-delete-user-row').remove();
+						} else {
+							div.find('.user-modal-delete-user').on('click', function () {
+								swal({
+									title: 'Forigo de uzanto',
+									text: 'Ĉu vi certas, ke vi volas forigi la uzanton kun la retpoŝtadreso ' + rowData.email + '?',
+									buttons: [
+										'Nuligi',
+										{
+											text: 'Forigi',
+											closeModal: false
+										}
+									]
+
+								}).then(function (e) {
+									if (!e) { return; }
+
+									performAPIRequest('post', '/api/user/delete_uninitiated', { user_id: rowData.id })
+										.then(function (res) {
+											table.draw();
+											swal.stopLoading();
+
+											if (res.success) {
+												swal.close();
+											}
+										});
+								});
+							});
+						}
+
+						showUserModal();
+					});
 			});
 		}
 	});
 
 	// Create new user
 	// Tags input
-	var groupsSearch = new Bloodhound({
-		local: pageData.groups,
-		identify: function (obj) { return obj.id; },
-		datumTokenizer: Bloodhound.tokenizers.obj.whitespace('nameBase'),
-		queryTokenizer: Bloodhound.tokenizers.whitespace
-	});
 	var groupsInput = $('#create-user-form-groups');
 	groupsInput.tagsinput({
 		itemValue: 'id',
@@ -130,79 +318,16 @@ $(function () {
 			source: groupsSearch.ttAdapter()
 		}
 	});
-
-	// Disable submitting by pressing enter in tags input field
-	$('#create-user-form .tt-input').keypress(function (e) {
-		if (e.which == 13) {
-			e.preventDefault();
-		}
-	});
+	setUpGroupsInput(groupsInput);
 
 	// Handle display name formatting
-	groupsInput.on('beforeItemAdd', function (e) {
+	groupsInput.on('itemAdded', function (e) {
 		if (e.item.nameDisplay) {
-			var div = cloneTemplate('#template-group-modal');
-			div.find('.val-name-base').text(e.item.nameBase);
-
-			var form = div.find('.template-group-modal-form');
-			var formGroup = div.find('.form-group');
-			var firstInput = null;
-			for (var i in e.item.args) {
-				var arg = e.item.args[i];
-				var el = cloneTemplate('#template-group-arg-input');
-				formGroup.append(el);
-				el.find('label').text(arg);
-				var input = el.find('input');
-				if (!firstInput) { firstInput = input; }
-				input.attr('name', i);
-				input.on('input', function () {
-					var valid = form[0].checkValidity();
-					$('.swal-button--confirm').attr('disabled', !valid);
-				});
-			}
-
-			form.submit(function (e) {
-				e.preventDefault();
-				$('.swal-button--confirm').click();
-			});
-
-			$.AdminBSB.input.activate(div);
-
-			window.setTimeout(function () {
-				firstInput.focus();
-				$('.swal-button--confirm').attr('disabled', true);
-			}, 0); // Run when the thread becomes idle
-
-			swal({
-				title: 'Aldono de grupo',
-				content: div[0],
-				button: 'Aldoni grupon'
-
-			}).then(function () {
-				groupsInput.tagsinput('remove', e.item);
-				$('#create-user-form .tt-input').focus();
-
-				var values = [];
-				var allSet = true;
-				formGroup.find('input[name]').each(function () {
-					values[this.name] = this.value.trim();
-					if (values[this.name].length === 0) { allSet = false; }
-				});
-
-				if (allSet) {
-					var formattedName = e.item.nameDisplay;
-					for (var i = 0; i < e.item.args.length; i++) {
-						var key = '$' + (i + 1);
-						formattedName = formattedName.replace(key, values[i]);
-					}
-					var item = { id: e.item.id, nameBase: formattedName, userArgs: values };
-					groupsInput.tagsinput('add', item);
-				}
-			});
+			handleGroupDisplayName(groupsInput, e);
 		}
-
 	});
 
+	// Create user submit
 	$('#create-user-form').submit(function (e) {
 		e.preventDefault();
 

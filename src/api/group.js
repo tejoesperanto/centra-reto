@@ -31,16 +31,22 @@ export default class Group {
 
 	/**
 	 * Adds a user to the group
-	 * @param  {User}        user
-	 * @param  {string[]}    [args]   An array of name arguments for use with the group's display name (if it accepts arguments)
-	 * @param  {number}      timeFrom The time at which the user's membership became valid
-	 * @param  {number|null} [timeTo] The time at which the user's membership becomes invalid
+	 * @param  {User}          user
+	 * @param  {string[]|null} [args]   An array of name arguments for use with the group's display name (if it accepts arguments)
+	 * @param  {number}        timeFrom The time at which the user's membership became valid
+	 * @param  {number|null}   [timeTo] The time at which the user's membership becomes invalid
 	 * @return {boolean} Whether the user was added to the group. Only returns false if the group does not allowed members.
 	 */
 	async addUser (user, args = [], timeFrom, timeTo = null) {
 		if (!this.membersAllowed) { return false; }
 
-		const argsStr = (await csvStringify([args])).trim();
+		if (args === null) { args = []; }
+		let argsStr = (await csvStringify([args])).trim();
+		if (argsStr.length === 0) {
+			argsStr = null;
+		}
+
+		// TODO: If the user is already, override and set new values
 
 		const stmt = CR.db.users.prepare("insert into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)");
 		stmt.run(user.id, this.id, argsStr, timeFrom, timeTo);
@@ -59,7 +65,8 @@ export default class Group {
 		if (!row) { return null; }
 
 		const argsStr = row.args || '';
-		const argsArr = (await csvParse(argsStr))[0];
+		let argsArr = await csvParse(argsStr);
+		if (argsArr.length > 0) { argsArr = argsArr[0]; }
 
 		return new Group({
 			id: id,
@@ -84,7 +91,8 @@ export default class Group {
 		const groups = new Map();
 		for (let row of rows) {
 			const argsStr = row.args || '';
-			const argsArr = (await csvParse(argsStr))[0];
+			let argsArr = await csvParse(argsStr);
+			if (argsArr.length > 0) { argsArr = argsArr[0]; }
 
 			const group = new Group({
 				id: row.id,
