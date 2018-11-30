@@ -13,7 +13,10 @@ import * as CRMail from './mail';
 import * as CRCmd from './cmd';
 
 (async () => {
-	const DBs = [ 'users' ];
+	const DBs = [
+		'users',
+		'cirkuleroj'
+	];
 
 	global.CR = {
 		version: require('../package.json').version,
