@@ -10,7 +10,8 @@
 			"auth": {
 				"user": "",
 				"pass": ""
-			}
+			},
+			"pool": false
 		}
 	},
 	"emailFrom": {
