@@ -7,6 +7,7 @@ import apiActivate from './_activate';
 import apiAddGroups from './_add_groups';
 import apiCreate from './_create';
 import apiDeleteUninitiated from './_delete_uninitiated';
+import apiEndGroupMemberships from './_end_group_memberships';
 import apiGetGroups from './_get_groups';
 import apiInitialSetup from './_initial_setup';
 import apiList from './_list';
@@ -40,6 +41,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiDeleteUninitiated));
+
+	router.post('/end_group_memberships',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiEndGroupMemberships));
 
 	router.post('/get_groups',
 		middleware.requireLogin,

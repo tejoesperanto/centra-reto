@@ -19,7 +19,7 @@ $(function () {
 		});
 	};
 
-	var handleGroupDisplayName = function (groupsInput, e, cb) {
+	var handleGroupDisplayName = function (groupsInput, e, addItems, cb) {
 		if (!cb) { cb = function(){}; }
 
 		var ttInput = groupsInput.parent().find('.tt-input');
@@ -57,6 +57,7 @@ $(function () {
 			button: 'Aldoni grupon'
 
 		}).then(function () {
+			e.item.nonUserRemoved = true;
 			groupsInput.tagsinput('remove', e.item);
 			ttInput.focus();
 
@@ -73,8 +74,8 @@ $(function () {
 					var key = '$' + (i + 1);
 					formattedName = formattedName.replace(key, values[i]);
 				}
-				var item = { id: e.item.id, nameBase: formattedName, userArgs: values };
-				groupsInput.tagsinput('add', item);
+				var item = { id: e.item.id, nameBase: formattedName, userArgs: values, nonUserAdded: true };
+				if (addItems) { groupsInput.tagsinput('add', item); }
 			}
 
 			cb(item);
@@ -187,7 +188,10 @@ $(function () {
 						    }
 						};
 
+						// Assigning new groups to a user
 						groupsInput.on('itemAdded', function (e) {
+							if (e.item.nonUserAdded) { return; }
+
 							var promptConfirmAddGroup = function (item) {
 								swal({
 									title: 'Aldono al grupo',
@@ -202,6 +206,7 @@ $(function () {
 
 								}).then(function (modalE) {
 									if (!modalE) {
+										item.nonUserRemoved = true;
 										groupsInput.tagsinput('remove', item);
 										showUserModal(true);
 										return;
@@ -224,22 +229,61 @@ $(function () {
 
 											if (!res.success) { return; }
 
-											if (!item.userArgs) {
-												groupsInput.tagsinput('add', {
-													id: item.id,
-													nameBase: item.nameBase
-												});
-											}
+											groupsInput.tagsinput('add', {
+												id: item.id,
+												nameBase: item.nameBase,
+												nonUserAdded: true
+											});
+
 											showUserModal(true);
 										});
 								});
 							};
 
 							if (e.item.nameDisplay) {
-								handleGroupDisplayName(groupsInput, e, promptConfirmAddGroup);
+								handleGroupDisplayName(groupsInput, e, true, promptConfirmAddGroup);
 							} else {
 								promptConfirmAddGroup(e.item);
 							}
+						});
+
+						// Removing a user from groups
+						groupsInput.on('itemRemoved', function (e) {
+							if (e.item.nonUserRemoved) { return; }
+
+							swal({
+								title: 'Forigo de grupo',
+								text: 'Ĉu vi certas, ke vi volas forigi ' + rowData.email + ' de la grupo ' + e.item.nameBase + '?',
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Forigi',
+										closeModal: false
+									}
+								]
+
+							}).then(function (modalE) {
+								if (!modalE) {
+									e.item.nonUserAdded = true;
+									groupsInput.tagsinput('add', e.item);
+									showUserModal(true);
+									return;
+								}
+
+								const data = {
+									user_id: rowData.id,
+									groups: [ e.item.id ]
+								};
+
+								performAPIRequest('post', '/api/user/end_group_memberships', data)
+									.then(function (res) {
+										swal.stopLoading();
+
+										if (!res.success) { return; }
+
+										showUserModal(true);
+									});
+							});
 						});
 
 						div.find('.user-modal-enable-button').on('click', function () {
@@ -323,7 +367,7 @@ $(function () {
 	// Handle display name formatting
 	groupsInput.on('itemAdded', function (e) {
 		if (e.item.nameDisplay) {
-			handleGroupDisplayName(groupsInput, e);
+			handleGroupDisplayName(groupsInput, e, true);
 		}
 	});
 

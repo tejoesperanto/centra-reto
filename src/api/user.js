@@ -338,6 +338,30 @@ class User {
 	}
 
 	/**
+	 * Ends a user's membership in a group by setting its to column to the current time
+	 * @param  {Group|number} group The group or its id
+	 * @return {boolean} false if the user isn't in the group, otherwise true
+	 */
+	async endGroupMembership (group) {
+		if (typeof group === 'number') {
+			group = await Group.getGroupById(groupId);
+		}
+
+		const groups = await this.getGroups();
+		if (!groups.has(group.id)) { return false; }
+
+		const timeNow = moment().unix();
+
+		const stmt = CR.db.users.prepare('update users_groups set `to` = ? where user_id = ? and group_id = ?');
+		stmt.run(timeNow, this.id, group.id);
+
+		groups.get(group.id).user.to = timeNow;
+		groups.get(group.id).user.active = false;
+
+		return true;
+	}
+
+	/**
 	 * Adds a user to a group
 	 * @param  {number|Group}  groupId    The group or its id
 	 * @param  {string[]|null} [args]     An array of name arguments for use with the group's display name (if it accepts arguments)

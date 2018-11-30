@@ -43,7 +43,7 @@ async function add_groups (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.groups !== 'object' || req.body.groups.length > 20) {
+	if (typeof req.body.groups !== 'object' || Object.keys(req.body.groups).length > 20) {
 		res.sendAPIError('INVALID_ARGUMENT', ['groups']);
 		return;
 	}
