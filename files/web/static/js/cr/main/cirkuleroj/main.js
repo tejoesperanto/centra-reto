@@ -56,15 +56,16 @@ $(function () {
 		stateCol.textContent = state;
 
 		var tr = document.createElement('tr');
-		tr.classList.add('clickable');
 		tr.appendChild(idCol);
 		tr.appendChild(nameCol);
 		tr.appendChild(stateCol);
 
+		tr.classList.add('clickable');
 		$(tr).click(function () {
 			var id = $(this).children()[0].innerHTML;
 			window.open('/d/cirkuleroj/' + id + '.pdf');
 		});
+		
 		archiveTable.append(tr);
 	}
 });
