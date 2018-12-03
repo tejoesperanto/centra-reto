@@ -30,7 +30,7 @@
                     return;
                 }
 
-                window.location = window.location.search.slice(1);
+                window.location = window.location.search.slice(1) || '/';
             }).fail(function (err) {
                 showError(err);
                 $('#submit-button').removeAttr('disabled');
