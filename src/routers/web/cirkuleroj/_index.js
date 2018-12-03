@@ -1,7 +1,11 @@
 import Group from '../../../api/group';
 
 async function index (req, res, next) {
-	const pageDataObj = {};
+	const pageDataObj = {
+		cirkuleroj: [],
+		mayContribute: false // TODO: Fetch this dynamically
+	};
+
 	if (req.user && req.user.hasPermission('cirkuleroj.manage')) {
 		const allGroups = await Group.getAllGroups();
 		const groups = [];
@@ -16,6 +20,30 @@ async function index (req, res, next) {
 		}
 		pageDataObj.groups = groups;
 	}
+
+	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj');
+	let rows = stmt.all();
+	for (let row of rows) {
+		pageDataObj.cirkuleroj.push({
+			id: row.id,
+			archive: false,
+			name: row.name,
+			deadline: row.deadline,
+			open: row.open,
+			published: row.published
+		});
+	}
+
+	stmt = CR.db.cirkuleroj.prepare('select id, name from cirkuleroj_arkivo');
+	rows = stmt.all();
+	for (let row of rows) {
+		pageDataObj.cirkuleroj.push({
+			id: row.id,
+			archive: true,
+			name: row.name
+		});
+	}
+	pageDataObj.cirkuleroj.sort((a, b) => b.id - a.id); // Descending
 
 	const data = {
 		title: 'Cirkuleroj',

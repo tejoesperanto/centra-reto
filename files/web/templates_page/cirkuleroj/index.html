@@ -17,17 +17,6 @@
 								<select multiple class="form-control" id="manage-cirkuleroj-form-groups"></select>
 							</div>
 						</div>
-						<div class="form-group form-float">
-							<div class="input-group">
-                                <span class="input-group-addon">
-                                    <i class="material-icons">access_time</i>
-                                </span>
-                                <div class="form-line">
-                                    <input type="text" class="form-control" id="manage-cirkuleroj-form-time">
-                                    <label class="form-label" for="manage-cirkuleroj-form-time">Horo de limdatoj (UTC)</label>
-                                </div>
-                            </div>
-						</div>
 					</form>
 				</div>
 			</div>
@@ -38,7 +27,14 @@
 					<small>Cirkulero estas monata raporto kiun kunfaras aktivuloj de TEJO (estraranoj, komitatanoj, volontuloj, oficistoj ktp.) sciigante kion ili faris dum la monato</small>
 				</div>
 				<div class="body">
-					
+					<table id="cirkuleroj-archive" class="table table-striped">
+						<thead>
+							<th>N-ro</th>
+							<th>Nomo</th>
+							<th>Stato</th>
+						</thead>
+						<tbody></tbody>
+					</table>
 				</div>
 			</div>
 		</div>
