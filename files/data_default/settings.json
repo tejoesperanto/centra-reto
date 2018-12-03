@@ -18,6 +18,7 @@
 		"address": "",
 		"name": ""
 	},
+	"emailSubjectPrefix": "",
 	"addressPrefix": "https://reto.tejo.org",
 	"bcryptSaltRounds": 10,
 	"trustLocalProxy": true,

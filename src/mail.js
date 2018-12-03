@@ -24,6 +24,10 @@ export async function sendMail (options) {
 		options.from = CR.conf.emailFrom;
 	}
 
+	if (options.subject) {
+		options.subject = CR.conf.emailSubjectPrefix + options.subject;
+	}
+
 	await CR.smtp.sendMail(options); // might throw an error
 }
 
