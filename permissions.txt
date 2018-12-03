@@ -6,3 +6,5 @@ users
 	create: Permits the user to create new users
 	modify: (SHOULD NEVER BE GIVEN WITHOUT users.create) Permits the user to modify users' enabled state and manage their groups
 	delete: Permits the user to remove uninitiated users
+cirkuleroj
+	manage: Permits the user to manage everything related to cirkuleroj, but not to contribute

@@ -28,7 +28,7 @@ async function administrado_uzantoj (req, res, next) {
 		stylesheets: [
 			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
-			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css',
+			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css'
 		],
 		permissionsCheck: [
 			'users.modify', 'users.create', 'users.delete'

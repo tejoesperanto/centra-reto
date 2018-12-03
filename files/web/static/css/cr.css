@@ -100,3 +100,8 @@ textarea.cr-code {
 .menu-login {
 	padding: 10px 13px;
 }
+
+/** Hotfix for z-index bug in AdminBSB */
+.form-group .form-line .form-label {
+	z-index: 10;
+}
