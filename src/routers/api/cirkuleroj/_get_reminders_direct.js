@@ -1,7 +1,7 @@
 async function get_reminders_direct (req, res, next) {
 	/**
 	 * POST /get_reminders_direct
-	 * Gets all directg reminders
+	 * Gets all direct reminders
 	 *
 	 * Login required
 	 * Initial setup required
@@ -16,7 +16,7 @@ async function get_reminders_direct (req, res, next) {
 	 *   message    (string) The message to send
 	 */
 	
-	if (!await req.requirePermissions('cirkulerj.manage')) { return; }
+	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const stmt = CR.db.cirkuleroj.prepare('select id, delta_time, message from reminders_direct order by delta_time desc');
 	const rows = stmt.all()

@@ -17,7 +17,7 @@ async function get_reminders_list (req, res, next) {
 	 *   message    (string) The message to send
 	 */
 	
-	if (!await req.requirePermissions('cirkulerj.manage')) { return; }
+	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const stmt = CR.db.cirkuleroj.prepare('select id, list_email, delta_time, message from reminders_lists order by delta_time desc');
 	const rows = stmt.all()

@@ -27,8 +27,13 @@ $(function () {
 	});
 
 	// Reminder settings
-	var handleReminderCommon = function (template, data) {
+	var handleReminderCommon = function (options) {
+		var template = options.template;
+		var data = options.data;
+		var updateCb = options.updateCb;
+
 		if (data) {
+			template[0].dataset.id = data.id;
 			var days = Math.floor(data.delta_time / 86400);
 			var hours = Math.round((data.delta_time % 86400) / 3600);
 			template.find('[name="days"]').val(days);
@@ -37,6 +42,47 @@ $(function () {
 			template.find('[name="list_email"]').val(data.list_email);
 			template.find('button[type="submit"]').removeAttr('disabled');
 		}
+
+		template.find('button[type="submit"]').click(function (e) {
+			e.preventDefault();
+
+			var deltaTime = template.find('[name="days"]').val() * 86400;
+			deltaTime += template.find('[name="hours"]').val() * 3600;
+
+			var apiData = {
+				id: parseInt(template[0].dataset.id, 10),
+				delta_time: deltaTime,
+				message: template.find('[name="message"]').val()
+			};
+
+			var listEmail = template.find('[name="list_email"]').val();
+			if (listEmail) { apiData.list_email = listEmail; }
+
+			swal({
+				title: 'Ĝisdatigo de cirkulera memorigo',
+				text: 'Ĉu vi certas, ke vi volas konservi la ŝanĝojn?',
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Konservi',
+						closeModal: false
+					}
+				]
+
+			}).then(function (modalE) {
+				if (!modalE) { return; }
+
+				template.find('button[type="submit"]').attr('disabled', true);
+
+				updateCb(apiData)
+					.then(function (res) {
+						swal.stopLoading();
+						template.find('button[type="submit"]').removeAttr('disabled');
+						if (!res.success) { return; }
+						swal.close();
+					});
+			});
+		});
 
 		$.AdminBSB.input.activate(template);
 		var autosizeEls = template.find('.autosize');
@@ -49,7 +95,13 @@ $(function () {
 	var insertDirectReminder = function (data) {
 		var template = cloneTemplate('#template-reminder-direct');
 		
-		handleReminderCommon(template, data);
+		handleReminderCommon({
+			template: template,
+			data: data,
+			updateCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_direct', apiData);
+			}
+		});
 
 		$('#reminders-direct').append(template);
 		return template;
@@ -59,7 +111,13 @@ $(function () {
 	var insertListReminder = function (data) {
 		var template = cloneTemplate('#template-reminder-lists');
 
-		handleReminderCommon(template, data);
+		handleReminderCommon({
+			template: template,
+			data: data,
+			updateCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_list', apiData);
+			}
+		});
 
 		$('#reminders-lists').append(template);
 		return template;
