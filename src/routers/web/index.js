@@ -69,7 +69,7 @@ export const middleware = {
 		if (req.user) {
 			next();
 		} else {
-			res.redirect(303, '/');
+			res.redirect(303, '/ensaluti?' + req.originalUrl);
 		}
 	}
 };
