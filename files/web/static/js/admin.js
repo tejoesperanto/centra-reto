@@ -501,6 +501,7 @@ function ajaxOptions (url, data, method) {
 
 // This wrapper function is necessary as promise-polyfill prepends an argument to the function
 function performAPIRequest (method, url, data, handleErrors) {
+    if (data === undefined) { data = {}; }
     if (handleErrors === undefined) { handleErrors = true; }
 
     return _performAPIRequest(method, url, data, handleErrors);

@@ -1,5 +1,6 @@
 import express from 'express';
 
+import routerCirkuleroj from './cirkuleroj';
 import routerUser from './user';
 
 /**
@@ -16,6 +17,7 @@ export function init () {
 	router.use(middlewareRequirePermissions);
 
 	// Routing
+	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/user', routerUser());
 
 	// Error handling
