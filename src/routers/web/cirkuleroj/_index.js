@@ -2,7 +2,7 @@ import Group from '../../../api/group';
 
 async function index (req, res, next) {
 	const pageDataObj = {
-		cirkuleroj: [],
+		cirkuleroj: {},
 		mayContribute: false // TODO: Fetch this dynamically
 	};
 
@@ -24,26 +24,25 @@ async function index (req, res, next) {
 	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj');
 	let rows = stmt.all();
 	for (let row of rows) {
-		pageDataObj.cirkuleroj.push({
+		pageDataObj.cirkuleroj[row.id] = {
 			id: row.id,
 			archive: false,
 			name: row.name,
 			deadline: row.deadline,
 			open: row.open,
 			published: row.published
-		});
+		};
 	}
 
 	stmt = CR.db.cirkuleroj.prepare('select id, name from cirkuleroj_arkivo');
 	rows = stmt.all();
 	for (let row of rows) {
-		pageDataObj.cirkuleroj.push({
+		pageDataObj.cirkuleroj[row.id] = {
 			id: row.id,
 			archive: true,
 			name: row.name
-		});
+		};
 	}
-	pageDataObj.cirkuleroj.sort((a, b) => b.id - a.id); // Descending
 
 	const data = {
 		title: 'Cirkuleroj',
@@ -52,7 +51,8 @@ async function index (req, res, next) {
 			'/plugins/typeahead/typeahead.js',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js',
 			'/plugins/momentjs/moment.min.js',
-			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js'
+			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
+			'/plugins/autosize/autosize.min.js'
 		],
 		stylesheets: [
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
