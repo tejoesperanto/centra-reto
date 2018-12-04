@@ -28,22 +28,23 @@ $(function () {
 
 	// Reminder settings
 	var handleReminderCommon = function (options) {
-		var template = options.template;
+		var template = $(options.template);
+		var parent = $(options.parent);
 		var data = options.data;
 		var updateCb = options.updateCb;
 
 		if (data) {
 			template[0].dataset.id = data.id;
+			template[0].dataset.deltaTime = data.delta_time;
 			var days = Math.floor(data.delta_time / 86400);
 			var hours = Math.round((data.delta_time % 86400) / 3600);
 			template.find('[name="days"]').val(days);
 			template.find('[name="hours"]').val(hours);
 			template.find('[name="message"]').val(data.message);
 			template.find('[name="list_email"]').val(data.list_email);
-			template.find('button[type="submit"]').removeAttr('disabled');
 		}
 
-		template.find('button[type="submit"]').click(function (e) {
+		template.find('form').submit(function (e) {
 			e.preventDefault();
 
 			var deltaTime = template.find('[name="days"]').val() * 86400;
@@ -79,7 +80,13 @@ $(function () {
 						swal.stopLoading();
 						template.find('button[type="submit"]').removeAttr('disabled');
 						if (!res.success) { return; }
+						template[0].dataset.deltaTime = deltaTime;
 						swal.close();
+
+						// Sort the reminders
+						parent.children().sortElements(function (a, b) {
+							return parseInt(b.dataset.deltaTime, 10) - parseInt(a.dataset.deltaTime, 10);
+						});
 					});
 			});
 		});
@@ -94,32 +101,36 @@ $(function () {
 	// Direct reminders
 	var insertDirectReminder = function (data) {
 		var template = cloneTemplate('#template-reminder-direct');
+		var parent = $('#reminders-direct');
 		
 		handleReminderCommon({
 			template: template,
+			parent: parent,
 			data: data,
 			updateCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_direct', apiData);
 			}
 		});
 
-		$('#reminders-direct').append(template);
+		parent.append(template);
 		return template;
 	};
 
 	// List reminders
 	var insertListReminder = function (data) {
 		var template = cloneTemplate('#template-reminder-lists');
+		var parent = $('#reminders-lists');
 
 		handleReminderCommon({
 			template: template,
+			parent: parent,
 			data: data,
 			updateCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_list', apiData);
 			}
 		});
 
-		$('#reminders-lists').append(template);
+		parent.append(template);
 		return template;
 	};
 
