@@ -2,7 +2,7 @@ $(function () {
 	var archiveTable = $('#cirkuleroj-archive>tbody');
 	var cirkulerojIds = Object.keys(pageData.cirkuleroj); // Sort descending
 	cirkulerojIds.sort(function (a, b) {
-		return b.id - a.id;
+		return b - a;
 	});
 	for (var i in cirkulerojIds) {
 		var id = cirkulerojIds[i];
