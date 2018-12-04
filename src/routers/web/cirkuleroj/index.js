@@ -3,7 +3,8 @@ import express from 'express';
 import { middleware } from '..';
 import { wrap } from '../..';
 
-import pageIndex from './_index.js'
+import pageAgordoj from './_agordoj.js'
+import pageArkivo from './_arkivo.js'
 
 /**
  * Sets up the router
@@ -13,8 +14,12 @@ export default function () {
 	const router = express.Router();
 	router.use(middleware.requireInitialSetup);
 
-	router.get('/',
-		wrap(pageIndex));
+	router.get('/agordoj',
+		middleware.requireLogin,
+		wrap(pageAgordoj));
+
+	router.get('/arkivo',
+		wrap(pageArkivo));
 
 	return router;
 }

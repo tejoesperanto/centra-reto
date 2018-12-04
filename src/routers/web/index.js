@@ -268,24 +268,34 @@ async function amendView (req, view) {
 			icon: 'home',
 			href: '/',
 			active: req.originalUrl === '/'
-		},
-		{
-			name: 'Cirkuleroj',
-			icon: 'assignment',
-			href: '/cirkuleroj',
-			active: /^\/cirkuleroj/.test(req.originalUrl)
 		}
 	];
 
+	const menuCirkuleroj = [];
+	if (req.user && await req.user.hasPermission('cirkuleroj.manage')) {
+		menuCirkuleroj.push({
+			name: 'Agordoj',
+			href: '/cirkuleroj/agordoj'
+		});
+	}
+	menuCirkuleroj.push({
+		name: 'Arkivo',
+		href: '/cirkuleroj/arkivo'
+	});
+	view.menu.push({
+		name: 'Cirkuleroj',
+		icon: 'assignment',
+		active: /^\/cirkuleroj/.test(req.originalUrl),
+		children: menuCirkuleroj
+	});
+
 	const menuAdmin = [];
 
-	if (req.user) {
-		if (await req.user.hasPermission('users.view')) {
-			menuAdmin.push({
-				name: 'Uzantoj',
-				href: '/administrado/uzantoj'
-			});
-		}
+	if (req.user && await req.user.hasPermission('users.view')) {
+		menuAdmin.push({
+			name: 'Uzantoj',
+			href: '/administrado/uzantoj'
+		});
 	}
 
 	if (menuAdmin.length > 0) {
