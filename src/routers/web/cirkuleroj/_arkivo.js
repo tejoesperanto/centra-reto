@@ -4,7 +4,7 @@ async function arkivo (req, res, next) {
 		mayContribute: false // TODO: Fetch this dynamically
 	};
 
-	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj');
+	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj where open = 1 or published = 1');
 	let rows = stmt.all();
 	for (let row of rows) {
 		pageDataObj.cirkuleroj[row.id] = {

@@ -1,3 +1,5 @@
+import { removeUnsafeChars } from '../../../util';
+
 async function insert_reminder_list (req, res, next) {
 	/**
 	 * POST /insert_reminder_list
@@ -46,7 +48,7 @@ async function insert_reminder_list (req, res, next) {
 	}
 
 	const stmt = CR.db.cirkuleroj.prepare('insert into reminders_lists (list_email, delta_time, message) values (?, ?, ?)');
-	const info = stmt.run(req.body.list_email, req.body.delta_time, req.body.message);
+	const info = stmt.run(req.body.list_email, req.body.delta_time,  removeUnsafeChars(req.body.message));
 
 	res.sendAPIResponse({
 		id: info.lastInsertRowid

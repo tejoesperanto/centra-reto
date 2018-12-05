@@ -1,3 +1,5 @@
+import { removeUnsafeChars } from '../../../util';
+
 async function update_reminder_list (req, res, next) {
 	/**
 	 * POST /update_reminder_list
@@ -51,7 +53,7 @@ async function update_reminder_list (req, res, next) {
 	}
 
 	const stmt = CR.db.cirkuleroj.prepare('update reminders_lists set list_email = ?, delta_time = ?, message = ? where id = ?');
-	const info = stmt.run(req.body.list_email, req.body.delta_time, req.body.message, req.body.id);
+	const info = stmt.run(req.body.list_email, req.body.delta_time, removeUnsafeChars(req.body.message), req.body.id);
 
 	if (info.changes === 0) {
 		res.sendAPIError('CIRKULERO_NOT_FOUND');

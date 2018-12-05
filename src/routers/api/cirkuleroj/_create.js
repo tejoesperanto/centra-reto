@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import { removeUnsafeCharsOneLine } from '../../../util';
+
 async function create (req, res, next) {
 	/**
 	 * POST /create
@@ -57,10 +59,13 @@ async function create (req, res, next) {
 		return;
 	}
 
-	const note = req.body.note || null;
-	if (typeof 'note' !== 'string') {
+	let note = null;
+	if (req.body.note && typeof req.body.note !== 'string') {
 		res.sendAPIError('INVALID_ARGUMENT', ['note']);
 		return;
+	}
+	if (req.body.note) {
+		note = removeUnsafeCharsOneLine(req.body.note);
 	}
 
 	if (typeof req.body.reminders !== 'boolean') {
@@ -81,7 +86,7 @@ async function create (req, res, next) {
 	stmt = CR.db.cirkuleroj.prepare('insert into cirkuleroj (id, name, deadline, `open`, note, reminders) values (@id, @name, @deadline, @open, @note, @reminders)');
 	stmt.run({
 		id: req.body.id,
-		name: req.body.name,
+		name: removeUnsafeCharsOneLine(req.body.name.toLowerCase()),
 		deadline: req.body.deadline,
 		open: +req.body.open,
 		note: note,
