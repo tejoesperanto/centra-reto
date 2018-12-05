@@ -31,6 +31,7 @@ $(function () {
 		}
 	});
 
+	var groupFields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
 	// Obtain existing groups
 	performAPIRequest('post', '/api/cirkuleroj/get_groups')
 		.then(function (res) {
@@ -39,9 +40,8 @@ $(function () {
 			$('#manage-cirkuleroj-loader').remove();
 
 			// Add the groups
-			var fields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
-			for (var x in fields) {
-				var field = fields[x];
+			for (var x in groupFields) {
+				var field = groupFields[x];
 				var groupIds = res[field];
 				var el = $('#manage-cirkuleroj-form-groups-' + field);
 
@@ -54,6 +54,38 @@ $(function () {
 
 			$('#manage-cirkuleroj-form').show();
 		});
+
+	// Form submission handler
+	$('#manage-cirkuleroj-form').submit(function (e) {
+		e.preventDefault();
+
+		var data = {};
+
+		for (let x in groupFields) {
+			var field = groupFields[x];
+			var el = $('#manage-cirkuleroj-form-groups-' + field);
+			var items = el.tagsinput('items');
+			var groups = [];
+			for (var y in items) {
+				var group = items[y];
+				groups.push(group.id);
+			}
+			data[field] = groups;
+		}
+
+		var button = $('#manage-cirkuleroj-form-button');
+		button.attr('disabled', true);
+		performAPIRequest('post', '/api/cirkuleroj/update_groups', data)
+			.then(function (res) {
+				button.removeAttr('disabled');
+				if (!res.success) { return; }
+				var confirmation = $('#manage-cirkuleroj-form-button-confirmation');
+				confirmation.show();
+				window.setTimeout(function () {
+					confirmation.fadeOut();
+				}, 400);
+			});
+	});
 
 	// REMINDER SETTINGS
 	var handleReminderCommon = function (options) {

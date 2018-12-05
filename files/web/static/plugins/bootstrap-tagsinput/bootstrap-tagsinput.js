@@ -1,6 +1,6 @@
 /*
  * bootstrap-tagsinput v0.8.0
- * 
+ * With patches (marked patch) by Mia Nordentoft and github.com/Zehelein
  */
 
 (function ($) {
@@ -135,8 +135,13 @@
       if (beforeItemAddEvent.cancel)
         return;
 
-      // register item in internal array and map
-      self.itemsArray.push(item);
+      // register item in internal array and map (patch: https://github.com/bootstrap-tagsinput/bootstrap-tagsinput/issues/261)
+        var index = self.findInputWrapper().index();
+        if (index >= 0) {
+            self.itemsArray.splice(index, 0, item);
+        } else {
+            self.itemsArray.push(item);
+        }
 
       // add a tag element
 

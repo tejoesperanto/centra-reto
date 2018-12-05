@@ -6,6 +6,7 @@ import { wrap } from '../..';
 import pageGetGroups from './_get_groups';
 import pageGetRemindersDirect from './_get_reminders_direct';
 import pageGetRemindersLists from './_get_reminders_lists';
+import pageUpdateGroups from './_update_groups';
 import pageUpdateReminderDirect from './_update_reminder_direct';
 import pageUpdateReminderList from './_update_reminder_list';
 
@@ -32,6 +33,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(pageGetRemindersLists));
+
+	router.post('/update_groups',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(pageUpdateGroups));
 
 	router.post('/update_reminder_direct',
 		middleware.requireLogin,
