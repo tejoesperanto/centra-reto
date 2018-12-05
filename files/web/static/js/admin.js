@@ -606,12 +606,15 @@ function _performAPIRequest (method, url, data, handleErrors) {
 }
 
 function setUpDataTable (options) {
-    var selector     = options.el;
-    var method       = options.method;
-    var url          = options.url;
-    var select       = options.select;
-    var defaultOrder = options.defaultOrder || [];
-    var replaceOrder = options.replaceOrder || {};
+    var selector        = options.el;
+    var method          = options.method;
+    var url             = options.url;
+    var select          = options.select;
+    var defaultOrder    = options.defaultOrder || [];
+    var replaceOrder    = options.replaceOrder || {};
+    var globalWhere     = options.globalWhere || [];
+    var overrideOptions = options.options || {};
+    var dataFormatter   = options.dataFormatter || null;
 
     var el = $(selector);
     var headerOrg = el.find('thead>*')
@@ -627,7 +630,7 @@ function setUpDataTable (options) {
         columns.push(this.dataset.name);
     });
 
-    var table = el.DataTable({
+    var dataTableOptions = {
         language: dataTablesEsp,
         order: defaultOrder,
         responsive: true,
@@ -675,7 +678,7 @@ function setUpDataTable (options) {
                 limit: jData.length,
                 order: order,
                 search: globalSearch,
-                where: localSearch
+                where: globalWhere.concat(localSearch)
             };
             performAPIRequest(method, url, data).then(function (apiRes) {
                 latestData = apiRes;
@@ -687,6 +690,8 @@ function setUpDataTable (options) {
                     for (var y in jData.columns) {
                         var col = jData.columns[y];
                         var val = row[col.name];
+
+                        if (dataFormatter) { val = dataFormatter(val, col); }
 
                         if (typeof val === 'boolean') {
                             val = val ? 'Jes' : 'Ne';
@@ -708,7 +713,11 @@ function setUpDataTable (options) {
                 cb(res);
             });
         }
-    });
+    };
+    for (var key in overrideOptions) {
+        dataTableOptions[key] = overrideOptions[key];
+    }
+    var table = el.DataTable(dataTableOptions);
 
     return {
         table: table,

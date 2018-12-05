@@ -3,8 +3,9 @@ import express from 'express';
 import { middleware } from '..';
 import { wrap } from '../..';
 
-import pageAgordoj from './_agordoj.js'
-import pageArkivo from './_arkivo.js'
+import pageAgordoj from './_agordoj.js';
+import pageArkivo from './_arkivo.js';
+import pageVenontaj from './_venontaj.js';
 
 /**
  * Sets up the router
@@ -20,6 +21,10 @@ export default function () {
 
 	router.get('/arkivo',
 		wrap(pageArkivo));
+
+	router.get('/venontaj',
+		middleware.requireLogin,
+		wrap(pageVenontaj));
 
 	return router;
 }

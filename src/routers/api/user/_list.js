@@ -13,7 +13,7 @@ async function user_list (req, res, next) {
 	 * users.view
 	 *
 	 * Parameters:
-	 * See routers/api#generateListQueryStatement
+	 * See routers/api#performListQueryStatement
 	 *
 	 * Permitted cols:
 	 * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email, enabled, activation_key_time
@@ -36,7 +36,7 @@ async function user_list (req, res, next) {
 	 *   activation_key_time  (number)      The time the user's activation key expires
 	 * 
 	 * Throws:
-	 * See routers/api#generateListQueryStatement
+	 * See routers/api#performListQueryStatement
 	 */
 	
 	if (!await req.requirePermissions('users.view')) { return; }

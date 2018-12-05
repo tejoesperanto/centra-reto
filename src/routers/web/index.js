@@ -274,6 +274,9 @@ async function amendView (req, view) {
 	const menuCirkuleroj = [];
 	if (req.user && await req.user.hasPermission('cirkuleroj.manage')) {
 		menuCirkuleroj.push({
+			name: 'Venontaj cirkuleroj',
+			href: '/cirkuleroj/venontaj'
+		}, {
 			name: 'Agordoj',
 			href: '/cirkuleroj/agordoj'
 		});
