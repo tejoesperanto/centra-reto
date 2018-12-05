@@ -1,6 +1,11 @@
 $(function () {
-	// General settings
+	// GENERAL SETTINGS
 	// Group data
+	var groupsIndices = {};
+	for (var i = 0; i < pageData.groups.length; i++) {
+		var group = pageData.groups[i];
+		groupsIndices[group.id] = i;
+	}
 	var groupsSearch = new Bloodhound({
 		local: pageData.groups,
 		identify: function (obj) { return obj.id; },
@@ -26,7 +31,31 @@ $(function () {
 		}
 	});
 
-	// Reminder settings
+	// Obtain existing groups
+	performAPIRequest('post', '/api/cirkuleroj/get_groups')
+		.then(function (res) {
+			if (!res.success) { return; }
+
+			$('#manage-cirkuleroj-loader').remove();
+
+			// Add the groups
+			var fields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
+			for (var x in fields) {
+				var field = fields[x];
+				var groupIds = res[field];
+				var el = $('#manage-cirkuleroj-form-groups-' + field);
+
+				for (var y in groupIds) {
+					var id = groupIds[y];
+					var group = pageData.groups[groupsIndices[id]];
+					el.tagsinput('add', { id: id, name: group.name });
+				}
+			}
+
+			$('#manage-cirkuleroj-form').show();
+		});
+
+	// REMINDER SETTINGS
 	var handleReminderCommon = function (options) {
 		var template = $(options.template);
 		var parent = $(options.parent);

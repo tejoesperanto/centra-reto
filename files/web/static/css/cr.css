@@ -80,8 +80,13 @@ textarea.cr-code {
 	display: flex;
 }
 
+.tagsinput-group>label {
+	min-width: fit-content;
+}
+
 .tagsinput-group>.bootstrap-tagsinput {
 	flex-grow: 1;
+	margin-left: 5px;
 }
 
 .tagsinput-noform {

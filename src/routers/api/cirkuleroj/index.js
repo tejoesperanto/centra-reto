@@ -3,6 +3,7 @@ import express from 'express';
 import * as CRApi from '..';
 import { wrap } from '../..';
 
+import pageGetGroups from './_get_groups';
 import pageGetRemindersDirect from './_get_reminders_direct';
 import pageGetRemindersLists from './_get_reminders_lists';
 import pageUpdateReminderDirect from './_update_reminder_direct';
@@ -16,6 +17,11 @@ export default function () {
 	const router = express.Router();
 
 	const middleware = CRApi.middleware;
+
+	router.post('/get_groups',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(pageGetGroups));
 
 	router.post('/get_reminders_direct',
 		middleware.requireLogin,
