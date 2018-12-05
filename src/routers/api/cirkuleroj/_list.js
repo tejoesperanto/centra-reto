@@ -15,7 +15,7 @@ async function list (req, res, next) {
 	 * See routers/api#performListQueryStatement
 	 *
 	 * Permitted cols:
-	 * id, name, deadline, open, published, note
+	 * id, name, deadline, open, reminders, published, note
 	 * 
 	 * Returns:
 	 * rows_total    (number)   The amount of rows in the table in total
@@ -25,6 +25,7 @@ async function list (req, res, next) {
 	 *   name      (string)      The name of the cirkulero
 	 *   deadline  (number)      The unix time deadline of the cirkulero
 	 *   open      (boolean)     Whether the cirkulero is open for contributions
+	 *   reminders (boolean)     Whether reminders are enabled for this cirkulero
 	 *   published (boolean)     Whether the cirkulero has been published
 	 *   note      (string|null) The reminder note for the cirkulero
 	 * 
@@ -44,6 +45,7 @@ async function list (req, res, next) {
 			'name',
 			'deadline',
 			'open',
+			'reminders',
 			'published',
 			'note'
 		]
@@ -56,7 +58,7 @@ async function list (req, res, next) {
 		for (let col of dbData.select) {
 			const val = row[col];
 
-			if (col === 'open' || col === 'published') {
+			if (col === 'open' || col === 'published' || col === 'reminders') {
 				rowOutput[col] = !!val;
 
 			} else if (dbData.select.indexOf(col) > -1) {

@@ -76,7 +76,7 @@ $(function () {
 		el: '#cirkuleroj-table',
 		method: 'post'	,
 		url: '/api/cirkuleroj/list',
-		select: [ 'id', 'name', 'deadline', 'open' ],
+		select: [ 'id', 'name', 'deadline', 'open', 'reminders' ],
 		defaultOrder: [ 0, 'asc' ],
 		options: {
 			searching: false
