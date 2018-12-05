@@ -10,7 +10,7 @@ async function update_reminder_list (req, res, next) {
 	 * cirkuleroj.manage
 	 *
 	 * Parameters:
-	 *   id         (number) The id of the cirkulero
+	 *   id         (number) The id of the cirkulero reminder
 	 *   list_email (string) The new email address of the list
 	 *   delta_time (number) The new delta time
 	 *   message    (string) The new message

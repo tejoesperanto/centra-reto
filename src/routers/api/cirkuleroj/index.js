@@ -3,6 +3,8 @@ import express from 'express';
 import * as CRApi from '..';
 import { wrap } from '../..';
 
+import apiDeleteReminderDirect from './_delete_reminder_direct';
+import apiDeleteReminderList from './_delete_reminder_list';
 import apiGetGroups from './_get_groups';
 import apiGetRemindersDirect from './_get_reminders_direct';
 import apiGetRemindersLists from './_get_reminders_lists';
@@ -20,6 +22,16 @@ export default function () {
 	const router = express.Router();
 
 	const middleware = CRApi.middleware;
+
+	router.post('/delete_reminder_direct',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiDeleteReminderDirect));
+
+	router.post('/delete_reminder_list',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiDeleteReminderList));
 
 	router.post('/get_groups',
 		middleware.requireLogin,

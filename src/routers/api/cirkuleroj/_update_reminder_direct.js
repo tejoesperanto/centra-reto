@@ -10,7 +10,7 @@ async function update_reminder_direct (req, res, next) {
 	 * cirkuleroj.manage
 	 *
 	 * Parameters:
-	 *   id         (number) The id of the cirkulero
+	 *   id         (number) The id of the cirkulero reminder
 	 *   delta_time (number) The new delta time
 	 *   message    (string) The new message
 	 *

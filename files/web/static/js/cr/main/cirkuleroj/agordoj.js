@@ -95,6 +95,7 @@ $(function () {
 		var data = options.data;
 		var updateCb = options.updateCb;
 		var insertCb = options.insertCb;
+		var deleteCb = options.deleteCb;
 
 		if (data) {
 			template[0].dataset.id = data.id;
@@ -107,6 +108,7 @@ $(function () {
 			template.find('[name="list_email"]').val(data.list_email);
 		}
 
+		// On save
 		template.find('form').submit(function (e) {
 			e.preventDefault();
 
@@ -161,6 +163,46 @@ $(function () {
 			});
 		});
 
+		var deleteButton = template.find('.reminder-delete');
+		deleteButton.click(function () {
+			swal({
+				title: 'Forigo de cirkulera memorigo',
+				text: 'Ĉu vi certas, ke vi volas forigi tiun ĉi memorigon?',
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Konservi',
+						closeModal: false
+					}
+				]
+
+			}).then(function (modalE) {
+				if (!modalE) { return; }
+
+				if (!('id' in template[0].dataset)) {
+					handleDelete();
+					swal.stopLoading();
+					swal.close();
+					return;
+				}
+
+				deleteButton.attr('disabled', true);
+
+				deleteCb({ id: parseInt(template[0].dataset.id, 10) })
+					.then(function (res) {
+						swal.stopLoading();
+						deleteButton.removeAttr('disabled');
+						if (!res.success) { return; }
+						swal.close();
+						handleDelete();
+					});
+			});
+		});
+
+		var handleDelete = function () {
+			template.remove();
+		};
+
 		$.AdminBSB.input.activate(template);
 		var autosizeEls = template.find('.autosize');
 		autosize(autosizeEls);
@@ -182,6 +224,9 @@ $(function () {
 			},
 			insertCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/insert_reminder_direct', apiData);
+			},
+			deleteCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/delete_reminder_direct', apiData);
 			}
 		});
 
@@ -207,6 +252,9 @@ $(function () {
 			},
 			insertCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/insert_reminder_list', apiData);
+			},
+			deleteCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/delete_reminder_list', apiData);
 			}
 		});
 
