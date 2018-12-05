@@ -5,6 +5,7 @@ import { wrap } from '../..';
 
 import pageAgordoj from './_agordoj.js';
 import pageArkivo from './_arkivo.js';
+import pageNumero from './_numero.js';
 import pageVenontaj from './_venontaj.js';
 
 /**
@@ -25,6 +26,10 @@ export default function () {
 	router.get('/venontaj',
 		middleware.requireLogin,
 		wrap(pageVenontaj));
+
+	// This must be added at the very end
+	router.get('/:id',
+		wrap(pageNumero));
 
 	return router;
 }

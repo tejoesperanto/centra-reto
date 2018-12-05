@@ -39,11 +39,7 @@ $(function () {
 		$(tr).click(function () {
 			var id = $(this).children()[0].innerHTML;
 			var row = pageData.cirkuleroj[id];
-			if (row.archive) {
-				window.open('/d/cirkuleroj/' + id + '.pdf');
-			} else {
-				console.log('Not yet implemented'); // TODO
-			}
+			window.open('/cirkuleroj/' + id);
 		});
 
 		archiveTable.append(tr);
