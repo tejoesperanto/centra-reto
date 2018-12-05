@@ -88,11 +88,13 @@ $(function () {
 	});
 
 	// REMINDER SETTINGS
+	// Existing reminder
 	var handleReminderCommon = function (options) {
 		var template = $(options.template);
 		var parent = $(options.parent);
 		var data = options.data;
 		var updateCb = options.updateCb;
+		var insertCb = options.insertCb;
 
 		if (data) {
 			template[0].dataset.id = data.id;
@@ -112,10 +114,13 @@ $(function () {
 			deltaTime += template.find('[name="hours"]').val() * 3600;
 
 			var apiData = {
-				id: parseInt(template[0].dataset.id, 10),
 				delta_time: deltaTime,
 				message: template.find('[name="message"]').val()
 			};
+
+			if ('id' in template[0].dataset) {
+				apiData.id = parseInt(template[0].dataset.id, 10);
+			}
 
 			var listEmail = template.find('[name="list_email"]').val();
 			if (listEmail) { apiData.list_email = listEmail; }
@@ -136,12 +141,16 @@ $(function () {
 
 				template.find('button[type="submit"]').attr('disabled', true);
 
-				updateCb(apiData)
+				var cb = insertCb;
+				if ('id' in apiData) { cb = updateCb; }
+
+				cb(apiData)
 					.then(function (res) {
 						swal.stopLoading();
 						template.find('button[type="submit"]').removeAttr('disabled');
 						if (!res.success) { return; }
 						template[0].dataset.deltaTime = deltaTime;
+						if ('id' in res) { template[0].dataset.id = res.id; }
 						swal.close();
 
 						// Sort the reminders
@@ -160,7 +169,7 @@ $(function () {
 		}, 0); // Run when the thread is idle
 	};
 	// Direct reminders
-	var insertDirectReminder = function (data) {
+	var insertDirectReminder = function (data, prepend) {
 		var template = cloneTemplate('#template-reminder-direct');
 		var parent = $('#reminders-direct');
 		
@@ -170,15 +179,22 @@ $(function () {
 			data: data,
 			updateCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_direct', apiData);
+			},
+			insertCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/insert_reminder_direct', apiData);
 			}
 		});
 
-		parent.append(template);
+		if (prepend) {
+			parent.prepend(template);
+		} else {
+			parent.append(template);
+		}
 		return template;
 	};
 
 	// List reminders
-	var insertListReminder = function (data) {
+	var insertListReminder = function (data, prepend) {
 		var template = cloneTemplate('#template-reminder-lists');
 		var parent = $('#reminders-lists');
 
@@ -188,10 +204,17 @@ $(function () {
 			data: data,
 			updateCb: function (apiData) {
 				return performAPIRequest('post', '/api/cirkuleroj/update_reminder_list', apiData);
+			},
+			insertCb: function (apiData) {
+				return performAPIRequest('post', '/api/cirkuleroj/insert_reminder_list', apiData);
 			}
 		});
 
-		parent.append(template);
+		if (prepend) {
+			parent.prepend(template);
+		} else {
+			parent.append(template);
+		}
 		return template;
 	};
 
@@ -217,5 +240,15 @@ $(function () {
 			var reminder = remindersLists[i];
 			insertListReminder(reminder);
 		}
-	})
+	});
+
+	// New reminder
+	// Direct reminder
+	$('#create-reminder-direct').click(function () {
+		insertDirectReminder(null, true);
+	});
+	// List reminder
+	$('#create-reminder-list').click(function () {
+		insertListReminder(null, true);
+	});
 });

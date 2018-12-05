@@ -3,12 +3,14 @@ import express from 'express';
 import * as CRApi from '..';
 import { wrap } from '../..';
 
-import pageGetGroups from './_get_groups';
-import pageGetRemindersDirect from './_get_reminders_direct';
-import pageGetRemindersLists from './_get_reminders_lists';
-import pageUpdateGroups from './_update_groups';
-import pageUpdateReminderDirect from './_update_reminder_direct';
-import pageUpdateReminderList from './_update_reminder_list';
+import apiGetGroups from './_get_groups';
+import apiGetRemindersDirect from './_get_reminders_direct';
+import apiGetRemindersLists from './_get_reminders_lists';
+import apiInsertReminderDirect from './_insert_reminder_direct';
+import apiInsertReminderList from './_insert_reminder_list';
+import apiUpdateGroups from './_update_groups';
+import apiUpdateReminderDirect from './_update_reminder_direct';
+import apiUpdateReminderList from './_update_reminder_list';
 
 /**
  * Sets up the router
@@ -22,32 +24,42 @@ export default function () {
 	router.post('/get_groups',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageGetGroups));
+		wrap(apiGetGroups));
 
 	router.post('/get_reminders_direct',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageGetRemindersDirect));
+		wrap(apiGetRemindersDirect));
 
 	router.post('/get_reminders_lists',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageGetRemindersLists));
+		wrap(apiGetRemindersLists));
+
+	router.post('/insert_reminder_direct',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiInsertReminderDirect));
+
+	router.post('/insert_reminder_list',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiInsertReminderList));
 
 	router.post('/update_groups',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageUpdateGroups));
+		wrap(apiUpdateGroups));
 
 	router.post('/update_reminder_direct',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageUpdateReminderDirect));
+		wrap(apiUpdateReminderDirect));
 
 	router.post('/update_reminder_list',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(pageUpdateReminderList));
+		wrap(apiUpdateReminderList));
 
 	return router;
 }
