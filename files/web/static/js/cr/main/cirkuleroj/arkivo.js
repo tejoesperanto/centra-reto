@@ -19,15 +19,11 @@ $(function () {
 		} else if (row.published) {
 			state = 'Preta';
 		} else if (pageData.mayContribute) {
-			if (row.open) {
-				var timeNow = moment().unix();
-				if (row.deadline > timeNow) {
-					state = 'Malfermita';
-				} else {
-					state = 'Malfermita, post limdato';
-				}
+			var timeNow = moment().unix();
+			if (row.deadline > timeNow) {
+				state = 'Malfermita';
 			} else {
-				state = 'Fermita, ankoraŭ ne preta';
+				state = 'Malfermita, post limdato';
 			}
 		} else {
 			state = 'Ankoraŭ ne preta';
