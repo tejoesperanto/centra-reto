@@ -106,7 +106,15 @@ textarea.cr-code {
 	padding: 10px 13px;
 }
 
-/** Hotfix for z-index bug in AdminBSB */
+/* Hotfix for z-index bug in AdminBSB */
 .form-group .form-line .form-label {
 	z-index: 10;
+}
+
+/* Hotfix for offset bug with floating forms and jquery datetimepicker */
+.form-group.form-float .bootstrap-datetimepicker-widget.bottom {
+	top: 72px !important;
+}
+.form-group.form-float .bootstrap-datetimepicker-widget.top {
+	bottom: 55px !important;
 }

@@ -41,6 +41,7 @@ import * as CRCmd from './cmd';
 
 	// Init
 	moment.tz.setDefault('UTC');
+	moment.locale('eo');
 
 	// Set up logging
 	const logStream = new stream.Writable({
