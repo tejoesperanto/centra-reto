@@ -128,7 +128,7 @@ $(function () {
 					swal({
 						icon: 'success',
 						title: 'Sendis kontribuon',
-						text: 'Via kontribuo al cirkulero n-ro ' + pageData.cirkulero.id + ' estis sukcese sendita.\nVi povas sendi plian kontribuon se vi havas plurajn rolojn.'
+						text: 'Via kontribuo al cirkulero n-ro ' + pageData.cirkulero.id + ' estis sukcese sendita.\nVi povas sendi pliajn kontribuojn se vi havas plurajn rolojn.'
 					});
 				});
 		});
