@@ -21,7 +21,6 @@ async function arkivo (req, res, next) {
 			'/js/cr/main/cirkuleroj/agordoj.js',
 			'/plugins/typeahead/typeahead.js',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js',
-			'/plugins/momentjs/moment.min.js',
 			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
 			'/plugins/autosize/autosize.min.js'
 		],

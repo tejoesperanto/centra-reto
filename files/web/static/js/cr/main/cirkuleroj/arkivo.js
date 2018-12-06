@@ -14,6 +14,7 @@ $(function () {
 		nameCol.textContent = 'Cirkulero n-ro ' + id + ' de ' + row.name;
 		var stateCol = document.createElement('td');
 		var state;
+		var clickable = true;
 		if (row.archive) {
 			state = 'Preta (malnova arkivo)';
 		} else if (row.published) {
@@ -27,6 +28,7 @@ $(function () {
 			}
 		} else {
 			state = 'Ankoraŭ ne preta';
+			clickable = false;
 		}
 		stateCol.textContent = state;
 
@@ -35,12 +37,15 @@ $(function () {
 		tr.appendChild(nameCol);
 		tr.appendChild(stateCol);
 
-		tr.classList.add('clickable'); // TODO: Not all should be clickable
-		$(tr).click(function () {
-			var id = $(this).children()[0].innerHTML;
-			var row = pageData.cirkuleroj[id];
-			window.open('/cirkuleroj/' + id);
-		});
+		if (clickable) {
+			tr.classList.add('clickable');
+			$(tr).click(function () {
+				var id = $(this).children()[0].innerHTML;
+				var row = pageData.cirkuleroj[id];
+
+				window.open('/cirkuleroj/' + id);
+			});
+		}
 
 		archiveTable.append(tr);
 	}

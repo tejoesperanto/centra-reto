@@ -488,10 +488,10 @@ class User {
 	}
 
 	/**
-	 * Returns whether the user may contribute in cirkuleroj
+	 * Returns whether the user may contribute to cirkuleroj
 	 * @return {boolean}
 	 */
-	async mayContributeInCirkuleroj () {
+	async mayContributeToCirkuleroj () {
 		const stmt = CR.db.cirkuleroj.prepare('select groups from groups where purpose = "CONTRIBUTE"');
 		const row = stmt.get();
 

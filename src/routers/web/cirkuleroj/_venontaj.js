@@ -6,7 +6,6 @@ async function venontaj (req, res, next) {
 			'/plugins/jquery-datatable/jquery.dataTables.js',
 			'/js/jquery.dataTables.eo.js',
 			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js',
-			'/plugins/momentjs/moment.min.js',
 			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
 			'/plugins/autosize/autosize.min.js'
 		],

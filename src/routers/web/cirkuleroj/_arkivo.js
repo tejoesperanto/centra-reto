@@ -1,7 +1,7 @@
 async function arkivo (req, res, next) {
 	// Determine whether the user is allowed to contribute to cirkuleroj
 	let mayContribute = false;
-	if (req.user) { mayContribute = await req.user.mayContributeInCirkuleroj(); }
+	if (req.user) { mayContribute = await req.user.mayContributeToCirkuleroj(); }
 
 	const pageDataObj = {
 		cirkuleroj: {},
@@ -34,8 +34,7 @@ async function arkivo (req, res, next) {
 	const data = {
 		title: 'Cirkuleroj',
 		scripts: [
-			'/js/cr/main/cirkuleroj/arkivo.js',
-			'/plugins/momentjs/moment.min.js'
+			'/js/cr/main/cirkuleroj/arkivo.js'
 		],
 		pageDataObj: pageDataObj
 	};
