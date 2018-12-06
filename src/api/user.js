@@ -1,4 +1,4 @@
-import { promisify, inspect } from 'util';
+import { promisify } from 'util';
 import crypto from 'pn/crypto';
 import moment from 'moment-timezone';
 import url from 'url';
