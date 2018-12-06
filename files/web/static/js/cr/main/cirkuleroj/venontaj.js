@@ -1,6 +1,4 @@
 $(function () {
-	moment.locale('eo');
-
 	// CREATE CIRKULERO
 	var defaultDate = moment();
 	defaultDate.set('day', 1);

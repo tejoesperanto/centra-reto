@@ -9,18 +9,52 @@
 					<h2>Kontribui al cirkulero n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
 				</div>
 				<div class="body">
-					<div>
-						<span>Mi kontribuas al la cirkulero kiel</span>
-						<select id="cirkulero-role" class="selectpicker"></select>
-					</div>
-					<div id="cirkulero"></div>
+					<p>
+						La limdato por tiu ĉi cirkulero estas: <b id="deadline"></b>
+					</p>
+					<form id="cirkulero" class="m-t-30">
+						<div>
+							<span>Mi kontribuas al la cirkulero kiel</span>
+							<select id="cirkulero-role" class="selectpicker"></select>
+						</div>
+
+						<h3 class="m-t-30">{{user.longName}}, <span id="role-name"></span></h3>
+						<div class="form-group form-float m-t-15">
+							<div class="form-line">
+								<input type="text" id="cirkulero-user_role_comment" class="form-control">
+								<label for="cirkulero-user_role_comment" class="form-label">Komento pri via rolo (ekz. “eksa ĜenSek”)</label>
+							</div>
+						</div>
+						<div class="m-b-15"><i>Faru novan linion por aldoni novan punkton</i></div>
+						<div>
+							<label>Kion vi faris dum la pasinta monato?</label>
+							<ul class="cr-cirk-faro-dyn form-group" id="cirkulero-faris"></ul>
+						</div>
+						<div>
+							<label>Pri kio vi okupiĝas nuntempe?</label>
+							<ul class="cr-cirk-faro-dyn form-group" id="cirkulero-faras"></ul>
+						</div>
+						<div>
+							<label>Kiuj estas viaj estontaj planoj?</label>
+							<ul class="cr-cirk-faro-dyn form-group" id="cirkulero-faros"></ul>
+						</div>
+						<div class="form-group form-float m-t-15">
+							<div class="form-line">
+								<textarea rows="1" id="cirkulero-comment" class="form-control no-resize autosize"></textarea>
+								<label class="form-label">Libera spaco por komentoj</label>
+							</div>
+						</div>
+						<div class="form-group m-t-30">
+							<button type="submit" id="cirkulero-submit" class="btn btn-primary waves-effect">KONTRIBUI</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<div id="template-cirkulero" class="template">
-	<form>
-		<h3>{{user.longName}}, <span class="role-name"></span></h3>
-	</form>
-</div>
+<li class="template cirk-faro" id="template-cirk-faro">
+	<div class="form-line">
+		<input type="text" class="form-control">
+	</div>
+</li>

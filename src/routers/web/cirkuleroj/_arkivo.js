@@ -1,7 +1,9 @@
+import * as cirkulero from '../../../api/cirkulero';
+
 async function arkivo (req, res, next) {
 	// Determine whether the user is allowed to contribute to cirkuleroj
 	let mayContribute = false;
-	if (req.user) { mayContribute = await req.user.mayContributeToCirkuleroj(); }
+	if (req.user) { mayContribute = await cirkulero.mayUserContributeToCirkuleroj(req.user); }
 
 	const pageDataObj = {
 		cirkuleroj: {},

@@ -1,3 +1,5 @@
+import * as cirkulero from '../../../api/cirkulero';
+
 async function numero (req, res, next) {
 	const id = parseInt(req.params.id, 10);
 	if (!Number.isSafeInteger(id)) {
@@ -41,7 +43,7 @@ async function numero (req, res, next) {
 	}
 
 	let mayContribute = false;
-	if (req.user) { mayContribute = await req.user.mayContributeToCirkuleroj(); }
+	if (req.user) { mayContribute = await cirkulero.mayUserContributeToCirkuleroj(req.user); }
 
 	if (row.open) { // The cirkulero is open to contributions ... from the right people
 		if (!mayContribute) {
@@ -53,14 +55,15 @@ async function numero (req, res, next) {
 			return;
 		}
 
-		const roles = await req.user.getCirkuleroGroups();
-		const creditRoles = await req.user.getCirkuleroContributionGroups();
+		const roles = await cirkulero.getUserCirkuleroGroups(req.user);
+		const creditRoles = await cirkulero.getUserCirkuleroContributionGroups(req.user);
 
 		const data = {
 			title: `Kontribui al cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
 				'/js/cr/main/cirkuleroj/kontribui.js',
-				'/plugins/bootstrap-select/js/bootstrap-select.min.js'
+				'/plugins/bootstrap-select/js/bootstrap-select.min.js',
+				'/plugins/autosize/autosize.min.js'
 			],
 			stylesheets: [
 				'/plugins/bootstrap-select/css/bootstrap-select.min.css'

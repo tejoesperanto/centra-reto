@@ -289,7 +289,7 @@ $.AdminBSB.input = {
 
         //On label click
         $parentSelector.on('click', '.form-float .form-line .form-label', function () {
-            $(this).parent().find('input').focus();
+            $(this).parent().find('input,textarea').focus();
         });
 
         //Not blank form
@@ -470,6 +470,9 @@ $(function () {
 
 //==========================================================================================================================
 // BEGIN Added for CR
+
+moment.locale('eo');
+moment.tz.setDefault('utc');
 
 /**
  * jQuery.fn.sortElements

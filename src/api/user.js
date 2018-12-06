@@ -508,67 +508,6 @@ class User {
 		}
 		return true;
 	}
-
-	/**
-	 * Returns all groups the user belongs to that relate to cirkuleroj
-	 * @return {Object} A map of `{ purpose string, groups Group[] }`
-	 */
-	async getCirkuleroGroups () {
-		const stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
-		const rows = stmt.all();
-
-		const userGroups = await this.getGroups();
-
-		const cirkuleroGroups = {};
-		for (let row of rows) {
-			const purpose = row.purpose.toLowerCase();
-			const groupIds = row.groups.split(',').map(x => parseInt(x, 10));
-
-			cirkuleroGroups[purpose] = [];
-			for (let id of groupIds) {
-				if (!userGroups.has(id)) { continue; }
-				if (!userGroups.get(id).user.active) { continue; }
-
-				cirkuleroGroups[purpose].push(userGroups.get(id));
-			}
-		}
-
-		return cirkuleroGroups;
-	}
-
-	/**
-	 * Returns the groups to credit contributions to cirkuleroj to
-	 * @return {number[]}
-	 */
-	async getCirkuleroContributionGroups () {
-		const userGroups = await this.getGroups();
-		const creditGroups = [];
-		const handleGroups = groups => {
-			let nextLookup = [];
-			for (let group of groups) {
-				if (group.user.direct) {
-					creditGroups.push(group);
-				} else {
-					const children = group.user.children.map(x => userGroups.get(x));
-					nextLookup = nextLookup.concat(children);
-				}
-			}
-			if (!nextLookup.length) { return; }
-			handleGroups(nextLookup);
-		};
-		const groups = (await this.getCirkuleroGroups()).contribute;
-		handleGroups(groups);
-		return creditGroups;
-	}
-
-	/**
-	 * Returns whether the user may contribute to cirkuleroj
-	 * @return {boolean}
-	 */
-	async mayContributeToCirkuleroj () {
-		const cirkuleroGroups = await this.getCirkuleroGroups();
-		return cirkuleroGroups.contribute.length > 0;
-	}
 }
 
 export default User;

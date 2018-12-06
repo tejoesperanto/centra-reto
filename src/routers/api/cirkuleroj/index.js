@@ -3,6 +3,7 @@ import express from 'express';
 import * as CRApi from '..';
 import { wrap } from '../..';
 
+import apiContribute from './_contribute';
 import apiCreate from './_create';
 import apiDeleteReminderDirect from './_delete_reminder_direct';
 import apiDeleteReminderList from './_delete_reminder_list';
@@ -24,6 +25,11 @@ export default function () {
 	const router = express.Router();
 
 	const middleware = CRApi.middleware;
+
+	router.post('/contribute',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiContribute));
 
 	router.post('/create',
 		middleware.requireLogin,

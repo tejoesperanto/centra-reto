@@ -118,3 +118,11 @@ textarea.cr-code {
 .form-group.form-float .bootstrap-datetimepicker-widget.top {
 	bottom: 55px !important;
 }
+
+
+.cr-cirk-faro-dyn>li:not(:first-child) {
+	margin-top: 15px;
+}
+.cr-cirk-faro-dyn>li>.form-line {
+	display: inline-block;
+}
