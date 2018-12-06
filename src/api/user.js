@@ -471,7 +471,7 @@ class User {
 	/**
 	 * Returns whether the user has a given permission
 	 * @param  {string}  permission The permission to check
-	 * @return {Boolean}
+	 * @return {boolean}
 	 */
 	async hasPermission (permission) {
 		const permissions = await this.getPermissions();
@@ -485,6 +485,30 @@ class User {
 			path = path[bit];
 		}
 		return true;
+	}
+
+	/**
+	 * Returns whether the user may contribute in cirkuleroj
+	 * @return {boolean}
+	 */
+	async mayContributeInCirkuleroj () {
+		const stmt = CR.db.cirkuleroj.prepare('select groups from groups where purpose = "CONTRIBUTE"');
+		const row = stmt.get();
+
+		let mayContribute = false;
+		const userGroups = await this.getGroups();
+
+		const groupIds = row.groups.split(',').map(x => parseInt(x, 10));
+
+		for (let id of groupIds) {
+			if (!userGroups.has(id)) { continue; }
+			if (!userGroups.get(id).user.active) { continue; }
+
+			mayContribute = true;
+			break;
+		}
+
+		return mayContribute;
 	}
 }
 

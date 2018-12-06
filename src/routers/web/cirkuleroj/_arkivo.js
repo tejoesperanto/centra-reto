@@ -1,31 +1,15 @@
 async function arkivo (req, res, next) {
 	// Determine whether the user is allowed to contribute to cirkuleroj
-	let stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
-	let rows = stmt.all();
-
 	let mayContribute = false;
-	if (req.user) {
-		const userGroups = await req.user.getGroups();
-
-		for (let row of rows) {
-			const groupIds = row.groups.split(',').map(x => parseInt(x, 10));
-
-			for (let id of groupIds) {
-				if (userGroups.has(id)) {
-					mayContribute = true;
-					break;
-				}
-			}
-		}
-	}
+	if (req.user) { mayContribute = await req.user.mayContributeInCirkuleroj(); }
 
 	const pageDataObj = {
 		cirkuleroj: {},
 		mayContribute: mayContribute
 	};
 
-	stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj where open = 1 or published = 1');
-	rows = stmt.all();
+	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, `open`, published from cirkuleroj where open = 1 or published = 1');
+	let rows = stmt.all();
 	for (let row of rows) {
 		pageDataObj.cirkuleroj[row.id] = {
 			id: row.id,
