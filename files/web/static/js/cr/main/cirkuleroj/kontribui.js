@@ -1,4 +1,8 @@
 $(function () {
+	// TODO: Show existing contributions (remember to let the user freely change the role picker when creating a new item)
+	// The best way to do this is to have some sort of attribute on pre-filled forms and one that's always empty for new entries
+	// When that form has been filled out we should put an attribute on it and create a new empty form
+
 	autosize($('.autosize'));
 
 	$('#deadline').text(moment.unix(pageData.cirkulero.deadline).format('LLL [UTC]'));
@@ -91,13 +95,13 @@ $(function () {
 			var faras = [];
 			$('#cirkulero-faras').children().each(function () {
 				var value = $(this).find('input').val();
-				if (value) { faris.push(value); }
+				if (value) { faras.push(value); }
 			});
 
 			var faros = [];
 			$('#cirkulero-faros').children().each(function () {
 				var value = $(this).find('input').val();
-				if (value) { faris.push(value); }
+				if (value) { faros.push(value); }
 			});
 
 
