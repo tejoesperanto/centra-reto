@@ -1,4 +1,4 @@
-import { promisify } from 'util';
+import { promisify, inspect } from 'util';
 import crypto from 'pn/crypto';
 import moment from 'moment-timezone';
 import url from 'url';
@@ -255,28 +255,49 @@ class User {
 
 		this.groups = new Map();
 
-		const stmt = CR.db.users.prepare('select groups.id, `from`, `to`, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, groups.`args` as group_args, users_groups.`args` as user_args from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
-		const rows = stmt.all(this.id);
-
 		const timeNow = moment().unix();
 
-		const recursiveGroupLookup = async groups => {
+		const pairings = {};
+		const handleRows = async rows => {
 			const nextLookup = [];
-			const children = [];
-			for (let row of groups) {
-				let active = true;
-				if (row.to   && row.to   < timeNow) { active = false; }
-				if (            row.from > timeNow) { active = false; }
+			for (let row of rows) {
+				let timeFrom = row.from;
+				let timeTo = row.to;
+
+				// If already present
+				if (this.groups.has(row.id)) {
+					const group = this.groups.get(row.id);
+					timeFrom = Math.min(timeFrom, group.user.from);
+					if (timeTo && group.user.to) {
+						timeTo = Math.max(timeTo, group.user.to);
+					} else if (group.user.to) {
+						timeTo = group.user.to;
+					}
+				}
 
 				let direct = true;
 				if (row.direct === false) { direct = false; }
+
+				// If parent
+				if (!direct) {
+					const children = pairings[row.id].map(x => this.groups.get(x));
+					timeFrom = Math.min(...children.map(x => x.user.from));
+					timeTo = Math.max(...children.map(x => {
+						if (!x.user.to) { return 0; }
+						return x.user.to;
+					}));
+				}
+
+				let active = true;
+				if (          timeFrom > timeNow) { active = false; }
+				if (timeTo && timeTo   < timeNow) { active = false; }
 
 				const userArgsStr = row.user_args || '';
 				let userArgsArr = await csvParse(userArgsStr);
 				if (userArgsArr.length > 0) { userArgsArr = userArgsArr[0]; }
 
 				const groupArgsStr = row.group_args || '';
-				const groupArgsArr = await csvParse(groupArgsStr);
+				let groupArgsArr = await csvParse(groupArgsStr);
 				if (groupArgsArr.length > 0) { groupArgsArr = groupArgsArr[0]; }
 
 				let nameForUser = row.name_base;
@@ -301,39 +322,39 @@ class User {
 					}),
 					user: {
 						args: userArgsArr,
-						from: row.from,
-						to: row.to,
+						from: timeFrom,
+						to: timeTo,
 						active: active,
 						direct: direct,
+						children: pairings[row.id] || null,
 						name: nameForUser
 					}
 				});
 
 				if (row.parent) {
 					nextLookup.push(row.parent);
-					children.push(row.id);
+					if (!pairings[row.parent]) { pairings[row.parent] = []; }
+					pairings[row.parent].push(row.id);
 				}
 			}
 
-			if (nextLookup.length == 0) { return; }
+			if (nextLookup.length < 1) { return; }
 
 			const params = '?,'.repeat(nextLookup.length).slice(0, -1);
 			const stmt = CR.db.users.prepare(`select id, name_base, name_display, \`parent\`, \`public\`, searchable, \`members_allowed\`, \`args\` as group_args from groups where id in (${params})`);
-			const rows = stmt.all(...nextLookup);
+			const newRows = stmt.all(...nextLookup);
 
-			for (let i in rows) {
-				const row = rows[i];
-				const child = children[i];
+			for (let row of newRows) {
 				row.direct = false;
-				row.from = this.groups.get(child).user.from;
-				row.to   = this.groups.get(child).user.to;
 			}
 
-			await recursiveGroupLookup(rows);
+			await handleRows(newRows, nextLookup);
 		};
 
-		await recursiveGroupLookup(rows);
+		const stmt = CR.db.users.prepare('select groups.id, `from`, `to`, name_base, name_display, `members_allowed`, `parent`, `public`, searchable, groups.`args` as group_args, users_groups.`args` as user_args from users_groups inner join groups on users_groups.group_id = groups.id where user_id = ?');
+		const rows = stmt.all(this.id);
 
+		await handleRows(rows);
 		return this.groups;
 	}
 
@@ -406,6 +427,7 @@ class User {
 				to: timeTo,
 				active: active,
 				direct: true,
+				children: null,
 				name: nameForUser
 			}
 		});
@@ -488,27 +510,64 @@ class User {
 	}
 
 	/**
+	 * Returns all groups the user belongs to that relate to cirkuleroj
+	 * @return {Object} A map of `{ purpose string, groups Group[] }`
+	 */
+	async getCirkuleroGroups () {
+		const stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
+		const rows = stmt.all();
+
+		const userGroups = await this.getGroups();
+
+		const cirkuleroGroups = {};
+		for (let row of rows) {
+			const purpose = row.purpose.toLowerCase();
+			const groupIds = row.groups.split(',').map(x => parseInt(x, 10));
+
+			cirkuleroGroups[purpose] = [];
+			for (let id of groupIds) {
+				if (!userGroups.has(id)) { continue; }
+				if (!userGroups.get(id).user.active) { continue; }
+
+				cirkuleroGroups[purpose].push(userGroups.get(id));
+			}
+		}
+
+		return cirkuleroGroups;
+	}
+
+	/**
+	 * Returns the groups to credit contributions to cirkuleroj to
+	 * @return {number[]}
+	 */
+	async getCirkuleroContributionGroups () {
+		const userGroups = await this.getGroups();
+		const creditGroups = [];
+		const handleGroups = groups => {
+			let nextLookup = [];
+			for (let group of groups) {
+				if (group.user.direct) {
+					creditGroups.push(group);
+				} else {
+					const children = group.user.children.map(x => userGroups.get(x));
+					nextLookup = nextLookup.concat(children);
+				}
+			}
+			if (!nextLookup.length) { return; }
+			handleGroups(nextLookup);
+		};
+		const groups = (await this.getCirkuleroGroups()).contribute;
+		handleGroups(groups);
+		return creditGroups;
+	}
+
+	/**
 	 * Returns whether the user may contribute to cirkuleroj
 	 * @return {boolean}
 	 */
 	async mayContributeToCirkuleroj () {
-		const stmt = CR.db.cirkuleroj.prepare('select groups from groups where purpose = "CONTRIBUTE"');
-		const row = stmt.get();
-
-		let mayContribute = false;
-		const userGroups = await this.getGroups();
-
-		const groupIds = row.groups.split(',').map(x => parseInt(x, 10));
-
-		for (let id of groupIds) {
-			if (!userGroups.has(id)) { continue; }
-			if (!userGroups.get(id).user.active) { continue; }
-
-			mayContribute = true;
-			break;
-		}
-
-		return mayContribute;
+		const cirkuleroGroups = await this.getCirkuleroGroups();
+		return cirkuleroGroups.contribute.length > 0;
 	}
 }
 

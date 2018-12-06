@@ -53,23 +53,32 @@ async function numero (req, res, next) {
 			return;
 		}
 
+		const roles = await req.user.getCirkuleroGroups();
+		const creditRoles = await req.user.getCirkuleroContributionGroups();
+
 		const data = {
 			title: `Kontribui al cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
-				'/js/cr/main/cirkuleroj/kontribui.js'
+				'/js/cr/main/cirkuleroj/kontribui.js',
+				'/plugins/bootstrap-select/js/bootstrap-select.min.js'
+			],
+			stylesheets: [
+				'/plugins/bootstrap-select/css/bootstrap-select.min.css'
 			],
 			page: {
 				cirkulero: row
 			},
 			pageDataObj: {
-				cirkulero: row
+				cirkulero: row,
+				roles: roles,
+				creditRoles: creditRoles
 			}
 		};
 		await res.sendRegularPage('cirkuleroj/kontribui', data);
 		return;
 	}
 
-	next();
+	next(); // 404
 }
 
 export default numero;
