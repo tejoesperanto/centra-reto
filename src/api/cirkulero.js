@@ -80,3 +80,14 @@ export async function getGroups () {
 
 	return groups;
 }
+
+/**
+ * Gets all contributions to a cirkulero
+ * @param  {number} id The id of the cirkulero
+ * @return {Object[]}
+ */
+export function getAllContributions (id) {
+	const stmt = CR.db.cirkuleroj.prepare('select user_id, group_id, user_role, user_role_comment, faris, faras, faros, comment, modified_by_admin from cirkuleroj_contributions where cirkulero_id = ?');
+	const rows = stmt.all(id);
+	return rows;
+}

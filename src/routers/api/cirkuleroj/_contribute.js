@@ -120,7 +120,7 @@ async function contribute (req, res, next) {
 		return;
 	}
 
-	// Ensure that the user is in the group
+	// Ensure that the group exists and that the user is in it
 	const groups = await cirkulero.getUserCirkuleroContributionGroups(req.user);
 	const groupIds = groups.map(x => x.group.id);
 	const groupIndex = groupIds.indexOf(req.body.group_id);

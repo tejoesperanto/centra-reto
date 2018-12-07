@@ -16,7 +16,7 @@ class User {
 	constructor (id, email, enabled, password) {
 		// The values beneath can be safely accessed at any time
 		// For any values not mentioned here, please use its getter function as they're obtained as needed
-		this.id = id;
+		this.id = parseInt(id, 10);
 		this.email = email;
 		this.enabled = !!enabled;
 		this.password = password;

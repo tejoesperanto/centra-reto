@@ -141,9 +141,10 @@ export default class Group {
 
 	/**
 	 * Gets all users that directly or indirectly are members of this group
+	 * @param  {boolean} [noDuplicates] If true no duplicate users are returned. Defaults to false
 	 * @return {User[]}
 	 */
-	async getAllUsers () {
+	async getAllUsers (noDuplicates = false) {
 		// Obtain all the group's children
 		const groups = [ this ];
 		const getChildren = async ids => {
@@ -167,11 +168,14 @@ export default class Group {
 		});
 
 		const users = [];
+		const userIds = [];
 		for (let row of rows) {
+			if (userIds.indexOf(row.user_id) !== -1) { continue; }
 			const user = new User(row.user_id, row.email, row.enabled, row.password);
 			user.activationKey = row.activation_key;
 			user.activationKeyTime = row.activation_key_time;
 			users.push(user);
+			userIds.push(user.id);
 		}
 
 		return users;
