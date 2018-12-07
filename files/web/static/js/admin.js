@@ -294,7 +294,7 @@ $.AdminBSB.input = {
 
         //Not blank form
         $parentSelector.find('.form-control').each(function () {
-            if ($(this).val() !== '') {
+            if ($(this).val() !== '' && $(this).parents('.form-group').hasClass('form-float')) {
                 $(this).parents('.form-line').addClass('focused');
             }
         });

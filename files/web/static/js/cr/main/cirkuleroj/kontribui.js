@@ -10,28 +10,10 @@ $(function () {
 	var rolePicker = $('#cirkulero-role');
 	var cirkuleroDiv = $('#cirkulero');
 
-	var roles = Object.values(pageData.creditRoles);
-	for (var i = 0; i < roles.length; i++) {
-		var role = roles[i];
-
-		// Add roles to role picker
-		var option = document.createElement('option');
-		option.textContent = role.user.name;
-		option.value = role.group.id;
-		rolePicker.append(option);
-	}
-
-	// Switch active contribution role
-	var setRoleName = function () {
-		var val = $(this).children(':selected').text();
-		$('#role-name').text(val);
-	};
-	rolePicker.on('change', setRoleName);
-	setRoleName.call(rolePicker);
-
 	// Dynamic faris/faras/faros
 	var insertCirkFaro = function (parent, after) {
 		parent = $(parent);
+		if (after) { after = $(after); }
 
 		var template = cloneTemplate('#template-cirk-faro');
 		$.AdminBSB.input.activate(template);
@@ -60,16 +42,15 @@ $(function () {
 		}
 
 		return input;
-	}
-	insertCirkFaro('#cirkulero-faris');
-	insertCirkFaro('#cirkulero-faras');
-	insertCirkFaro('#cirkulero-faros');
+	};
 
 	// Form submission
-	$('#cirkulero').submit(function (e) {
+	var handleSubmit = function (e) {
 		e.preventDefault();
 
-		var button = $('#cirkulero-submit');
+		var self = $(this);
+
+		var button = self.find('button[type=submit]');
 
 		swal({
 			title: 'Kontribuo al cirkulero',
@@ -87,19 +68,19 @@ $(function () {
 			button.attr('disabled', true);
 
 			var faris = [];
-			$('#cirkulero-faris').children().each(function () {
+			self.find('[name=faris]').children().each(function () {
 				var value = $(this).find('input').val();
 				if (value) { faris.push(value); }
 			});
 
 			var faras = [];
-			$('#cirkulero-faras').children().each(function () {
+			self.find('[name=faras]').children().each(function () {
 				var value = $(this).find('input').val();
 				if (value) { faras.push(value); }
 			});
 
 			var faros = [];
-			$('#cirkulero-faros').children().each(function () {
+			self.find('[name=faros]').children().each(function () {
 				var value = $(this).find('input').val();
 				if (value) { faros.push(value); }
 			});
@@ -113,10 +94,10 @@ $(function () {
 				faros: faros
 			};
 
-			var userRoleComment = $('#cirkulero-user_role_comment').val();
+			var userRoleComment = self.find('[name=user_role_comment]').val();
 			if (userRoleComment) { apiData.user_role_comment = userRoleComment; }
 
-			var comment = $('#cirkulero-comment').val();
+			var comment = self.find('[name=comment]').val();
 			if (comment) { apiData.comment = comment; }
 
 			performAPIRequest('post', '/api/cirkuleroj/contribute', apiData)
@@ -125,6 +106,12 @@ $(function () {
 					button.removeAttr('disabled', false);
 					if (!res.success) { return; }
 
+					if (self.hasClass('contrib-new')) {
+						self.removeClass('contrib-new');
+						self[0].dataset.id = apiData.group_id;
+						insertNewContribution();
+					}
+
 					swal({
 						icon: 'success',
 						title: 'Sendis kontribuon',
@@ -132,5 +119,79 @@ $(function () {
 					});
 				});
 		});
-	});
+	};
+
+	var insertNewContribution = function (willHaveData) {
+		var template = cloneTemplate('#template-cirkulero');
+		if (!willHaveData) {
+			template.addClass('contrib-new');
+			insertCirkFaro(template.find('[name=faris]'));
+			insertCirkFaro(template.find('[name=faras]'));
+			insertCirkFaro(template.find('[name=faros]'));
+		}
+		template.submit(handleSubmit);
+		template.hide();
+
+	cirkuleroDiv.append(template);
+		return template;
+	};
+	insertNewContribution();
+
+	var roles = Object.values(pageData.creditRoles);
+	for (var i in roles) {
+		var role = roles[i];
+
+		// Add roles to role picker
+		var option = document.createElement('option');
+		option.textContent = role.user.name;
+		option.value = role.group.id;
+		rolePicker.append(option);
+	}
+
+	for (var i in pageData.contributions) {
+		var contrib = pageData.contributions[i];
+		// Insert contribution role templates
+		var template = insertNewContribution(true);
+		template[0].dataset.id = contrib.group_id;
+		template.find('[name=user_role_comment]').val(contrib.user_role_comment);
+		template.find('[name=comment]').val(contrib.comment);
+
+		var faris = template.find('[name=faris]');
+		for (var n in contrib.faris) {
+			var faro = contrib.faris[n];
+			var el = insertCirkFaro(faris);
+			el.val(faro);
+		}
+		if (contrib.faris.length === 0) { insertCirkFaro(faris); }
+
+		var faras = template.find('[name=faras]');
+		for (var n in contrib.faras) {
+			var faro = contrib.faras[n];
+			var el = insertCirkFaro(faras);
+			el.val(faro);
+		}
+		if (contrib.faras.length === 0) { insertCirkFaro(faras); }
+
+		var faros = template.find('[name=faros]');
+		for (var n in contrib.faros) {
+			var faro = contrib.faros[n];
+			var el = insertCirkFaro(faros);
+			el.val(faro);
+		}
+		if (contrib.faros.length === 0) { insertCirkFaro(faros); }
+	}
+
+	// Switch active contribution role
+	var setRoleName = function () {
+		var val = $(this).children(':selected').text();
+		$('#role-name').text(val);
+		cirkuleroDiv.children().hide();
+		var el = cirkuleroDiv.children('[data-id=' + this.value + ']');
+		if (!el[0]) {
+			el = cirkuleroDiv.children('.contrib-new');
+		}
+		el.show();
+	};
+	rolePicker.on('change', setRoleName);
+	setRoleName.call(rolePicker[0]);
 });

@@ -8,6 +8,7 @@ import apiCreate from './_create';
 import apiDeleteReminderDirect from './_delete_reminder_direct';
 import apiDeleteReminderList from './_delete_reminder_list';
 import apiGetGroups from './_get_groups';
+import apiGetOwnContributions from './_get_own_contributions';
 import apiGetRemindersDirect from './_get_reminders_direct';
 import apiGetRemindersLists from './_get_reminders_lists';
 import apiInsertReminderDirect from './_insert_reminder_direct';
@@ -50,6 +51,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiGetGroups));
+
+	router.post('/get_own_contributions',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiGetOwnContributions));
 
 	router.post('/get_reminders_direct',
 		middleware.requireLogin,

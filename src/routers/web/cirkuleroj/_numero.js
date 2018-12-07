@@ -58,6 +58,22 @@ async function numero (req, res, next) {
 		const roles = await cirkulero.getUserCirkuleroGroups(req.user);
 		const creditRoles = await cirkulero.getUserCirkuleroContributionGroups(req.user);
 
+		// Get the user's existing contributions
+		const stmt = CR.db.cirkuleroj.prepare('select group_id, user_role_comment, faris, faras, faros, comment from cirkuleroj_contributions where cirkulero_id = ? and user_id = ?');
+		const rows = stmt.all(row.id, req.user.id);
+
+		const contribs = [];
+		for (let row of rows) {
+			contribs.push({
+				group_id: row.group_id,
+				user_role_comment: row.user_role_comment,
+				faris: JSON.parse(row.faris),
+				faras: JSON.parse(row.faras),
+				faros: JSON.parse(row.faros),
+				comment: row.comment
+			});
+		}
+
 		const data = {
 			title: `Kontribui al cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
@@ -74,7 +90,8 @@ async function numero (req, res, next) {
 			pageDataObj: {
 				cirkulero: row,
 				roles: roles,
-				creditRoles: creditRoles
+				creditRoles: creditRoles,
+				contributions: contribs
 			}
 		};
 		await res.sendRegularPage('cirkuleroj/kontribui', data);
