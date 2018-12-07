@@ -75,7 +75,7 @@ export async function getGroups () {
 	const groups = {};
 	for (let row of rows) {
 		const groupIds = row.groups.split(',');
-		groups[row.purpose] = groupIds.map(id => Group.getGroupById(id));
+		groups[row.purpose.toLowerCase()] = await Promise.all(groupIds.map(id => Group.getGroupById(id)));
 	};
 
 	return groups;

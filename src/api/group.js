@@ -5,6 +5,8 @@ const csvStringify = promisify(_csvStringify);
 import _csvParse from 'csv-parse';
 const csvParse = promisify(_csvParse);
 
+import User from './user';
+
 /**
  * Represents a group in CR
  */
@@ -19,7 +21,7 @@ export default class Group {
 		searchable = undefined,
 		args = null
 	} = {}) {
-		this.id = id;
+		this.id = parseInt(id, 10);
 		this.nameBase = nameBase;
 		this.nameDisplay = nameDisplay;
 		this.membersAllowed = membersAllowed;
@@ -106,5 +108,54 @@ export default class Group {
 			groups.set(row.id, group);
 		}
 		return groups;
+	}
+
+	/**
+	 * Obtains the group with its user data for a specific user
+	 * @param  {User} user
+	 * @return {Object|null} Returns null if the user isn't a member of the group
+	 */
+	async getForUser (user) {
+		const groups = await user.getGroups();
+		if (!groups.has(this.id)) { return null; }
+		return groups.get(this.id);
+	}
+
+	/**
+	 * Gets all users that directly or indirectly are members of this group
+	 * @return {User[]}
+	 */
+	async getAllUsers () {
+		// Obtain all the group's children
+		const groups = [ this ];
+		const getChildren = async ids => {
+			const params = '?,'.repeat(ids.length).slice(0, -1);
+			const stmt = CR.db.users.prepare(`select id from groups where parent in (${params})`);
+			const rows = stmt.all(...ids);
+
+			if (rows.length === 0) { return; }
+			const promises = rows.map(row => Group.getGroupById(row.id)); // No await on purpose
+			const newGroups = await Promise.all(promises);
+			groups.push(...newGroups);
+			await getChildren(rows.map(row => row.id));
+		};
+		await getChildren([ this.id ]);
+
+		// Obtain all users in the group and all of its children
+		const params = '?,'.repeat(groups.length).slice(0, -1);
+		const stmt = CR.db.users.prepare(`select user_id, email, enabled, password, activation_key, activation_key_time from users_groups inner join users on users_groups.user_id = users.id where group_id in (${params}) and enabled = 1 and \`from\` <= @current_time and (\`to\` is null or \`to\` > @current_time)`);
+		const rows = stmt.all(...groups.map(x => x.id), {
+			current_time: moment().unix()
+		});
+
+		const users = [];
+		for (let row of rows) {
+			const user = new User(row.user_id, row.email, row.enabled, row.password);
+			user.activationKey = row.activation_key;
+			user.activationKeyTime = row.activation_key_time;
+			users.push(user);
+		}
+
+		return users;
 	}
 }
