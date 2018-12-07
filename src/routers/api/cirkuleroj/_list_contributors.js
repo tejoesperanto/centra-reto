@@ -40,11 +40,11 @@ async function list_contributors (req, res, next) {
 	}
 
 	const cirkGroups = await cirkulero.getGroups();
-	const contributeGroups = cirkGroups.contribute;
-	const statisticsGroups = cirkGroups.statistics;
+	const children = await Promise.all(cirkGroups.contribute.map(group => group.getAllChildGroups()));
+	const groups = cirkGroups.contribute.concat(...children);
 
 	// Get all users allowed to contribute
-	const groupUsersMap = await Promise.all(contributeGroups.map(async group => {
+	const groupUsersMap = await Promise.all(groups.map(async group => {
 		const users = await group.getAllUsers();
 		
 		const usersSettings = await Promise.all(users.map(async user => {
@@ -52,7 +52,7 @@ async function list_contributors (req, res, next) {
 			return {
 				id: user.id,
 				long_name: user.getLongName(),
-				group_name: settings.name
+				group_name: settings.user.name
 			};
 		}));
 

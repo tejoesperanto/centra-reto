@@ -122,6 +122,24 @@ export default class Group {
 	}
 
 	/**
+	 * Gets all child groups of the group
+	 * @return {Group[]}
+	 */
+	async getAllChildGroups () {
+		const groups = [];
+
+		const stmt = CR.db.users.prepare(`select id from groups where parent = ?`);
+		const rows = stmt.all(this.id);
+
+		if (rows.length === 0) { return []; }
+		const promises = rows.map(row => Group.getGroupById(row.id));
+		const directChildren = await Promise.all(promises);
+		const indirectChildren = await Promise.all(groups.map(group => group.getAllChildGroups()));
+		groups.push(...directChildren, ...indirectChildren);
+		return groups;
+	}
+
+	/**
 	 * Gets all users that directly or indirectly are members of this group
 	 * @return {User[]}
 	 */
