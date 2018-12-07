@@ -98,6 +98,10 @@ $(function () {
 	});
 	var table = tableData.table;
 
+	$('#users-table-reload').click(function () {
+		tableData.table.draw();
+	});
+
 	var loaderTemplate = cloneTemplate('#template-loader');
 
 	table.on('draw', function () {

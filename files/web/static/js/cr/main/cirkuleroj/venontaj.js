@@ -92,4 +92,7 @@ $(function () {
         	return val;
         }
 	});
+	$('#cirkuleroj-table-reload').click(function () {
+		tableData.table.draw();
+	});
 });
