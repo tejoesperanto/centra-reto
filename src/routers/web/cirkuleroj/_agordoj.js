@@ -15,6 +15,9 @@ async function arkivo (req, res, next) {
 		});
 	}
 
+	const stmt = CR.db.cirkuleroj.prepare('select value from settings where key = "publish_message"');
+	const publishMessage = stmt.get().value;
+
 	const data = {
 		title: 'Cirkuleroj',
 		scripts: [
@@ -30,7 +33,8 @@ async function arkivo (req, res, next) {
 			'/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'
 		],
 		pageDataObj: {
-			groups
+			groups,
+			publishMessage: publishMessage
 		}
 	};
 	await res.sendRegularPage('cirkuleroj/agordoj', data);

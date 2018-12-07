@@ -31,6 +31,10 @@ $(function () {
 		}
 	});
 
+	// Publish message
+	var publishMessageEl = $('#manage-cirkuleroj-form-publish_message');
+	publishMessageEl.val(pageData.publishMessage);
+
 	var groupFields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
 	// Obtain existing groups
 	performAPIRequest('post', '/api/cirkuleroj/get_groups')
@@ -52,14 +56,18 @@ $(function () {
 				}
 			}
 
-			$('#manage-cirkuleroj-form').show();
+			$('#manage-cirkuleroj-form').show({
+				complete: function () {
+					autosize(publishMessageEl);
+				}
+			});
 		});
 
 	// Form submission handler
 	$('#manage-cirkuleroj-form').submit(function (e) {
 		e.preventDefault();
 
-		var data = {};
+		var groupData = {};
 
 		for (let x in groupFields) {
 			var field = groupFields[x];
@@ -70,21 +78,25 @@ $(function () {
 				var group = items[y];
 				groups.push(group.id);
 			}
-			data[field] = groups;
+			groupData[field] = groups;
 		}
 
 		var button = $('#manage-cirkuleroj-form-button');
 		button.attr('disabled', true);
-		performAPIRequest('post', '/api/cirkuleroj/update_groups', data)
-			.then(function (res) {
-				button.removeAttr('disabled');
-				if (!res.success) { return; }
-				var confirmation = $('#manage-cirkuleroj-form-button-confirmation');
-				confirmation.show();
-				window.setTimeout(function () {
-					confirmation.fadeOut();
-				}, 400);
-			});
+		Promise.all([
+			performAPIRequest('post', '/api/cirkuleroj/update_groups', groupData),	
+			performAPIRequest('post', '/api/cirkuleroj/set_publish_message', {
+				message: $('#manage-cirkuleroj-form-publish_message').val()
+			})
+		]).then(function (res) {
+			button.removeAttr('disabled');
+			if (!res[0].success || !res[1].success) { return; }
+			var confirmation = $('#manage-cirkuleroj-form-button-confirmation');
+			confirmation.show();
+			window.setTimeout(function () {
+				confirmation.fadeOut();
+			}, 400);
+		});
 	});
 
 	// REMINDER SETTINGS

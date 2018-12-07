@@ -14,6 +14,7 @@ import apiGetRemindersLists from './_get_reminders_lists';
 import apiInsertReminderDirect from './_insert_reminder_direct';
 import apiInsertReminderList from './_insert_reminder_list';
 import apiList from './_list';
+import apiSetPublishMessage from './_set_publish_message';
 import apiUpdateGroups from './_update_groups';
 import apiUpdateReminderDirect from './_update_reminder_direct';
 import apiUpdateReminderList from './_update_reminder_list';
@@ -81,6 +82,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiList));
+
+	router.post('/set_publish_message',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiSetPublishMessage));
 
 	router.post('/update_groups',
 		middleware.requireLogin,

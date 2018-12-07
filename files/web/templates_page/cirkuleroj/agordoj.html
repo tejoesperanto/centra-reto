@@ -49,6 +49,21 @@
 								<select multiple class="form-control manage-cirkuleroj-form-groups" id="manage-cirkuleroj-form-groups-responsible"></select>
 							</div>
 						</div>
+						<div class="form-group form-float">
+							<p>En la publikiga mesaĝo eblas uzi la jenajn kodojn:</p>
+							<ul>
+								<li><code>{{=<% %>=}}{{cirkulero}}<%={{ }}=%></code> por skribi la numeron kaj periodon de la cirkulero (ekz. “Cirkulero n-ro 999 de aŭgusto 2099”)</li>
+								<li><code>{{=<% %>=}}{{numero}}<%={{ }}=%></code> por skribi la numeron de la cirkulero (ekz. “999”)</li>
+								<li><code>{{=<% %>=}}{{monato}}<%={{ }}=%></code> por skribi la monaton kaj la jaron de la cirkulero (ekz. “aŭgusto 2099”)</li>
+								<li><code>{{=<% %>=}}{{noto}}<%={{ }}=%></code> por skribi la eblan noton alkroĉitan al la specifa cirkulero</li>
+								<li><code>{{=<% %>=}}{{ligilo}}<%={{ }}=%></code> por skribi la ligilon por legi la cirkuleron</li>
+								<li><code>{{=<% %>=}}{{statistiko}}<%={{ }}=%></code> por enmeti statistikon pri kontribuoj</li>
+							</ul>
+							<div class="form-line m-t-30">
+								<textarea name="publish_message" id="manage-cirkuleroj-form-publish_message" rows="1" class="form-control no-resize" required></textarea>
+								<label class="form-label">Defaŭlta mesaĝo por publikigo de kompilita cirkulero</label>
+							</div>
+						</div>
 
 						<div class="form-group">
 							<button type="submit" id="manage-cirkuleroj-form-button" class="btn btn-primary waves-effect">KONSERVI</button>
