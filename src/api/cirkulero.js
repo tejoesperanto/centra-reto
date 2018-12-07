@@ -1,3 +1,5 @@
+import Group from './group';
+
 /**
  * Returns all groups a user belongs to that relate to cirkuleroj
  * @param  {User} user
@@ -60,4 +62,21 @@ export async function getUserCirkuleroContributionGroups (user) {
 export async function mayUserContributeToCirkuleroj (user) {
 	const cirkuleroGroups = await getUserCirkuleroGroups(user);
 	return cirkuleroGroups.contribute.length > 0;
+}
+
+/**
+ * Obtains all the groups related to cirkuleroj
+ * @return {Object} A map of `{ purpose string: groups Group[] }`
+ */
+export async function getGroups () {
+	const stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
+	const rows = stmt.all();
+
+	const groups = {};
+	for (let row of rows) {
+		const groupIds = row.groups.split(',');
+		groups[row.purpose] = groupIds.map(id => Group.getGroupById(id));
+	};
+
+	return groups;
 }
