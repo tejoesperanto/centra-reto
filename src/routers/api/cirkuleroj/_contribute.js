@@ -58,6 +58,7 @@ async function contribute (req, res, next) {
 			return;
 		}
 		userRoleComment = removeUnsafeCharsOneLine(req.body.user_role_comment);
+		if (userRoleComment.length === 0) { userRoleComment = null; }
 	}
 
 	if (!(req.body.faris instanceof Array)) {
@@ -106,6 +107,7 @@ async function contribute (req, res, next) {
 			return;
 		}
 		comment = removeUnsafeChars(req.body.comment);
+		if (comment.length === 0) { comment = null; }
 	}
 	// End data validation
 
