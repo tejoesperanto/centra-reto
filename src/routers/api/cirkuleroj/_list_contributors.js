@@ -17,14 +17,15 @@ async function list_contributors (req, res, next) {
 	 *
 	 * Returns:
 	 *   groups (Object[])
-	 *     id    (string|null) The id of the group or null if this is the “remainder” group
-	 *     name  (string|null) The name of the group or null if this is the “remainder” group
+	 *     group (Object)
+	 *       id    (string|null) The id of the group or null if this is the “remainder” group
+	 *       name  (string|null) The name of the group or null if this is the “remainder” group
 	 *     users (Object[])
 	 *       id                   (number)  The id of the user
 	 *       long_name            (string)  The long name of the user
 	 *       full_name_latin_sort (string)  The user's name for sorting purposes
 	 *       group_name           (string)  The user's formatted group name
-	 *       contributed          (boolean) Whether the user has contributed to the cirkulero within in this group
+	 *       contributed          (boolean) Whether the user has contributed to the cirkulero as a member of this group
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -59,6 +60,8 @@ async function list_contributors (req, res, next) {
 	const childrenObj = await promiseAllObject(childrenObjPromises);
 	const children = [].concat(...Object.values(childrenObj));
 	const groups = cirkGroups.contribute.concat(children);
+
+	// TODO: Implement “remainder group” (see description at the top)
 
 	const groupUsersMap = await Promise.all(groups.map(async group => {
 		const users = await group.getAllUsers(true);
@@ -103,7 +106,7 @@ async function list_contributors (req, res, next) {
 				contrib = contribs.get(group.id).get(user.id);
 			}
 			// If this isn't a parent group then we need to check if a direct contribution is found
-			if (childrenObj[group.id] && childrenObj[group.id].length === 0) {
+			if (!childrenObj[group.id] || childrenObj[group.id].length === 0) {
 				contributed = !!contrib;
 			}
 
