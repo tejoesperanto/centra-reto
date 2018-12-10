@@ -24,17 +24,17 @@
 
         <!-- Page specific css -->
         {{#stylesheets}}
-        <link href="{{&.}}" rel="stylesheet">
+        <link href="{{&.}}?{{&version}}" rel="stylesheet">
         {{/stylesheets}}
 
         <!-- Template css -->
-        <link href="/css/style.min.css" rel="stylesheet">
+        <link href="/css/style.min.css?{{&version}}" rel="stylesheet">
 
         <!-- Custom version of AdminsBSB theme -->
-        <link href="/css/cr-theme-tejo.css" rel="stylesheet">
+        <link href="/css/cr-theme-tejo.css?{{&version}}" rel="stylesheet">
 
         <!-- Centra Reto css -->
-        <link href="/css/cr.css" rel="stylesheet">
+        <link href="/css/cr.css?{{&version}}" rel="stylesheet">
     </head>
     <body class="theme-tejo">
         <!-- Page Loader -->
@@ -63,7 +63,7 @@
                 <div class="navbar-header">
                     <a href="javascript:void(0);" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"></a>
                     <a href="javascript:void(0);" class="bars"></a>
-                    <a class="navbar-brand" href="/"><img id="navbar-logo" src="/images/tejo_cr.svg"></a>
+                    <a class="navbar-brand" href="/"><img id="navbar-logo" src="/images/tejo_cr.svg?{{&version}}"></a>
                 </div>
             </div>
         </nav>
@@ -172,13 +172,13 @@
 
         <!-- Page specific js -->
         {{#scripts}}
-        <script src="{{&.}}"></script>
+        <script src="{{&.}}?{{&version}}"></script>
         {{/scripts}}
 
         <!-- Template js -->
-        <script src="/js/admin.js"></script>
+        <script src="/js/admin.js?{{&version}}"></script>
 
         <!-- CR js -->
-        <script src="/js/page.js"></script>
+        <script src="/js/page.js?{{&version}}"></script>
     </body>
 </html>
