@@ -119,10 +119,13 @@ textarea.cr-code {
 	bottom: 55px !important;
 }
 
-
 .cr-cirk-faro-dyn>li:not(:first-child) {
 	margin-top: 15px;
 }
 .cr-cirk-faro-dyn>li>.form-line {
 	display: inline-block;
+}
+
+.swal-content table.table {
+	text-align: left;
 }

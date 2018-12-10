@@ -1,4 +1,8 @@
+import * as cirkulero from '../../../api/cirkulero';
+
 async function venontaj (req, res, next) {
+	const groups = await cirkulero.getGroups();
+
 	const data = {
 		title: 'Venontaj cirkuleroj',
 		scripts: [
@@ -14,7 +18,10 @@ async function venontaj (req, res, next) {
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css',
 			'/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'
-		]
+		],
+		pageDataObj: {
+			groups: groups
+		}
 	};
 	await res.sendRegularPage('cirkuleroj/venontaj', data);
 }

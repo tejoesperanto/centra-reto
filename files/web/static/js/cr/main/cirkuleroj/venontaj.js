@@ -91,7 +91,102 @@ $(function () {
         	return val;
         }
 	});
+	var table = tableData.table;
+	var loaderTemplate = cloneTemplate('#template-loader');
 	$('#cirkuleroj-table-reload').click(function () {
-		tableData.table.draw();
+		table.draw();
+	});
+	table.on('draw', function () {
+		// Apply click listeners to all rows
+		var rows = table.rows().nodes().to$();
+		rows.addClass('clickable');
+		rows.on('click', function () { // The listener is automatically removed upon the next draw
+			var row = table.row(this);
+			var rowData = tableData.getRowData(row, 'id');
+
+			var modalTitle = 'Cirkulero n-ro ' + rowData.id + ', ' + rowData.name;
+
+			swal({
+				title: modalTitle,
+				content: loaderTemplate[0],
+				buttons: false
+			});
+
+			// Obtain contributions
+			performAPIRequest('post', '/api/cirkuleroj/list_contributors', { cirkulero_id: rowData.id })
+				.then(function (res) {
+					if (!res.success) { return; }
+
+					var template = cloneTemplate('#template-cirkulero-modal');
+					var stats = template.find('.cirkulero-modal-statistics');
+					for (var i in pageData.groups.statistics) {
+						var group = pageData.groups.statistics[i];
+
+						var contribGroup;
+						for (var n in res.groups) {
+							if (res.groups[n].group.id === group.id) {
+								contribGroup = res.groups[n];
+								break; 
+							}
+						}
+
+						var contributors = [];
+						var nonContributors = [];
+						var totalUsers = contribGroup.users.length;
+						for (var n in contribGroup.users) {
+							var user = contribGroup.users[n];
+							var name = user.long_name + ' (' + user.group_name + ')';
+							if (user.contributed) {
+								contributors.push(name);
+							} else {
+								nonContributors.push(name)
+							}
+						}
+
+						var div = document.createElement('div');
+						stats.append(div);
+
+						var h4 = document.createElement('h4');
+						div.appendChild(h4);
+						h4.textContent = contribGroup.group.name + ' (' +  contributors.length + '/' + totalUsers + ')';
+
+						if (totalUsers > 0) {
+							var contribEl = document.createElement('p');
+							div.appendChild(contribEl);
+							var contribPreText = document.createTextNode('Kontribuis: ');
+							if (contributors.length) {
+								var contribText = document.createTextNode(contributors.join(', '));
+							} else {
+								var contribText = document.createElement('i');
+								contribText.textContent = 'Neniu';
+							}
+							contribEl.appendChild(contribPreText);
+							contribEl.appendChild(contribText);
+
+							var noContribEl = document.createElement('p');
+							div.appendChild(noContribEl);
+							var noContribPreText = document.createTextNode('Ne kontribuis: ');
+							if (nonContributors.length) {
+								var noContribText = document.createTextNode(nonContributors.join(', '));
+							} else {
+								var noContribText = document.createElement('i');
+								noContribText.textContent = 'Neniu';
+							}
+							noContribEl.appendChild(noContribPreText);
+							noContribEl.appendChild(noContribText);
+						} else {
+							var el = document.createElement('i');
+							div.appendChild(el);
+							el.textContent = 'Neniuj membroj';
+						}
+					}
+
+					swal({
+						title: modalTitle,
+						content: template[0],
+						button: 'Fermi'
+					});
+				});
+		});
 	});
 });
