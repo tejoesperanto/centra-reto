@@ -118,7 +118,6 @@ $(function () {
 					if (!res.success) { return; }
 
 					var template = cloneTemplate('#template-cirkulero-modal');
-					var stats = template.find('.cirkulero-modal-statistics');
 					for (var i in pageData.groups.statistics) {
 						var group = pageData.groups.statistics[i];
 
@@ -143,6 +142,13 @@ $(function () {
 							}
 						}
 
+						// Actions
+						template.find('.cirkulero-modal-prepare').click(function () {
+							window.location.href = '/cirkuleroj/' + rowData.id + '/pretigi';
+						});
+
+						// Statitics
+						var stats = template.find('.cirkulero-modal-statistics');
 						var div = document.createElement('div');
 						stats.append(div);
 

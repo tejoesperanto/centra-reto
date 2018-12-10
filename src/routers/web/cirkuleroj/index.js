@@ -6,6 +6,7 @@ import { wrap } from '../..';
 import pageAgordoj from './_agordoj.js';
 import pageArkivo from './_arkivo.js';
 import pageNumero from './_numero.js';
+import pagePretigi from './_pretigi.js';
 import pageVenontaj from './_venontaj.js';
 
 /**
@@ -27,9 +28,14 @@ export default function () {
 		middleware.requireLogin,
 		wrap(pageVenontaj));
 
-	// This must be added at the very end
+	// These must be added at the very end
+	router.get('/:id/pretigi',
+		middleware.requireLogin,
+		wrap(pagePretigi));
+
 	router.get('/:id',
 		wrap(pageNumero));
+
 
 	return router;
 }

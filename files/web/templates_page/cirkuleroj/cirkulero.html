@@ -1,17 +1,55 @@
 <div class="container-fluid">
 	<div class="block-header">
-		<h2>Cirkuleroj » N-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
+		<h2>Cirkuleroj » N-ro {{page.cirkulero.id}} por {{page.cirkulero.name}} {{#page.editor}}» Pretigi{{/page.editor}}</h2>
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="card">
 				<div class="header">
-					<h2>Cirkulero n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
+					<h2>{{#page.editor}}Pretigi cirkuleron{{/page.editor}}{{^page.editor}}Cirkulero{{/page.editor}} n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
 				</div>
 				<div class="body">
-					
+					{{#page.editor}}
+					<div class="m-b-30">
+						<b>La cirkulero aspektos kiel ĉi-sube post ĝia publikiĝo. Memoru ke la cirkulero ne estas publike legebla ĝis vi alklakis la butonon ‘Publikigi’.</b>
+					</div>
+					{{/page.editor}}
+
+					<div id="loader">
+						<div class="preloader pl-size-xl">
+				            <div class="spinner-layer pl-light-blue">
+				                <div class="circle-clipper left">
+				                    <div class="circle"></div>
+				                </div>
+				                <div class="circle-clipper right">
+				                    <div class="circle"></div>
+				                </div>
+				            </div>
+				        </div>
+
+				        <p class="m-t-20">Ŝarĝas cirkuleron ...</p>
+					</div>
+					<div id="cirkulero" style="display:none;">
+						<p>Al cirkulero n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}} kontribuis <span class="data-contribs-total"></span> personoj:</p>
+						<div id="cirkulero-contrib-overview" class="m-t-15"></div>
+					</div>
 				</div>
 			</div>
+		</div>
+	</div>
+</div>
+
+<div class="template" id="template-cirkulero-contrib-overview">
+	<h4 class="cirkulero-contrib-overview-name"></h4>
+	<div class="row">
+		<div class="col-sm-6 col-lg-5">
+			<p class="cirkulero-contrib-overview-contributors-title font-bold"></p>
+			<ol class="cirkulero-contrib-overview-contributors"></ol>
+			<p class="cirkulero-contrib-overview-noncontributors-title font-bold"></p>
+			<ul class="cirkulero-contrib-overview-noncontributors"></ul>
+		</div>
+		<div class="col-sm-6 col-lg-2">
+			<canvas class="cirkulero-contrib-overview-chart" aria-label="Diagramo de kontribuoj" width="300px" height="200px"></canvas>
 		</div>
 	</div>
 </div>

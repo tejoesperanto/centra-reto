@@ -35,7 +35,7 @@ $(function () {
 	var publishMessageEl = $('#manage-cirkuleroj-form-publish_message');
 	publishMessageEl.val(pageData.publishMessage);
 
-	var groupFields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
+	var groupFields = [ 'contribute', 'appear', 'statistics' ];
 	// Obtain existing groups
 	performAPIRequest('post', '/api/cirkuleroj/get_groups')
 		.then(function (res) {

@@ -15,7 +15,6 @@ async function update_groups (req, res, next) {
 	 * contribute  (number[]) An array of group ids
 	 * appear      (number[]) An array of group ids
 	 * statistics  (number[]) An array of group ids
-	 * responsible (number[]) An array of group ids
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -27,8 +26,7 @@ async function update_groups (req, res, next) {
 	const purposes = [
 		'contribute',
 		'appear',
-		'statistics',
-		'responsible'
+		'statistics'
 	];
 	const fields = Object.assign([], purposes);
 	if (!req.handleRequiredFields(fields)) { return; }

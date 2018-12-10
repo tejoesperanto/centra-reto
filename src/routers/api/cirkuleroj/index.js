@@ -3,10 +3,12 @@ import express from 'express';
 import * as CRApi from '..';
 import { wrap } from '../..';
 
+import apiClose from './_close';
 import apiContribute from './_contribute';
 import apiCreate from './_create';
 import apiDeleteReminderDirect from './_delete_reminder_direct';
 import apiDeleteReminderList from './_delete_reminder_list';
+import apiGetContributions from './_get_contributions';
 import apiGetGroups from './_get_groups';
 import apiGetOwnContributions from './_get_own_contributions';
 import apiGetRemindersDirect from './_get_reminders_direct';
@@ -29,6 +31,11 @@ export default function () {
 
 	const middleware = CRApi.middleware;
 
+	router.post('/close',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiClose));
+
 	router.post('/contribute',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
@@ -48,6 +55,10 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiDeleteReminderList));
+
+	router.post('/get_contributions',
+		middleware.requireInitialSetup,
+		wrap(apiGetContributions));
 
 	router.post('/get_groups',
 		middleware.requireLogin,
@@ -85,7 +96,6 @@ export default function () {
 		wrap(apiList));
 
 	router.post('/list_contributors',
-		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiListContributors));
 

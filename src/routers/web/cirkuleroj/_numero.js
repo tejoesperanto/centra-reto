@@ -29,13 +29,16 @@ async function numero (req, res, next) {
 		const data = {
 			title: `Cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
+				'/plugins/chartjs/Chart.bundle.min.js',
 				'/js/cr/main/cirkuleroj/cirkulero.js'
 			],
 			page: {
-				cirkulero: row
+				cirkulero: row,
+				editor: false
 			},
 			pageDataObj: {
-				cirkulero: row
+				cirkulero: row,
+				editor: false
 			}
 		};
 		await res.sendRegularPage('cirkuleroj/cirkulero', data);

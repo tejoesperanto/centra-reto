@@ -7,10 +7,10 @@ async function list_contributors (req, res, next) {
 	 * Lists which users have contributed to a given cirkulero and which have not
 	 *
 	 * Login required
-	 * Initial setup required
+	 * Initial setup required if logged in
 	 *
 	 * Permissions required:
-	 * cirkuleroj.manage
+	 * cirkuleroj.manage (Only if trying to read a cirkulero that's not yet been published)
 	 *
 	 * Parameters:
 	 *   cirkulero_id (number)
@@ -21,17 +21,16 @@ async function list_contributors (req, res, next) {
 	 *       id    (string|null) The id of the group or null if this is the “remainder” group
 	 *       name  (string|null) The name of the group or null if this is the “remainder” group
 	 *     users (Object[])
-	 *       id                   (number)  The id of the user
-	 *       long_name            (string)  The long name of the user
-	 *       full_name_latin_sort (string)  The user's name for sorting purposes
-	 *       group_name           (string)  The user's formatted group name
-	 *       contributed          (boolean) Whether the user has contributed to the cirkulero as a member of this group
+	 *       id                   (number)       The id of the user
+	 *       email                (string)       The email address of the user
+	 *       long_name            (string|null)  The long name of the user or null if the user hasn't completed the initial setup
+	 *       full_name_latin_sort (string|null)  The user's name for sorting purposes or null if the user hasn't completed the initial setup
+	 *       group_name           (string)       The user's formatted group name
+	 *       contributed          (boolean)      Whether the user has contributed to the cirkulero as a member of this group
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
 	 */
-	
-	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const fields = [
 		'cirkulero_id'
@@ -40,6 +39,16 @@ async function list_contributors (req, res, next) {
 
 	if (!Number.isSafeInteger(req.body.cirkulero_id)) {
 		res.sendAPIError('INVALID_ARGUMENT', ['cirkulero_id']);
+		return;
+	}
+
+	// Try to find the cirkulero
+	const stmt = CR.db.cirkuleroj.prepare('select published from cirkuleroj where id = ?');
+	const row = stmt.get(req.body.cirkulero_id);
+
+	if (!row ||
+		(!row.published && (!req.user || !await req.user.hasPermission('cirkuleroj.manage')))) {
+		res.sendAPIError('CIRKULERO_NOT_FOUND');
 		return;
 	}
 
@@ -121,8 +130,9 @@ async function list_contributors (req, res, next) {
 
 			return {
 				id: user.id,
-				long_name: user.getLongName(),
-				full_name_latin_sort: user.getNameDetails().fullNameLatinSort,
+				email: user.email,
+				long_name: user.getLongName() || null,
+				full_name_latin_sort: user.getNameDetails().fullNameLatinSort || null,
 				group_name: groupName,
 				contributed: contributed
 			};

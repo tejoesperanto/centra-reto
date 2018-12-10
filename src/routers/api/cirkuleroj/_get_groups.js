@@ -13,7 +13,6 @@ async function get_groups (req, res, next) {
 	 * contribute  (number[]) An array of group ids
 	 * appear      (number[]) An array of group ids
 	 * statistics  (number[]) An array of group ids
-	 * responsible (number[]) An array of group ids
 	 */
 	
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
@@ -21,7 +20,7 @@ async function get_groups (req, res, next) {
 	const stmt = CR.db.cirkuleroj.prepare('select `purpose`, `groups` from groups');
 	const rows = stmt.all()
 
-	const allowedFields = [ 'contribute', 'appear', 'statistics', 'responsible' ];
+	const allowedFields = [ 'contribute', 'appear', 'statistics' ];
 	const response = {};
 	for (let row of rows) {
 		const purpose = row.purpose.toLowerCase();
