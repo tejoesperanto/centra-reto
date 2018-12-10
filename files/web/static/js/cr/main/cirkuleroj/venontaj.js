@@ -1,11 +1,10 @@
 $(function () {
 	// CREATE CIRKULERO
 	var defaultDate = moment();
-	defaultDate.set('day', 1);
-	defaultDate.set('hour', 12);
-	defaultDate.set('minute', 0);
+	defaultDate.date(5);
+	defaultDate.hour(12);
+	defaultDate.minute(0);
 	defaultDate.add(1, 'month');
-	defaultDate.set('day', 6); // 6 = 5, We have to do this again due to varying month lengths
 	$('#create-cirkulero-form-deadline').datetimepicker({
 		locale: 'eo',
 		minDate: moment(),
