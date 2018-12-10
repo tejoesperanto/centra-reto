@@ -18,14 +18,35 @@ $(function () {
 
 			var overview = $('#cirkulero-contrib-overview');
 			var contribIter = 1;
-			var contributorGroup;
-			// TODO: “Aliaj”
-			for (var i in pageData.groups.statistics) {
-				var group = pageData.groups.statistics[i];
+			var statisticsGroups = pageData.groups.statistics;
+			statisticsGroups.push(null); // Remainder group
+			for (var i in statisticsGroups) {
+				var group = statisticsGroups[i];
+				var contributorGroup;
 
-				for (var n in cirkuleroInfo.contributors) {
-					contributorGroup = cirkuleroInfo.contributors[n];
-					if (contributorGroup.group.id === group.id) { break; }
+				if (group === null) {
+					var users = [];
+					for (var n in cirkuleroInfo.contributors) {
+						var group = cirkuleroInfo.contributors[n];
+						if (group.hasStats || !group.users.length) { continue; }
+						users = users.concat(group.users);
+					}
+
+					contributorGroup = {
+						isRemainder: true,
+						group: {
+							name: 'Aliaj'
+						},
+						users: users
+					};
+				} else {
+					for (var n in cirkuleroInfo.contributors) {
+						contributorGroup = cirkuleroInfo.contributors[n];
+						if (contributorGroup.group.id === group.id) {
+							contributorGroup.hasStats = true;
+							break;
+						}
+					}
 				}
 
 				if (contributorGroup.users.length < 1) {
@@ -51,7 +72,7 @@ $(function () {
 				var template = cloneTemplate('#template-cirkulero-contrib-overview');
 				overview.append(template);
 
-				template.find('.cirkulero-contrib-overview-name').text(group.nameBase);
+				template.find('.cirkulero-contrib-overview-name').text(contributorGroup.group.name);
 
 				// Kontribuis
 				var contribTitle = template.find('.cirkulero-contrib-overview-contributors-title');
