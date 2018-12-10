@@ -725,7 +725,32 @@ function setUpDataTable (options) {
     return {
         table: table,
         columns: columns,
-        getData: function () { return latestData; }
+        getData: function () { return latestData; },
+        getRowData: function (row, comparators) {
+            if (!(comparators instanceof Array)) { comparators = [comparators]; }
+
+            var _rowDataRaw = row.data();
+            var _rowData = {};
+            for (var i in _rowDataRaw) {
+                var val = _rowDataRaw[i];
+                var key = columns[i];
+                _rowData[key] = val;
+            }
+            var rowData;
+            for (var i in latestData.data) {
+                for (var n in comparators) {
+                    var comparator = comparators[n];
+                    if (latestData.data[i][comparator] !== _rowData[comparator]) {
+                        continue;
+                    }
+                }
+
+                rowData = latestData.data[i];
+                break;
+            }
+
+            return rowData;
+        }
     };
 }
 

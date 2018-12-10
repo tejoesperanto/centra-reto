@@ -110,24 +110,8 @@ $(function () {
 			var rows = table.rows().nodes().to$();
 			rows.addClass('clickable');
 			rows.on('click', function () { // The listener is automatically removed upon the next draw
-				var data = tableData.getData();
 				var row = table.row(this);
-				var _rowDataRaw = row.data();
-				var _rowData = {};
-				for (var i in _rowDataRaw) {
-					var val = _rowDataRaw[i];
-					var key = tableData.columns[i];
-					_rowData[key] = val;
-				}
-				var id = _rowData.id;
-				var rowData;
-				for (var i in data.data) {
-					if (data.data[i].id === _rowData.id) {
-						rowData = data.data[i];
-						break;
-					}
-				}
-
+				var rowData = tableData.getRowData(row, 'id');
 				var modalTitle = 'Uzanto ' + rowData.email;
 
 				swal({
