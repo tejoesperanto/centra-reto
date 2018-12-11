@@ -36,3 +36,15 @@ export function removeUnsafeCharsOneLine (str) {
 	str = str.replace(/\u000a/g, '');
 	return str;
 }
+
+/**
+ * Like JSON.stringify but it replaces angle brakcets with their unicode codes to prevent inline HTML JSON XSS.
+ * Equivalent to using JSON_HEX_TAG in `json_encode()` in PHP
+ * @param  {Object} obj
+ * @return {string}
+ */
+export function safeInlineJSONStringify (obj) {
+	let json =  JSON.stringify(obj);
+	json = json.replace(/</g, '\\u003C');
+	return json;
+}

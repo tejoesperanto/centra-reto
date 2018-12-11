@@ -5,6 +5,7 @@ import path from 'path';
 import moment from 'moment-timezone';
 
 import { wrap } from '..';
+import { safeInlineJSONStringify } from '../../util';
 
 import routerCirkuleroj from './cirkuleroj';
 import routerAdministrado from './administrado';
@@ -220,7 +221,7 @@ async function amendView (req, view) {
 
 	// Page data
 	if (view.pageDataObj) {
-		view.pageDataJSON = JSON.stringify(view.pageDataObj);
+		view.pageDataJSON = safeInlineJSONStringify(view.pageDataObj);
 	}
 
 	// User data
