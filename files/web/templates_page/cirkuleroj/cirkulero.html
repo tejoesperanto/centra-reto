@@ -34,6 +34,7 @@
 						<div id="cirkulero-contrib-overview" class="m-t-15"></div>
 
 						<h3>Kontribuoj</h3>
+						<p class="font-italic">Kontribuoj markitaj per * estis redaktitaj de ĜenSek.</p>
 						<div id="cirkulero-contribs" class="panel-group m-t-20" role="tablist" aria-multiselectable="true">
 					</div>
 				</div>
@@ -65,7 +66,7 @@
 			</a>
 		</h4>
 	</div>
-	<div class="panel-collapse collapse" role="tabpanel">
+	<div class="panel-collapse{{^page.editor}} collapse{{/page.editor}}" role="tabpanel">
 		<div class="panel-body">
 			<div class="row">
 				<div class="cirkulero-contrib-faris col-sm-6 col-lg-4">
@@ -83,10 +84,44 @@
 			</div>
 			<div class="form-group form-float cirkulero-contrib-comment m-t-5">
 				<div class="form-line">
-					<textarea rows="1" name="comment" class="form-control no-resize autosize"></textarea>
+					<textarea rows="1" disabled class="form-control no-resize autosize"></textarea>
 					<label class="form-label">Komentoj</label>
 				</div>
 			</div>
+			<div>
+				<button class="cirkulero-contrib-edit-button btn btn-primary waves-effect">
+					<i class="material-icons">edit</i>
+					<span>Redakti kontribuon</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="template-edit-contrib-modal" class="template align-left">
+	<p class="font-bold">Kontribuo de <span class="data-name"></span></p>
+	<p class="font-italic">Alklaku ajnan punkton sub ‘faris’, ‘faras’, ‘faros’ por redakti.</p>
+	<div class="edit-contrib-modal-faris m-b-15">
+		<b>Faris:</b>
+		<ul></ul>
+	</div>
+	<div class="edit-contrib-modal-faras m-b-15">
+		<b>Faras:</b>
+		<ul></ul>
+	</div>
+	<div class="edit-contrib-modal-faros m-b-15">
+		<b>Faros:</b>
+		<ul></ul>
+	</div>
+	<div class="form-group form-float cirkulero-contrib-comment m-t-30">
+		<div class="form-line">
+			<textarea rows="1" class="form-control no-resize autosize"></textarea>
+			<label class="form-label">Komentoj</label>
+		</div>
+	</div>
+	<div class="form-group form-float cirkulero-contrib-user_role_comment m-t-15">
+		<div class="form-line">
+			<input type="text" class="form-control">
+			<label class="form-label">Komento pri rolo (ekz. “eksa ĜenSek”)</label>
 		</div>
 	</div>
 </div>

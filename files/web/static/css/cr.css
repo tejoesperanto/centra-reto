@@ -160,4 +160,13 @@ a.collapsed>.panel-collapse-arrow:before {
 	.panel-print>.panel-collapse {
 		display: inherit;
 	}
+
+	.panel-print>.panel-heading>.panel-title {
+		background-color: inherit !important;
+	}
+}
+
+#cirkulero-contribs>.panel[data-edited=true] .cirkulero-contrib-title:before {
+	content: '*';
+	margin-right: 10px
 }
