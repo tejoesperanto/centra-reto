@@ -142,3 +142,21 @@ a.collapsed>.panel-collapse-arrow:before {
 .form-control[disabled]~label.form-label {
 	cursor: not-allowed;
 }
+
+@media print {
+	h1,h2,h3,h4,h5 {
+		page-break-after: avoid;
+	}
+
+	.panel-print>.panel-heading>.panel-title>a>.panel-collapse-arrow {
+		display: none;
+	}
+
+	.panel-print {
+		page-break-inside: avoid;
+	}
+
+	.panel-print>.panel-collapse {
+		display: inherit;
+	}
+}

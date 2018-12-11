@@ -738,12 +738,15 @@ function setUpDataTable (options) {
             }
             var rowData;
             for (var i in latestData.data) {
+                var found = true;
                 for (var n in comparators) {
                     var comparator = comparators[n];
                     if (latestData.data[i][comparator] !== _rowData[comparator]) {
-                        continue;
+                        found = false;
+                        break;
                     }
                 }
+                if (!found) { continue; }
 
                 rowData = latestData.data[i];
                 break;
