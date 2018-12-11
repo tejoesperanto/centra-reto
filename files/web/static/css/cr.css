@@ -54,10 +54,10 @@ textarea.cr-code {
 .cr-user-picture {
 	background: #fff;
 	border-radius:50%;
-    -moz-border-radius:50%;
-    -webkit-border-radius:50%;
-    display: block;
-    margin-bottom: -5px; /* hack to solve weird phantom bottom margin beneath svg compared to img */
+	-moz-border-radius:50%;
+	-webkit-border-radius:50%;
+	display: block;
+	margin-bottom: -5px; /* hack to solve weird phantom bottom margin beneath svg compared to img */
 }
 
 .user-info {
@@ -144,9 +144,10 @@ a.collapsed>.panel-collapse-arrow:before {
 }
 
 @media print {
-	h1,h2,h3,h4,h5 {
-		page-break-after: avoid;
-	}
+	* {
+		-webkit-transition: none !important;
+		transition: none !important;
+	  }
 
 	.panel-print>.panel-heading>.panel-title>a>.panel-collapse-arrow {
 		display: none;
