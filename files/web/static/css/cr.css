@@ -137,3 +137,8 @@ textarea.cr-code {
 a.collapsed>.panel-collapse-arrow:before {
 	content: '\e313';
 }
+
+/* Hotfix for invalid cursor in disabled floating label input fields in AdminBSB */
+.form-control[disabled]~label.form-label {
+	cursor: not-allowed;
+}

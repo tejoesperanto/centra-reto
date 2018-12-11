@@ -252,16 +252,11 @@ $(function () {
 				handleFaro(contrib, 'faras');
 				handleFaro(contrib, 'faros');
 
-				var commentEl = template.find('.cirkulero-contrib-comment');
-				if (contrib.comment) {
-					var textarea = commentEl.find('textarea');
-					if (!pageData.editor) {
-						textarea.attr('readonly', true);
-					}
-					textarea.val(contrib.comment);
-				} else {
-					commentEl.remove();
-				}
+				var commentEl = template.find('.cirkulero-contrib-comment textarea');
+				//if (!pageData.editor) {
+					commentEl.attr('disabled', true);
+				//}
+				commentEl.val(contrib.comment || '');
 			}
 
 			$('#loader').hide();
