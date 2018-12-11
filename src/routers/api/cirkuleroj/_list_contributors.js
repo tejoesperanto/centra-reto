@@ -18,8 +18,9 @@ async function list_contributors (req, res, next) {
 	 * Returns:
 	 *   groups (Object[])
 	 *     group (Object)
-	 *       id    (string|null) The id of the group or null if this is the “remainder” group
-	 *       name  (string|null) The name of the group or null if this is the “remainder” group
+	 *       id              (string|null) The id of the group or null if this is the “remainder” group
+	 *       name            (string|null) The name of the group or null if this is the “remainder” group
+	 *       members_allowed (boolean)     Whether this group may contain direct members
 	 *     users (Object[])
 	 *       id                   (number)       The id of the user
 	 *       email                (string)       The email address of the user
@@ -27,6 +28,7 @@ async function list_contributors (req, res, next) {
 	 *       full_name_latin_sort (string|null)  The user's name for sorting purposes or null if the user hasn't completed the initial setup
 	 *       group_name           (string)       The user's formatted group name
 	 *       contributed          (boolean)      Whether the user has contributed to the cirkulero as a member of this group
+	 *       direct               (boolean)      Whether the user contributed directly into this group
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -134,14 +136,16 @@ async function list_contributors (req, res, next) {
 				long_name: user.getLongName() || null,
 				full_name_latin_sort: user.getNameDetails().fullNameLatinSort || null,
 				group_name: groupName,
-				contributed: contributed
+				contributed: contributed,
+				direct: !!contrib
 			};
 		}));
 
 		return {
 			group: {
 				id: group.id,
-				name: group.nameBase
+				name: group.nameBase,
+				members_allowed: group.membersAllowed
 			},
 			users: usersDetails
 		};

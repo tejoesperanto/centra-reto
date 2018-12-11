@@ -35,7 +35,8 @@ $(function () {
 					contributorGroup = {
 						isRemainder: true,
 						group: {
-							name: 'Aliaj'
+							name: 'Aliaj',
+							members_allowed: true
 						},
 						users: users
 					};
@@ -82,11 +83,18 @@ $(function () {
 				var contribTitle = template.find('.cirkulero-contrib-overview-contributors-title');
 				var contribList = template.find('.cirkulero-contrib-overview-contributors');
 				if (contributors.length) {
+					if (contributorGroup.group.members_allowed) {
+						contribList.attr('start', contribIter);
+					} else {
+						var newEl = $('<ul class="cirkulero-contrib-overview-contributors"></ul>');
+						contribList.replaceWith(newEl);
+						contribList = newEl;
+					}
+
 					contribTitle.text('Kontribuis (' + contributors.length + '/' + totalUsers + '):');
-					contribList.attr('start', contribIter);
 					for (var n in contributors) {
 						var user = contributors[n];
-						contribIter++;
+						if (contributorGroup.group.members_allowed) { contribIter++; }
 
 						var li = document.createElement('li');
 						contribList.append(li);
