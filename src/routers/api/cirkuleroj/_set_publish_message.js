@@ -3,7 +3,7 @@ import { removeUnsafeChars } from '../../../util';
 async function set_publish_message (req, res, next) {
 	/**
 	 * POST /set_publish_message
-	 * Sets the default cirkulero publish message
+	 * Sets the default cirkulero publish message and email address
 	 *
 	 * Login required
 	 * Initial setup required
@@ -13,6 +13,7 @@ async function set_publish_message (req, res, next) {
 	 *
 	 * Parameters:
 	 *   message (string)
+	 *   email   (string)
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -21,7 +22,8 @@ async function set_publish_message (req, res, next) {
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const fields = [
-		'message'
+		'message',
+		'email'
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
@@ -31,8 +33,15 @@ async function set_publish_message (req, res, next) {
 	}
 	const message = removeUnsafeChars(req.body.message);
 
-	const stmt = CR.db.cirkuleroj.prepare('update settings set value = ? where key = "publish_message"');
-	stmt.run(message);
+	if (typeof req.body.email !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['email']);
+		return;
+	}
+	const email = removeUnsafeChars(req.body.email);
+
+	const stmt = CR.db.cirkuleroj.prepare('update settings set value = ? where key = ?');
+	stmt.run(message, "publish_message");
+	stmt.run(email, "publish_email");
 
 	res.sendAPIResponse();
 }

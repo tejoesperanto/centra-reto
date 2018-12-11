@@ -15,8 +15,19 @@ async function arkivo (req, res, next) {
 		});
 	}
 
-	const stmt = CR.db.cirkuleroj.prepare('select value from settings where key = "publish_message"');
-	const publishMessage = stmt.get().value;
+	const stmt = CR.db.cirkuleroj.prepare('select key, value from settings where key in ("publish_message", "publish_email")');
+	const settings = stmt.all();
+	let publishMessage;
+	let publishEmail;
+	for (let setting of settings) {
+		switch (setting.key) {
+			case 'publish_message':
+			publishMessage = setting.value;
+			break;
+			case 'publish_email':
+			publishEmail = setting.value;
+		}
+	}
 
 	const data = {
 		title: 'Cirkuleroj',
@@ -34,7 +45,8 @@ async function arkivo (req, res, next) {
 		],
 		pageDataObj: {
 			groups,
-			publishMessage: publishMessage
+			publishMessage: publishMessage,
+			publishEmail: publishEmail
 		}
 	};
 	await res.sendRegularPage('cirkuleroj/agordoj', data);

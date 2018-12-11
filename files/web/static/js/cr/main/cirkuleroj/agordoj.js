@@ -35,6 +35,10 @@ $(function () {
 	var publishMessageEl = $('#manage-cirkuleroj-form-publish_message');
 	publishMessageEl.val(pageData.publishMessage);
 
+	// Publish email
+	var publishEmailEl = $('#manage-cirkuleroj-form-publish_email');
+	publishEmailEl.val(pageData.publishEmail);
+
 	var groupFields = [ 'contribute', 'appear', 'statistics' ];
 	// Obtain existing groups
 	performAPIRequest('post', '/api/cirkuleroj/get_groups')
@@ -86,7 +90,8 @@ $(function () {
 		Promise.all([
 			performAPIRequest('post', '/api/cirkuleroj/update_groups', groupData),	
 			performAPIRequest('post', '/api/cirkuleroj/set_publish_message', {
-				message: $('#manage-cirkuleroj-form-publish_message').val()
+				message: $('#manage-cirkuleroj-form-publish_message').val(),
+				email:   $('#manage-cirkuleroj-form-publish_email')  .val()
 			})
 		]).then(function (res) {
 			button.removeAttr('disabled');
