@@ -17,21 +17,24 @@
 
 					<div id="loader">
 						<div class="preloader pl-size-xl">
-				            <div class="spinner-layer pl-light-blue">
-				                <div class="circle-clipper left">
-				                    <div class="circle"></div>
-				                </div>
-				                <div class="circle-clipper right">
-				                    <div class="circle"></div>
-				                </div>
-				            </div>
-				        </div>
+							<div class="spinner-layer pl-light-blue">
+								<div class="circle-clipper left">
+									<div class="circle"></div>
+								</div>
+								<div class="circle-clipper right">
+									<div class="circle"></div>
+								</div>
+							</div>
+						</div>
 
-				        <p class="m-t-20">Ŝarĝas cirkuleron ...</p>
+						<p class="m-t-20">Ŝarĝas cirkuleron ...</p>
 					</div>
 					<div id="cirkulero" style="display:none;">
 						<p>Al cirkulero n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}} kontribuis <span class="data-contribs-total"></span> personoj:</p>
 						<div id="cirkulero-contrib-overview" class="m-t-15"></div>
+
+						<h3>Kontribuoj</h3>
+						<div id="cirkulero-contribs" class="panel-group m-t-20" role="tablist" aria-multiselectable="true">
 					</div>
 				</div>
 			</div>
@@ -50,6 +53,40 @@
 		</div>
 		<div class="col-sm-6 col-lg-2">
 			<canvas class="cirkulero-contrib-overview-chart" aria-label="Diagramo de kontribuoj" width="300px" height="200px"></canvas>
+		</div>
+	</div>
+</div>
+<div class="template panel panel-col-green" id="template-cirkulero-contrib">
+	<div class="panel-heading" role="tab">
+		<h4 class="panel-title">
+			<a class="collapsed" role="button" data-toggle="collapse" aria-expanded="false">
+				<span class="panel-collapse-arrow material-icons"></span>
+				<span class="cirkulero-contrib-title"></span>
+			</a>
+		</h4>
+	</div>
+	<div class="panel-collapse collapse" role="tabpanel">
+		<div class="panel-body">
+			<div class="row">
+				<div class="cirkulero-contrib-faris col-sm-6 col-lg-4">
+					<b>Faris:</b>
+					<ul></ul>
+				</div>
+				<div class="cirkulero-contrib-faras col-sm-6 col-lg-4">
+					<b>Faras:</b>
+					<ul></ul>
+				</div>
+				<div class="cirkulero-contrib-faros col-sm-6 col-lg-4">
+					<b>Faros:</b>
+					<ul></ul>
+				</div>
+			</div>
+			<div class="form-group form-float cirkulero-contrib-comment m-t-5">
+				<div class="form-line">
+					<textarea rows="1" name="comment" class="form-control no-resize autosize"></textarea>
+					<label class="form-label">Komentoj</label>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

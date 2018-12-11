@@ -30,7 +30,8 @@ async function numero (req, res, next) {
 			title: `Cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
 				'/plugins/chartjs/Chart.bundle.min.js',
-				'/js/cr/main/cirkuleroj/cirkulero.js'
+				'/js/cr/main/cirkuleroj/cirkulero.js',
+				'/plugins/autosize/autosize.min.js'
 			],
 			page: {
 				cirkulero: row,

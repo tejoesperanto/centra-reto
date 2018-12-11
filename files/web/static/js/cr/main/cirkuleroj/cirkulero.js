@@ -54,7 +54,11 @@ $(function () {
 				}
 
 				contributorGroup.users.sort(function (a, b) {
-					return a.full_name_latin_sort - b.full_name_latin_sort;
+					if (a.full_name_latin_sort < b.full_name_latin_sort) {
+						return -1;
+					} else {
+						return 1;
+					}
 				});
 
 				var contributors = [];
@@ -95,7 +99,11 @@ $(function () {
 
 						var span = document.createElement('span');
 						li.appendChild(span);
-						span.textContent = ' – ' + user.group_name;
+						if (user.long_name) {
+							span.textContent = ' – ' + user.group_name;
+						} else {
+							span.textContent = 'Nealiĝinto – ' + user.group_name;
+						}
 					}
 				} else {
 					contribTitle.remove();
@@ -126,7 +134,7 @@ $(function () {
 						if (user.long_name) {
 							span.textContent = ' – ' + user.group_name;
 						} else {
-							span.textContent = 'Nealiĝintulo – ' + user.group_name;
+							span.textContent = 'Nealiĝinto – ' + user.group_name;
 						}
 					}
 				} else {
@@ -157,8 +165,104 @@ $(function () {
 				});
 			}
 
+			// Contributions
+			var contributionsGroups = [];
+			var remainder = [];
+			for (var i in cirkuleroInfo.contributions) {
+				var contrib = cirkuleroInfo.contributions[i];
+				
+				var index = null;
+				for (var n = 0; n < pageData.groups.appear.length; n++) {
+					var group = pageData.groups.appear[n];
+					if (contrib.user.group_id === group.id) {
+						index = n;
+						break;
+					}
+				}
+
+				if (index) {
+					if (!contributionsGroups[index]) {
+						contributionsGroups[index] = [];
+					}
+					contributionsGroups[index].push(contrib);
+				} else {
+					remainder.push(contrib);
+				}
+			}
+			contributionsGroups.push(remainder);
+			var contributions = [];
+			for (var i in contributionsGroups) {
+				var group = contributionsGroups[i];
+				group.sort(function (a, b) {
+					if (a.full_name_latin_sort < b.full_name_latin_sort) {
+						return -1;
+					} else {
+						return 1;
+					}
+				});
+				contributions = contributions.concat(group);
+			}
+
+			var handleFaro = function (contrib, name) {
+				var fares = template.find('.cirkulero-contrib-' + name);
+				var faresList = fares.find('ul');
+				if (contrib[name].length < 1) {
+					contrib[name].push('-');
+				}
+				for (var n in contrib[name]) {
+					var faro = contrib[name][n];
+					var li = document.createElement('li');
+					faresList.append(li);
+					li.textContent = faro;
+				}
+			};
+
+			var contribsEl = $('#cirkulero-contribs');
+			for (var i in contributions) {
+				var contrib = contributions[i];
+
+				var template = cloneTemplate('#template-cirkulero-contrib');
+				contribsEl.append(template);
+
+				var prefix = 'contrib-' + i;
+				template.find('.panel-heading')[0].id = prefix;
+				template.find('.collapsed')
+					.attr('href', '#' + prefix + '-collapse')
+					.attr('aria-controls', prefix + '-collapse');
+				template.find('.panel-collapse')
+					.attr('id', prefix + '-collapse')
+					.attr('aria-labelledby', prefix);
+
+				var title = contrib.user.long_name || 'Nealiĝinto';
+				title += ' – ' + contrib.user.role;
+				if (contrib.user.role_comment) {
+					title += ' – ' + contrib.user.role_comment;
+				}
+				template.find('.cirkulero-contrib-title').text(title);
+
+				handleFaro(contrib, 'faris');
+				handleFaro(contrib, 'faras');
+				handleFaro(contrib, 'faros');
+
+				var commentEl = template.find('.cirkulero-contrib-comment');
+				if (contrib.comment) {
+					var textarea = commentEl.find('textarea');
+					if (!pageData.editor) {
+						textarea.attr('readonly', true);
+					}
+					textarea.val(contrib.comment);
+				} else {
+					commentEl.remove();
+				}
+			}
+
 			$('#loader').hide();
-			$('#cirkulero').show();
+
+			var cirkulero = $('#cirkulero');
+			cirkulero.show(0, function () {
+				$.AdminBSB.input.activate(cirkulero);
+				autosize(cirkulero.find('.autosize'));
+			});
 		});
 	};
 

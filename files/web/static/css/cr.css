@@ -129,3 +129,11 @@ textarea.cr-code {
 .swal-content table.table {
 	text-align: left;
 }
+
+.panel-collapse-arrow:before {
+	content: '\e316';
+}
+
+a.collapsed>.panel-collapse-arrow:before {
+	content: '\e313';
+}

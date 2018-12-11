@@ -22,6 +22,7 @@ async function pretigi (req, res, next) {
 		title: `Pretigi cirkuleron n-ro ${row.id} por ${row.name}`,
 		scripts: [
 			'/plugins/chartjs/Chart.bundle.min.js',
+			'/plugins/autosize/autosize.min.js',
 			'/js/cr/main/cirkuleroj/cirkulero.js'
 		],
 		page: {
