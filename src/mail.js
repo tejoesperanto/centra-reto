@@ -86,7 +86,7 @@ export async function renderSendMail (template, templateData, sendOptions) {
 	const mail = await renderMail(template, templateData);
 	sendOptions.text = mail.text;
 	sendOptions.html = mail.html;
-	sendOptions.subject = mail.data.subject;
+	if (!sendOptions.subject) { sendOptions.subject = mail.data.subject; }
 
 	// Embed the pictures
 	const emailImgDir = path.join(CR.filesDir, 'email', 'img');

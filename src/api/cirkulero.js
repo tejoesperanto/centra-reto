@@ -1,4 +1,9 @@
+import moment from 'moment-timezone';
+import url from 'url';
+
 import Group from './group';
+import * as CRMail from '../mail';
+import { promiseAllObject, escapeHTML } from '../util';
 
 /**
  * Returns all groups a user belongs to that relate to cirkuleroj
@@ -90,4 +95,151 @@ export function getAllContributions (id) {
 	const stmt = CR.db.cirkuleroj.prepare('select user_id, group_id, user_role, user_role_comment, faris, faras, faros, comment, modified_by_admin from cirkuleroj_contributions where cirkulero_id = ?');
 	const rows = stmt.all(id);
 	return rows;
+}
+
+/**
+ * Checks all cirkuleroj to see if a reminder should be sent out.
+ * This function is automatically called by the event loop.
+ */
+export async function checkReminders () {
+	const timeNow = moment().unix();
+
+	let stmt = CR.db.cirkuleroj.prepare('select id, delta_time, message from reminders_direct order by delta_time desc');
+	const directReminders = stmt.all();
+
+	stmt = CR.db.cirkuleroj.prepare('select id, delta_time, message, list_email from reminders_lists order by delta_time desc');
+	const listReminders = stmt.all();
+
+	stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, note, open from cirkuleroj where reminders = 1 and published = 0');
+	const cirkuleroj = stmt.all();
+
+	const mailPromises = [];
+
+	for (let cirk of cirkuleroj) {
+		const openCirk = () => {
+			if (!cirk.open) {
+				const stmt = CR.db.cirkuleroj.prepare('update cirkuleroj set open = 1 where id = ?');
+				stmt.run(cirk.id);
+				cirk.open = 1;
+			}
+		};
+
+		// List reminders
+		stmt = CR.db.cirkuleroj.prepare('select reminder_id from reminders_lists_sent where cirkulero_id = ?')
+		const sentListReminders = new Set(stmt.all(cirk.id).map(x => x.reminder_id));
+
+		for (let i = 0; i < listReminders.length; i++) {
+			const reminder = listReminders[i];
+			// Ensure we haven't already sent the reminder
+			if (sentListReminders.has(reminder.id)) { continue; }
+			// Check if it's time to send it
+			const minTime = cirk.deadline - reminder.delta_time;
+			if (minTime > timeNow) { continue; }
+
+			openCirk();
+
+			stmt = CR.db.cirkuleroj.prepare('insert into reminders_lists_sent (reminder_id, cirkulero_id) values (?, ?)');
+			stmt.run(reminder.id, cirk.id);
+
+			let msg = reminder.message;
+			msg = msg.replace(/{{cirkulero}}/g, `Cirkulero n-ro ${cirk.id} de ${cirk.name}`);
+			msg = msg.replace(/{{numero}}/g, cirk.id);
+			msg = msg.replace(/{{monato}}/g, cirk.name);
+			msg = msg.replace(/{{noto}}/g, cirk.note || '');
+			msg = msg.replace(/{{ligilo}}/g, url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirk.id}`));
+			msg = msg.replace(/{{limdato}}/g, moment.unix(cirk.deadline).format(CR.timeFormats.dateTimeFull));
+
+			// Remove consecutive newlines
+			msg = msg.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '\n\n');
+
+			let subject = `Cirkulero ${cirk.id}`;
+			if (i > 0) { // This is not the first reminder
+				subject += ' – Memorigo';
+			}
+
+			mailPromises.push(CRMail.sendMail({
+				subject: subject,
+				to: reminder.list_email,
+				text: msg
+			}));
+		}
+
+		// Direct reminders
+		stmt = CR.db.cirkuleroj.prepare('select reminder_id from reminders_direct_sent where cirkulero_id = ?');
+		const sentDirectReminders = new Set(stmt.all(cirk.id).map(x => x.reminder_id));
+
+		stmt = CR.db.cirkuleroj.prepare('select user_id from cirkuleroj_contributions where cirkulero_id = ?');
+		const contributors = stmt.all(cirk.id).map(x => x.user_id);
+
+		// Get all users who haven't contributed
+		const cirkGroups = await getGroups();
+		const childrenObjPromises = {};
+		for (let group of cirkGroups.contribute) {
+			childrenObjPromises[group.id] = group.getAllChildGroups();
+		}
+		const childrenObj = await promiseAllObject(childrenObjPromises);
+		const children = [].concat(...Object.values(childrenObj));
+		const allGroups = cirkGroups.contribute.concat(children);
+		const groups = allGroups.filter(group => group.membersAllowed);
+		const usersArrs = await Promise.all(groups.map(group => group.getAllUsers(true)));
+		const users = {};
+		for (let user of [].concat(...usersArrs)) {
+			if (user.id in users) { continue; }
+			if (contributors.indexOf(user.id) > -1) { continue; }
+			users[user.id] = user;
+		}
+
+		for (let reminder of directReminders) {
+			// Ensure we haven't already sent the reminder
+			if (sentDirectReminders.has(reminder.id)) { continue; }
+			// Check if it's time to send it
+			const minTime = cirk.deadline - reminder.delta_time;
+			if (minTime > timeNow) { continue; }
+
+			openCirk();
+
+			stmt = CR.db.cirkuleroj.prepare('insert into reminders_direct_sent (reminder_id, cirkulero_id) values (?, ?)');
+			stmt.run(reminder.id, cirk.id);
+
+			const contribURL = url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirk.id}`);
+			const prettyContribURL = contribURL.replace(/^https?:\/\/?/, '');
+
+			let generalMsg = reminder.message;
+			generalMsg = generalMsg.replace(/{{cirkulero}}/g, `Cirkulero n-ro ${cirk.id} de ${cirk.name}`);
+			generalMsg = generalMsg.replace(/{{numero}}/g, cirk.id);
+			generalMsg = generalMsg.replace(/{{monato}}/g, cirk.name);
+			generalMsg = generalMsg.replace(/{{noto}}/g, cirk.note || '');
+			generalMsg = generalMsg.replace(/{{limdato}}/g, moment.unix(cirk.deadline).format(CR.timeFormats.dateTimeFull));
+
+			for (let user of Object.values(users)) {
+				let name = user.getBriefName();
+				if (!name) { name = 'cirkulerkontribuanto'; }
+
+				let userMessage = generalMsg.replace(/{{nomo}}/g, name);
+
+				let htmlMessage = escapeHTML(userMessage);
+
+				userMessage = userMessage.replace(/{{ligilo}}/g, contribURL);
+				htmlMessage = htmlMessage.replace(/{{ligilo}}/g, `<a href="${contribURL}">${prettyContribURL}</a>`);
+
+				// Remove consecutive newlines
+				userMessage = userMessage.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '\n\n');
+				htmlMessage = htmlMessage.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '\n\n');
+
+				const paragraphs = htmlMessage.split(/(?:\r?\n){2}/g)
+					.map(par => par.split(/\r?\n/g).join('<br>'));
+
+				mailPromises.push(CRMail.renderSendMail('cirkulero_reminder_direct', {
+					preheader: `Vi ankoraŭ ne kontribuis al cirkulero ${cirk.id}.`,
+					text: userMessage,
+					paragraphs: paragraphs
+				}, {
+					subject: `Cirkulero ${cirk.id} – Vi ankoraŭ ne kontribuis`,
+					to: user.email
+				}));
+			}
+		}
+	}
+
+	await Promise.all(mailPromises);
 }

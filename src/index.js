@@ -11,6 +11,7 @@ import readline from 'readline';
 import * as CRHttp from './http';
 import * as CRMail from './mail';
 import * as CRCmd from './cmd';
+import * as CRTimer from './timer';
 
 (async () => {
 	const DBs = [
@@ -34,7 +35,8 @@ import * as CRCmd from './cmd';
 		reader: readline.createInterface(process.stdin, process.stdout),
 		timeFormats: {
 			dateSimple: 'YYYY-MM-DD',
-			dateTimeSimple: 'YYYY-MM-DD HH:mm:ss'
+			dateTimeSimple: 'YYYY-MM-DD HH:mm:ss',
+			dateTimeFull: 'D[-a de] MMMM YYYY H:mm [UTC]'
 		}
 	};
 	CR.defaultDataDir = path.join(CR.filesDir, 'data_default');
@@ -135,6 +137,9 @@ import * as CRCmd from './cmd';
 	// Create smtp server
 	CRMail.init();
 
+	// Set up timers
+	CRTimer.init();
+
 	// Create http server
 	await CRHttp.init();
 
@@ -152,10 +157,16 @@ import * as CRCmd from './cmd';
 		process.stdout.write('\r\r');
 
 		CR.log.info(`Ricevis ${signal}, malŝaltiĝas`);
+
 		// Perform any necessary cleanup
+		CR.log.info('... Fermas datumbazojn');
 		for (let dbName in CR.db) {
 			CR.db[dbName].close();
 		}
+
+		CR.log.info('... Malŝaltas tempeventojn');
+		CRTimer.removeAllTimers();
+
 		// Shut down
 		process.exit();
 	};

@@ -2,7 +2,6 @@ import { promisify } from 'util';
 import crypto from 'pn/crypto';
 import moment from 'moment-timezone';
 import url from 'url';
-import path from 'path';
 import bcrypt from 'bcrypt';
 import _csvParse from 'csv-parse';
 const csvParse = promisify(_csvParse);
@@ -70,7 +69,7 @@ class User {
 	 * @return {string} The account activation url
 	 */
 	getActivationURL () {
-		return url.resolve(CR.conf.addressPrefix, path.join('alighi', this.email, this.activationKey));
+		return url.resolve(CR.conf.addressPrefix, `alighi/${this.email}/${this.activationKey}`);
 	}
 
 	/**
@@ -197,10 +196,13 @@ class User {
 
 	/**
 	 * Returns the user's full name with the optional pet name in parenthesis at the end
-	 * @return {string}
+	 * @return {string|null} The user's long name or null if they haven't completed the initial setup
 	 */
 	getLongName () {
 		const details = this.getNameDetails();
+		if (!details.fullNameLatin) {
+			return null;
+		}
 		return User.formatLongName(details.fullNameLatin, details.petName);
 	}
 
@@ -220,11 +222,14 @@ class User {
 
 	/**
 	 * Returns the user's short name with the optional pet name in parenthesis at the end
-	 * @return {string}
+	 * @return {string|null} The user's short name or null if they haven't completed the initial setup
 	 */
 	getShortName () {
 		const details = this.getNameDetails();
 		let name = details.nickname;
+		if (!name) {
+			return null;
+		}
 		if (details.petName) {
 			name += ` (${details.petName})`;
 		}
@@ -233,14 +238,16 @@ class User {
 
 	/**
 	 * Returns the user's brief name (pet name if present, otherwise nickname)
-	 * @return {string}
+	 * @return {string|null} The user's short name or null if they haven't completed the initial setup
 	 */
 	getBriefName () {
 		const details = this.getNameDetails();
 		if (details.petName) {
 			return details.petName;
-		} else {
+		} else if (details.nickname) {
 			return details.nickname;
+		} else {
+			return null;
 		}
 	}
 

@@ -48,3 +48,23 @@ export function safeInlineJSONStringify (obj) {
 	json = json.replace(/</g, '\\u003C');
 	return json;
 }
+
+const ESC_MAP = {
+	'&': '&amp;',
+	'<': '&lt;',
+	'>': '&gt;',
+	'"': '&quot;',
+	"'": '&#39;'
+};
+
+/**
+ * Escapes HTML characters in a string
+ * @param  {string}  str            The string to escape
+ * @param  {boolean} [forAttribute] Whether this is for use in an html attribute
+ * @return {string}
+ */
+export function escapeHTML (str, forAttribute = false) {
+	return str.replace(forAttribute ? /[&<>'"]/g : /[&<>]/g, function (c) {
+        return ESC_MAP[c];
+    });
+}

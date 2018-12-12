@@ -19,7 +19,7 @@
 		"name": ""
 	},
 	"emailSubjectPrefix": "",
-	"addressPrefix": "https://reto.tejo.org",
+	"addressPrefix": "https://reto.tejo.org/",
 	"bcryptSaltRounds": 10,
 	"trustLocalProxy": true,
 	"loginLimit": {
@@ -27,5 +27,8 @@
 		"time": 900
 	},
 	"sessionSecret": null,
-	"activationKeySize": 8
+	"activationKeySize": 8,
+	"timers": {
+		"cirkuleroReminders": 900000
+	}
 }

@@ -162,7 +162,7 @@ export default class Group {
 
 		// Obtain all users in the group and all of its children
 		const params = '?,'.repeat(groups.length).slice(0, -1);
-		const stmt = CR.db.users.prepare(`select user_id, email, enabled, password, activation_key, activation_key_time from users_groups inner join users on users_groups.user_id = users.id where group_id in (${params}) and enabled = 1 and \`from\` <= @current_time and (\`to\` is null or \`to\` > @current_time)`);
+		const stmt = CR.db.users.prepare(`select user_id, email, password, activation_key, activation_key_time from users_groups inner join users on users_groups.user_id = users.id where group_id in (${params}) and enabled = 1 and \`from\` <= @current_time and (\`to\` is null or \`to\` > @current_time)`);
 		const rows = stmt.all(...groups.map(x => x.id), {
 			current_time: moment().unix()
 		});
@@ -170,8 +170,8 @@ export default class Group {
 		const users = [];
 		const userIds = [];
 		for (let row of rows) {
-			if (userIds.indexOf(row.user_id) !== -1) { continue; }
-			const user = new User(row.user_id, row.email, row.enabled, row.password);
+			if (noDuplicates && userIds.indexOf(row.user_id) !== -1) { continue; }
+			const user = new User(row.user_id, row.email, true, row.password);
 			user.activationKey = row.activation_key;
 			user.activationKeyTime = row.activation_key_time;
 			users.push(user);
