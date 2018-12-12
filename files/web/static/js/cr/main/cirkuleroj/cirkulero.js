@@ -19,8 +19,6 @@ $(function () {
 			if (!res[0].success || !res[1].success) { return; }
 			cirkuleroInfo.contributions = res[0].contributions;
 			cirkuleroInfo.contributors  = res[1].groups;
-			console.log(cirkuleroInfo); // TODO: Remove this
-			console.log(pageData);
 
 			// Set up the overview
 			$('.data-contribs-total').text(cirkuleroInfo.contributions.length);
@@ -315,6 +313,7 @@ $(function () {
 							if (!isConfirm) { return; }
 
 							panel[0].dataset.edited = true;
+							contrib.edited = true;
 
 							for (var n in faroj) {
 								var faroName = faroj[n];
@@ -325,18 +324,22 @@ $(function () {
 								});
 							}
 
-							var comment = template.find('.cirkulero-contrib-comment textarea').val();
-							if (!comment.length) { comment = null; }
+							var comment = template.find('.cirkulero-contrib-comment textarea').val().trim();
+							if (!comment || comment.length < 1) { comment = null; }
 							contrib.comment = comment;
 							var commentElPanel = panel.find('.cirkulero-contrib-comment textarea')
 							commentElPanel.val(comment);
-							autosize.update(commentElPanel);
 
-							var roleComment = template.find('.cirkulero-contrib-user_role_comment input').val();
-							if (!roleComment.length)  {  roleComment = null;}
-							contrib.user.role_comment = roleComment
+							var roleComment = template.find('.cirkulero-contrib-user_role_comment input').val().trim();
+							if (!roleComment || roleComment.length < 1) { roleComment = null;}
+							contrib.user.role_comment = roleComment;
 							var roleCommentPanel = panel.find('.cirkulero-contrib-title');
 							roleCommentPanel.text(getContribTitle(contrib));
+
+							window.setTimeout(function () {
+								autosize.update(commentElPanel);
+								// TODO: Get the AdminBSB floating label to update (it doesn't do it automatically as it's disabled)
+							}, 0);
 						})
 
 						window.setTimeout(function () {
@@ -363,10 +366,95 @@ $(function () {
 				publishMessage = publishMessage.replace(/{{statistiko}}/g, msgStatistics);
 
 				// Remove consecutive newlines
-				publishMessage = publishMessage.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '');
+				publishMessage = publishMessage.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '\n\n');
 
-				$('#cirkulero-publish_message').val(publishMessage);
-				$('#cirkulero-publish_email').val(pageData.publishEmail);
+				var publishMessageEl = $('#cirkulero-publish_message');
+				publishMessageEl.val(publishMessage);
+
+				var publishEmailEl = $('#cirkulero-publish_email')
+				publishEmailEl.val(pageData.publishEmail);
+
+				var sendEmailEl = $('#cirkulero-send-email');
+				sendEmailEl.change(function () {
+					if ($(this).is(':checked')) {
+						publishMessageEl.attr('required', true);
+						publishEmailEl.attr('required', true);
+					} else {
+						publishMessageEl.removeAttr('required');
+						publishEmailEl.removeAttr('required');
+					}
+				});
+
+				publishMessageEl.add(publishEmailEl).on('input focus', function () {
+					sendEmailEl.prop('checked', true).trigger('change');
+				});
+
+				$('#cirkulero-publish-form').submit(function (e) {
+					e.preventDefault();
+
+					swal({
+						title: 'Publikigo de cirkulero',
+						text: 'Ĉu vi certas, ke vi pretas publikigi la cirkuleron? Ne eblos poste fari ŝanĝojn.',
+						buttons: [
+							'Nuligi',
+							{
+								text: 'Publikigi',
+								closeModal: false
+							}
+						]
+					}).then(function (isConfirm) {
+						if (!isConfirm) { return; }
+
+						var publishMessage = publishMessageEl.val().trim();
+						var publishEmail = publishEmailEl.val().trim();
+
+						if (!sendEmailEl.is(':checked')) {
+							publishMessage = null;
+							publishEmail = null;
+						}
+
+						var contribs = [];
+						for (var i in contributions) {
+							var contrib = contributions[i];
+							if (!contrib.edited) { continue; }
+							contribs.push({
+								user_id: contrib.user.id,
+								group_id: contrib.user.group_id,
+								faris: contrib.faris,
+								faras: contrib.faras,
+								faros: contrib.faros,
+								comment: contrib.comment,
+								user_role_comment: contrib.user.role_comment
+							});
+						}
+
+						var apiData = {
+							cirkulero_id: pageData.cirkulero.id,
+							publish_message: publishMessage,
+							publish_email: publishEmail,
+							contribs: contribs
+						};
+
+						console.log(apiData);
+
+						var button = $('#cirkulero-publish-button').attr('disabled', true);
+
+						performAPIRequest('post', '/api/cirkuleroj/publish', apiData)
+							.then(function (res) {
+								button.removeAttr('disabled');
+								swal.stopLoading();
+								if (!res.success) { return; }
+
+								swal({
+									title: 'Cirkulero sukcese publikigita',
+									icon: 'success',
+									button: 'Al la cirkulero'
+								}).then(function () {
+									window.location.href = '/cirkuleroj/' + pageData.cirkulero.id;
+								})
+							});
+					});					
+				});
 			}
 
 			$('#loader').hide();
