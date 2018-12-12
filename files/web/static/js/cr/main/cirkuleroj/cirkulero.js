@@ -345,15 +345,6 @@ $(function () {
 				} else {
 					editButton.parent().remove();
 				}
-
-				$.AdminBSB.input.activate(template);
-				autosize(template.find('.autosize'));
-
-				var activateFn = function () {
-					autosize.update($(this).find('.autosize'));
-				};
-				template.on('shown.bs.collapse', activateFn);
-				activateFn.call(template);
 			}
 
 			// Publish
@@ -438,9 +429,6 @@ $(function () {
 							publish_email: publishEmail,
 							contribs: contribs
 						};
-
-						console.log(apiData);
-
 						var button = $('#cirkulero-publish-button').attr('disabled', true);
 
 						performAPIRequest('post', '/api/cirkuleroj/publish', apiData)
@@ -467,6 +455,12 @@ $(function () {
 			cirkulero.show(0, function () {
 				$.AdminBSB.input.activate(cirkulero);
 				autosize($('body').find('.autosize'));
+
+				if (!pageData.editor) {
+					window.setTimeout(function () {
+						$('.panel-collapse').collapse();
+					}, 0);
+				}
 			});
 		});
 	};
