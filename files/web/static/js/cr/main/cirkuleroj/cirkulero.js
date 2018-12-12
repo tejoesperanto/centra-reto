@@ -341,15 +341,19 @@ $(function () {
 								// TODO: Get the AdminBSB floating label to update (it doesn't do it automatically as it's disabled)
 							}, 0);
 						})
-
-						window.setTimeout(function () {
-							$.AdminBSB.input.activate(template);
-							autosize(template.find('.autosize'));
-						}, 0);
 					});
 				} else {
 					editButton.parent().remove();
 				}
+
+				$.AdminBSB.input.activate(template);
+				autosize(template.find('.autosize'));
+
+				var activateFn = function () {
+					autosize.update($(this).find('.autosize'));
+				};
+				template.on('shown.bs.collapse', activateFn);
+				activateFn.call(template);
 			}
 
 			// Publish

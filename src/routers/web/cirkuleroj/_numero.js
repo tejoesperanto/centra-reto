@@ -39,7 +39,8 @@ async function numero (req, res, next) {
 			},
 			pageDataObj: {
 				cirkulero: row,
-				editor: false
+				editor: false,
+				groups: await cirkulero.getGroups()
 			}
 		};
 		await res.sendRegularPage('cirkuleroj/cirkulero', data);
