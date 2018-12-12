@@ -302,6 +302,11 @@ $(function () {
 						template.find('.cirkulero-contrib-comment textarea').val(contrib.comment);
 						template.find('.cirkulero-contrib-user_role_comment input').val(contrib.user.role_comment);
 
+						window.setTimeout(function () {
+							$.AdminBSB.input.activate(template);
+							autosize(template.find('.cirkulero-contrib-comment textarea'));
+						}, 0);
+
 						swal({
 							title: 'Redakti cirkulerkontribuon',
 							content: template[0],
@@ -338,7 +343,10 @@ $(function () {
 
 							window.setTimeout(function () {
 								autosize.update(commentElPanel);
-								// TODO: Get the AdminBSB floating label to update (it doesn't do it automatically as it's disabled)
+								// Necessary to update the label
+								commentElPanel.removeAttr('disabled');
+								commentElPanel.trigger('focus').trigger('blur');
+								commentElPanel.attr('disabled', true);
 							}, 0);
 						})
 					});
