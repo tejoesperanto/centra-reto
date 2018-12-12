@@ -20,6 +20,8 @@ $(function () {
 			cirkuleroInfo.contributions = res[0].contributions;
 			cirkuleroInfo.contributors  = res[1].groups;
 
+			console.log(cirkuleroInfo);
+
 			// Set up the overview
 			$('.data-contribs-total').text(cirkuleroInfo.contributions.length);
 

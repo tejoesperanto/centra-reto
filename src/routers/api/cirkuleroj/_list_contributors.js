@@ -18,8 +18,8 @@ async function list_contributors (req, res, next) {
 	 * Returns:
 	 *   groups (Object[])
 	 *     group (Object)
-	 *       id              (string|null) The id of the group or null if this is the “remainder” group
-	 *       name            (string|null) The name of the group or null if this is the “remainder” group
+	 *       id              (string) The id of the group
+	 *       name            (string) The name of the group
 	 *       members_allowed (boolean)     Whether this group may contain direct members
 	 *     users (Object[])
 	 *       id                   (number)       The id of the user
@@ -71,8 +71,6 @@ async function list_contributors (req, res, next) {
 	const childrenObj = await promiseAllObject(childrenObjPromises);
 	const children = [].concat(...Object.values(childrenObj));
 	const groups = cirkGroups.contribute.concat(children);
-
-	// TODO: Implement “remainder group” (see description at the top)
 
 	const groupUsersMap = await Promise.all(groups.map(async group => {
 		const users = await group.getAllUsers(true);
