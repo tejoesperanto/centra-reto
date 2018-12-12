@@ -103,6 +103,12 @@ async function numero (req, res, next) {
 		return;
 	}
 
+	// If the user is allowed to manage cirkuleroj send them to the editor
+	if (req.user && await req.user.hasPermission('cirkuleroj.manage')) {
+		res.redirect(303, `/cirkuleroj/${row.id}/pretigi`);
+		return;
+	}
+
 	next(); // 404
 }
 
