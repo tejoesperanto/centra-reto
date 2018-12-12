@@ -349,12 +349,32 @@ $(function () {
 				}
 			}
 
+			// Publish
+			if (pageData.editor) {
+				var msgCirkulero = 'Cirkulero n-ro ' + pageData.cirkulero.id + ' de ' + pageData.cirkulero.name;
+				var msgStatistics = 'Al tiu ĉi cirkulero venis ' + cirkuleroInfo.contributions.length + ' kontribuoj.';
+
+				var publishMessage = pageData.publishMessage;
+				publishMessage = publishMessage.replace(/{{cirkulero}}/g, msgCirkulero);
+				publishMessage = publishMessage.replace(/{{numero}}/g, pageData.cirkulero.id);
+				publishMessage = publishMessage.replace(/{{monato}}/g, pageData.cirkulero.name);
+				publishMessage = publishMessage.replace(/{{noto}}/g, pageData.cirkulero.note || '');
+				publishMessage = publishMessage.replace(/{{ligilo}}/g, pageData.cirkURL);
+				publishMessage = publishMessage.replace(/{{statistiko}}/g, msgStatistics);
+
+				// Remove consecutive newlines
+				publishMessage = publishMessage.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '');
+
+				$('#cirkulero-publish_message').val(publishMessage);
+				$('#cirkulero-publish_email').val(pageData.publishEmail);
+			}
+
 			$('#loader').hide();
 
 			var cirkulero = $('#cirkulero');
 			cirkulero.show(0, function () {
 				$.AdminBSB.input.activate(cirkulero);
-				autosize(cirkulero.find('.autosize'));
+				autosize($('body').find('.autosize'));
 			});
 		});
 	};

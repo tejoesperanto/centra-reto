@@ -1,4 +1,5 @@
 import * as cirkulero from '../../../api/cirkulero';
+import url from 'url';
 
 async function pretigi (req, res, next) {
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
@@ -10,29 +11,46 @@ async function pretigi (req, res, next) {
 	}
 
 	// Try to find the cirkulero
-	const stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, open, published from cirkuleroj where id = ? and published = 0');
-	const row = stmt.get(id);
+	let stmt = CR.db.cirkuleroj.prepare('select id, name, deadline, open, published, note from cirkuleroj where id = ? and published = 0');
+	const cirk = stmt.get(id);
 
-	if (!row) {
+	if (!cirk) {
 		next(); // 404
 		return;
 	}
 
+	stmt = CR.db.cirkuleroj.prepare('select key, value from settings where key in ("publish_message", "publish_email")');
+	const settings = stmt.all();
+	let publishMessage;
+	let publishEmail;
+	for (let setting of settings) {
+		switch (setting.key) {
+			case 'publish_message':
+			publishMessage = setting.value;
+			break;
+			case 'publish_email':
+			publishEmail = setting.value;
+		}
+	}
+
 	const data = {
-		title: `Pretigi cirkuleron n-ro ${row.id} por ${row.name}`,
+		title: `Pretigi cirkuleron n-ro ${cirk.id} por ${cirk.name}`,
 		scripts: [
 			'/plugins/chartjs/Chart.bundle.min.js',
 			'/plugins/autosize/autosize.min.js',
 			'/js/cr/main/cirkuleroj/cirkulero.js'
 		],
 		page: {
-			cirkulero: row,
+			cirkulero: cirk,
 			editor: true
 		},
 		pageDataObj: {
-			cirkulero: row,
+			cirkulero: cirk,
 			editor: true,
-			groups: await cirkulero.getGroups()
+			groups: await cirkulero.getGroups(),
+			publishMessage: publishMessage,
+			publishEmail: publishEmail,
+			cirkURL: url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirk.id}`)
 		}
 	};
 	await res.sendRegularPage('cirkuleroj/cirkulero', data);
