@@ -34,10 +34,17 @@ function addTimer ({
 	timers.push(timer);
 }
 
+/**
+ * Gets all timers
+ * @return {Timeout[]}
+ */
 export function getAllTimers () {
 	return timers;
 }
 
+/**
+ * Disables and removes all timers
+ */
 export function removeAllTimers () {
 	for (let timer of timers) {
 		clearInterval(timer)
