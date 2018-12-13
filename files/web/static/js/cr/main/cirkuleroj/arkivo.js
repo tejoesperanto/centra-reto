@@ -39,11 +39,16 @@ $(function () {
 
 		if (clickable) {
 			tr.classList.add('clickable');
-			$(tr).click(function () {
+			$(tr).mousedown(function (e) {
 				var id = $(this).children()[0].innerHTML;
 				var row = pageData.cirkuleroj[id];
+				var url = '/cirkuleroj/' + id;
 
-				window.open('/cirkuleroj/' + id);
+				if (e.which === 1) {
+					window.location.href = url;
+				} else if (e.which === 2) {
+					window.open(url);
+				}
 			});
 		}
 
