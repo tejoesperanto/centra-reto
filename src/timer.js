@@ -13,6 +13,12 @@ export function init () {
 		fn: CRCirkulero.checkReminders,
 		immediate: true
 	});
+
+	addTimer({
+		time: CR.conf.timers.cirkuleroDeadlines,
+		fn: CRCirkulero.checkDeadlines,
+		immediate: true
+	});
 };
 
 /**

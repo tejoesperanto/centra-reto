@@ -243,3 +243,44 @@ export async function checkReminders () {
 
 	await Promise.all(mailPromises);
 }
+
+/**
+ * Checks all cirkulero deadlines to see if a message that we're past the deadline should be sent to the responsible person.
+ * This function is automatically called by the event loop.
+ */
+export async function checkDeadlines () {
+	const mailPromises = [];
+
+	let stmt = CR.db.cirkuleroj.prepare('select value from settings where key = "responsible_group"');
+	const responsibleGroup = await Group.getGroupById(parseInt(stmt.get().value, 10));
+	const users = await responsibleGroup.getAllUsers();
+
+	const timeNow = moment().unix();
+	stmt = CR.db.cirkuleroj.prepare('select id, name from cirkuleroj c where published = 0 and deadline < ? and not exists ( select 1 from cirkulero_deadline_sent d where d.cirkulero_id = c.id )');
+	const cirkuleroj = stmt.all(timeNow);
+
+	const insertStmt = CR.db.cirkuleroj.prepare('insert into cirkulero_deadline_sent (cirkulero_id) values (?)');
+	for (let cirkulero of cirkuleroj) {
+		insertStmt.run(cirkulero.id);
+
+		stmt = CR.db.cirkuleroj.prepare('select count(1) as count from cirkuleroj_contributions where cirkulero_id = ?');
+		const contribs = stmt.get(cirkulero.id).count;
+
+		for (let user of users) {
+			mailPromises.push(CRMail.renderSendMail('cirkulero_deadline', {
+				preheader: `Cirkulero ${cirkulero.id} atendas vian decidon.`,
+				cirk_id: cirkulero.id,
+				cirk_name: cirkulero.name,
+				name: user.getBriefName(),
+				contribs: contribs,
+				venontaj_link: url.resolve(CR.conf.addressPrefix, `cirkuleroj/venontaj`),
+				pretigi_link: url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirkulero.id}/pretigi`)
+			}, {
+				to: user.email,
+				subject: `Venis la limdato por cirkulero ${cirkulero.id}`
+			}));
+		}
+	}
+
+	await Promise.all(mailPromises);
+}

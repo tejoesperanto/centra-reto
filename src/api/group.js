@@ -70,7 +70,7 @@ export default class Group {
 		if (argsArr.length > 0) { argsArr = argsArr[0]; }
 
 		return new Group({
-			id: id,
+			id: +id,
 			nameBase: row.name_base,
 			nameDisplay: row.name_display,
 			membersAllowed: !!row.members_allowed,

@@ -29,6 +29,7 @@
 	"sessionSecret": null,
 	"activationKeySize": 8,
 	"timers": {
-		"cirkuleroReminders": 900000
+		"cirkuleroReminders": 900000,
+		"cirkuleroDeadlines": 900000
 	}
 }
