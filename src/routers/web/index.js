@@ -4,6 +4,7 @@ import fs from 'pn/fs';
 import path from 'path';
 import moment from 'moment-timezone';
 
+import * as CRApi from '../api';
 import { wrap } from '..';
 import { safeInlineJSONStringify } from '../../util';
 
@@ -204,7 +205,14 @@ export async function handleError404 (req, res, next) {
  * @param {Function}         next
  */
 export async function handleError500 (err, req, res, next) {
+	// As csurf is initiated by http.js itself requests made to the API are sent here as well. For this reason they need to be handled in their own way
+	if (err.code === 'EBADCSRFTOKEN') {
+		CRApi.handleBadCSRF(req, res);
+		return;
+	}
+
 	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);
+	if (res.headersSent) { return; }
 	res.status(500);
 	await res.sendErrorPage(500, 'Okazis interna eraro');
 }
@@ -221,6 +229,7 @@ async function amendView (req, view) {
 	view.year = moment().format('YYYY');
 	view.version = CR.version;
 	view.pagePath = req.originalUrl;
+	view.csrf_token = req.csrfToken();
 
 	// Page data
 	if (view.pageDataObj) {

@@ -10,6 +10,7 @@ import util from 'util';
 import path from 'path';
 import bcrypt from 'bcrypt';
 import passportLocal from 'passport-local';
+import csrf from 'csurf';
 
 import * as CRRouters from './routers';
 import User from './api/user';
@@ -74,6 +75,7 @@ export async function init () {
 
 	// Global middleware
 	CR.app.use(CRRouters.middlewareKillDisabledUsers);
+	CR.app.use(csrf({ cookie: true }));
 
 	// Routing
 	CR.app.use('/api', CRRouters.api.init());

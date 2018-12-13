@@ -471,6 +471,8 @@ $(function () {
 //==========================================================================================================================
 // BEGIN Added for CR
 
+window.csrfToken = $('meta[name="csrf-token"]').attr('content');
+
 moment.locale('eo');
 moment.tz.setDefault('utc');
 
@@ -564,7 +566,10 @@ function ajaxOptions (url, data, method) {
         type: method,
         data: JSON.stringify(data),
         contentType: 'application/json; charset=utf-8',
-        dataType: 'json'
+        dataType: 'json',
+        headers: {
+            'x-csrf-token': csrfToken
+        }
     };
 }
 

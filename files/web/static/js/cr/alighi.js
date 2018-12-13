@@ -22,39 +22,35 @@ $(function () {
             $(element).parents('.form-group').append(error);
         },
         submitHandler: function (form) {
-            $('#submit-button').attr('disabled', true);
+            var button = $('#submit-button');
+            button.attr('disabled', true);
             // TODO: Some sort of indicator that something's going on
-            var data = $(form).serialize();
-            $.post('/api/user/activate', data, function (res) {
-                if (!res.success) {
-                    showError(res);
-                    $('#submit-button').removeAttr('disabled');
-                    return;
-                }
+            var data = serializeToObj(form);
 
-                $.post('/api/user/login', data, function (res) {
+            performAPIRequest('post', '/api/user/activate', data)
+                .then(function (res) {
                     if (!res.success) {
-                        showError(res);
-                        $('#submit-button').removeAttr('disabled');
+                        button.removeAttr('disabled');
                         return;
                     }
 
-                    swal({
-                        title: 'Bonvenon',
-                        icon: 'success',
-                        text: 'Vi sukcesis aliĝis al Centra Reto.',
-                        button: 'Bone'
-                    }).then(function () {
-                        window.location = '/';
-                    });
-                }).fail(function (err) {
-                    showError(err);
-                    $('#submit-button').removeAttr('disabled');
+                    performAPIRequest('post', '/api/user/login', data)
+                        .then(function (res) {
+                            if (!res.success) {
+                                button.removeAttr('disabled');
+                                return;
+                            }
+
+                            swal({
+                                title: 'Bonvenon',
+                                icon: 'success',
+                                text: 'Vi sukcesis aliĝis al Centra Reto.',
+                                button: 'Bone'
+                            }).then(function () {
+                                window.location = '/';
+                            });
+                        });
                 });
-            }).fail(function (err) {
-                showError(err);
-                $('#submit-button').removeAttr('disabled');
-            });
         }
     });
 });

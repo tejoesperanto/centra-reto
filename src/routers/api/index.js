@@ -1,5 +1,7 @@
 import express from 'express';
 
+import { wrap } from '..';
+
 import routerCirkuleroj from './cirkuleroj';
 import routerUser from './user';
 
@@ -19,6 +21,9 @@ export function init () {
 	// Routing
 	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/user', routerUser());
+
+	// Pages
+	router.get('/get_csrf_token', pageGetCsrfToken);
 
 	// Error handling
 	router.use(handleError404);
@@ -96,6 +101,11 @@ function middlewareRequirePermissions (req, res, next) {
 	next();
 }
 
+export function handleBadCSRF (req, res) {
+	middlewareSendAPIError(res, res, () => {});
+	res.sendAPIError('BAD_CSRF_TOKEN');
+}
+
 export const middleware = {
 	/**
 	 * Express middleware that sends an API error if the user hasn't logged in
@@ -146,10 +156,24 @@ function handleError404 (req, res, next) {
  * @param {Function}         next
  */
 function handleError500 (err, req, res, next) {
-	if (res.headersSent) { return; }
 	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);
+	if (res.headersSent) { return; }
 	res.status(500);
 	res.sendAPIError('HTTP', [500]);
+}
+
+function pageGetCsrfToken (req, res, next) {
+	/**
+	 * GET /get_csrf_token
+	 * Obtains a CSRF token
+	 *
+	 * Returns:
+	 * token (string) The CSRF token
+	 */
+	
+	res.sendAPIResponse({
+		token: req.csrfToken()
+	});
 }
 
 /**

@@ -12,10 +12,14 @@
         submitHandler: function (form) {
             $('#submit-button').attr('disabled', true);
             // TODO: Some sort of indicator that something's going on
-            var data = $(form).serialize();
-            $.post('/api/user/login', data, function (res) {
-                if (!res.success) {
-                    if (res.error === 'USER_NOT_FOUND') {
+            var data = serializeToObj(form);
+
+            performAPIRequest('post', '/api/user/login', data, false)
+                .then(function (res) {
+                    window.location = window.location.search.slice(1) || '/';
+                })
+                .catch(function (err) {
+                    if (err.error === 'USER_NOT_FOUND') {
                         swal({
                             title: 'Ensaluto ne sukcesis',
                             icon: 'error',
@@ -23,18 +27,12 @@
                             button: 'Bone'
                         });
                     } else {
-                        showError(res);
+                        showError(err);
                     }
-
+                })
+                .finally(function () {
                     $('#submit-button').removeAttr('disabled');
-                    return;
-                }
-
-                window.location = window.location.search.slice(1) || '/';
-            }).fail(function (err) {
-                showError(err);
-                $('#submit-button').removeAttr('disabled');
-            });
+                });
         }
     });
 });

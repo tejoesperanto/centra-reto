@@ -5,14 +5,10 @@ if ($.fn.dataTable) {
 $('#cr-logout').click(function(e) {
     e.preventDefault();
     
-    $.post('/api/user/logout', function (res) {
-        if (!res.success) {
-            showError(res);
-            return;
-        }
+    performAPIRequest('post', '/api/user/logout')
+        .then(function (res) {
+            if (!res.success) { return; }
 
-        window.location.reload();
-    }).fail(function (err) {
-        showError(err);
-    });
+            window.location.reload();
+        });
 });
