@@ -30,27 +30,19 @@ $(function () {
 			state = 'Ankoraŭ ne preta';
 			clickable = false;
 		}
-		stateCol.textContent = state;
+		if (clickable) {
+			var anchor = document.createElement('a');
+			stateCol.appendChild(anchor);
+			anchor.textContent = state;
+			anchor.href = '/cirkuleroj/' + id;
+		} else {
+			stateCol.textContent = state;
+		}
 
 		var tr = document.createElement('tr');
 		tr.appendChild(idCol);
 		tr.appendChild(nameCol);
 		tr.appendChild(stateCol);
-
-		if (clickable) {
-			tr.classList.add('clickable');
-			$(tr).mousedown(function (e) {
-				var id = $(this).children()[0].innerHTML;
-				var row = pageData.cirkuleroj[id];
-				var url = '/cirkuleroj/' + id;
-
-				if (e.which === 1) {
-					window.location.href = url;
-				} else if (e.which === 2) {
-					window.open(url);
-				}
-			});
-		}
 
 		archiveTable.append(tr);
 	}
