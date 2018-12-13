@@ -7,6 +7,7 @@ import _csvParse from 'csv-parse';
 const csvParse = promisify(_csvParse);
 
 import Group from './group';
+import * as CRMail from '../mail';
 
 /**
  * Represents a user in CR
@@ -514,6 +515,39 @@ class User {
 			path = path[bit];
 		}
 		return true;
+	}
+
+	/**
+	 * Generates a key to reset the user's password, optionally sending an email
+	 * @return {string} The user's password reset key
+	 */
+	async generatePasswordReset (sendEmail = true) {
+		const keyBytes = await crypto.randomBytes(CR.conf.activationKeySize)
+		const key = keyBytes.toString('hex');
+
+		const stmt = CR.db.users.prepare('insert into users_password_reset (user_id, `key`, `time`) values (?, ?, ?)');
+		stmt.run(this.id, key, moment().unix());
+
+		if (sendEmail) {
+			await CRMail.renderSendMail('reset_password', {
+				name: this.getBriefName(),
+				reset_link: url.resolve(CR.conf.addressPrefix, `novapasvorto/${this.email}/${key}`)
+			}, {
+				to: this.email
+			});
+		}
+
+		return key;
+	}
+
+	/**
+	 * Updates the user's password
+	 * @param  {string} hashedPassword The password, prehashed
+	 */
+	updatePassword (hashedPassword) {
+		const stmt = CR.db.users.prepare('update users set password = ? where id = ?');
+		stmt.run(hashedPassword, this.id);
+		this.password = hashedPassword;
 	}
 }
 

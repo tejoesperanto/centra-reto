@@ -13,6 +13,7 @@ import routerAdministrado from './administrado';
 import pageIndex from './_index';
 import pageAlighi from './_alighi';
 import pageEnsaluti from './_ensaluti';
+import pageNovaPasvorto from './_nova_pasvorto';
 
 /**
  * Sets up the router
@@ -22,7 +23,6 @@ export function init () {
 	const router = express.Router();
 
 	// TODO:
-	// /novapasvorto
 	// /kondichoj
 	// /aktivulo/:email
 	// /agordoj
@@ -47,6 +47,9 @@ export function init () {
 
 	router.get('/ensaluti',
 		wrap(pageEnsaluti));
+
+	router.get([ '/novapasvorto', '/novapasvorto/:email/:resetKey' ],
+		wrap(pageNovaPasvorto))
 
 	return router;
 }

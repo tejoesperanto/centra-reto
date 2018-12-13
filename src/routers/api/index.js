@@ -133,6 +133,7 @@ export const middleware = {
  * @param {Function}         next
  */
 function handleError404 (req, res, next) {
+	if (res.headersSent) { return; }
 	res.status(404);
 	res.sendAPIError('HTTP', [404]);
 }
@@ -145,6 +146,7 @@ function handleError404 (req, res, next) {
  * @param {Function}         next
  */
 function handleError500 (err, req, res, next) {
+	if (res.headersSent) { return; }
 	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);
 	res.status(500);
 	res.sendAPIError('HTTP', [500]);

@@ -10,7 +10,7 @@ async function user_activate (req, res, next) {
 	 * Parameters:
 	 * activation_key (string) The activation key for the user's account
 	 * email          (string) The user's primary email
-	 * password       (string) The user's plain text password
+	 * password       (string) The user's plaintext password
 	 *
 	 * Throws:
 	 * INVALID_ACTIVATION_KEY The email and activation key combination was not found

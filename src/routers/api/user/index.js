@@ -13,6 +13,8 @@ import apiInitialSetup from './_initial_setup';
 import apiList from './_list';
 import apiLogin from './_login';
 import apiLogout from './_logout';
+import apiResetPasswordEmail from './_reset_password_email';
+import apiResetPasswordKey from './_reset_password_key';
 import apiToggleEnabled from './_toggle_enabled';
 
 /**
@@ -67,6 +69,12 @@ export default function () {
 
 	router.post('/logout',
 		wrap(apiLogout));
+
+	router.post('/reset_password_email',
+		wrap(apiResetPasswordEmail));
+
+	router.post('/reset_password_key',
+		wrap(apiResetPasswordKey))
 
 	router.post('/toggle_enabled',
 		middleware.requireLogin,
