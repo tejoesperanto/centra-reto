@@ -29,6 +29,8 @@ async function create (req, res, next) {
 	
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
+	const timeNow = moment().unix();
+
 	// Begin data validation
 	const fields = [
 		'id',
@@ -49,7 +51,7 @@ async function create (req, res, next) {
 		return;
 	}
 
-	if (!Number.isSafeInteger(req.body.deadline) || req.body.deadline < moment().unix()) {
+	if (!Number.isSafeInteger(req.body.deadline) || req.body.deadline < timeNow) {
 		res.sendAPIError('INVALID_ARGUMENT', ['deadline']);
 		return;
 	}
@@ -90,8 +92,33 @@ async function create (req, res, next) {
 		deadline: req.body.deadline,
 		open: +req.body.open,
 		note: note,
-		reminders: +req.body.reminders
+		reminders: 0
 	});
+
+	// Remove old reminders if necessary
+	if (req.body.reminders) {
+		const time = req.body.deadline - timeNow; // t < d - Δt <=> d - t < Δt
+
+		stmt = CR.db.cirkuleroj.prepare('select id from reminders_direct where delta_time > ?');
+		const remindersDirect = stmt.all(time).map(x => x.id);
+
+		stmt = CR.db.cirkuleroj.prepare('insert into reminders_direct_sent (reminder_id, cirkulero_id) values (?, ?)');
+		for (let reminder of remindersDirect) {
+			stmt.run(reminder, req.body.id);
+		}
+
+		stmt = CR.db.cirkuleroj.prepare('select id from reminders_lists where delta_time > ?');
+		const remindersLists = stmt.all(time).map(x => x.id);
+
+		stmt = CR.db.cirkuleroj.prepare('insert into reminders_lists_sent (reminder_id, cirkulero_id) values (?, ?)');
+		for (let reminder of remindersLists) {
+			stmt.run(reminder, req.body.id);
+		}
+
+		// Enable reminders
+		stmt = CR.db.cirkuleroj.prepare('update cirkuleroj set reminders = 1 where id = ?');
+		stmt.run(req.body.id);
+	}
 
 	res.sendAPIResponse();
 }
