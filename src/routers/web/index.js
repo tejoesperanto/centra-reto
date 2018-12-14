@@ -27,7 +27,6 @@ export function init () {
 	// TODO:
 	// /kondichoj
 	// /aktivulo/:email
-	// /agordoj
 	
 	// Middleware for this router only
 	router.use(middlewareRequirePermissions);
