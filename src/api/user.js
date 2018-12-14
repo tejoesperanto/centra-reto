@@ -152,10 +152,14 @@ class User {
 	 * @param  {string|null} pronouns          The user's pronouns in csv format. If null the user's nickname is used in generated text.
 	 */
 	initialSetup (fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns) {
-		const stmt = CR.db.users.prepare(`insert into users_details
+		const stmt = CR.db.users.prepare(`insert or replace into users_details
 			(user_id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, pronouns)
 			values (?, ?, ?, ?, ?, ?, ?)`);
 		stmt.run(this.id, fullNameLatin, fullNameNative, fullNameLatinSort, nickname, petName, pronouns);
+
+		if (typeof pronouns === 'string') {
+			pronouns = pronouns.split(',');
+		}
 
 		this.details = {
 			fullNameLatin: fullNameLatin,
@@ -186,7 +190,7 @@ class User {
 				fullNameLatinSort: row.full_name_latin_sort,
 				nickname: row.nickname,
 				petName: row.pet_name,
-				pronouns: row.pronouns
+				pronouns: row.pronouns ? row.pronouns.split(',') : null
 			};
 
 			return this.details;

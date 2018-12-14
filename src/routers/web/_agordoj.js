@@ -5,7 +5,10 @@ async function agordoj (req, res, next) {
 			'/js/cr/agordoj.js',
 			'/plugins/jquery-validation/jquery.validate.js',
 			'/js/jquery.validate.eo.js'
-		]
+		],
+		pageDataObj: {
+			userDetails: await req.user.getNameDetails()
+		}
 	};
 	await res.sendRegularPage('agordoj', data);
 }

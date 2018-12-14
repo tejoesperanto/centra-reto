@@ -3,10 +3,10 @@ import { removeUnsafeCharsOneLine } from '../../../util';
 async function user_initial_setup (req, res, next) {
 	/**
 	 * POST /initial_setup
-	 * Performs the initial profile setup procedure
+	 * Performs the initial profile setup procedure or optionally updates the existing values
 	 *
 	 * Login required
-	 * Initial setup not allowed
+	 * Initial setup not required
 	 *
 	 * Parameters:
 	 * full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
@@ -22,15 +22,10 @@ async function user_initial_setup (req, res, next) {
 	 * pronouns             (string|null) The user's pronouns (li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
 	 *
 	 * Throws:
-	 * ALREADY_COMPLETED The user has already completed the initial setup
+	 * INVALID_ARGUMENT [argument]
 	 */
 	
 	/** BEGIN INPUT VALIDATION */
-	if (req.user.hasCompletedInitialSetup()) {
-		res.sendAPIError('ALREADY_COMPLETED');
-		return;
-	}
-
 	const fields = [
 		'full_name_latin',
 		'full_name_latin_sort',

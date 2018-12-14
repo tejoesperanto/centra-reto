@@ -18,7 +18,103 @@
 
 						<div class="tab-content">
 							<div role="tabpanel" class="tab-pane active" id="tab-details">
-								Details
+								<form id="change-details">
+									<div class="form-group">
+										<label for="details-full_name_latin">* Ĉiuj viaj nomoj, laŭ la ordo de via denaska lingvo, per latinaj literoj</label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="material-icons">person</i>
+											</span>
+											<div class="form-line">
+												<input class="form-control" name="full_name_latin" placeholder="Plena nomo per latinaj literoj en origina ordo" id="details-full_name_latin" required maxlength="80" value="{{user.details.fullNameLatin}}">
+											</div>
+										</div>    
+									</div>
+
+									<div class="form-group">
+										<p>Se via nomo origine ne estas skribita per la latina skribsistemo:</p>
+										<label for="details-full_name_native">Via plena nomo per via propra skribsistemo, se ne estas la latina</label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="material-icons">person</i>
+											</span>
+											<div class="form-line">
+												<input class="form-control" name="full_name_native" placeholder="Plena nomo per denaska skribsistemo en origina ordo" id="details-full_name_native" maxlength="80" value="{{user.details.fullNameNative}}">
+											</div>
+										</div>    
+									</div>
+
+									<div class="form-group">
+										<label for="details-full_name_latin_sort">* Via nomo per latinaj literoj laŭ sekva ordo: <span class="cr-form-span">familinomo(j), meznomo(j), persona(j) nomo(j), gepatronomo(j), ĉiuj aliaj nomoj, titolo(j)</span></label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="material-icons">person</i>
+											</span>
+											<div class="form-line">
+												<input class="form-control" name="full_name_latin_sort" placeholder="Plena nomo per latinaj literoj en ordigita formo" id="details-full_name_latin_sort" required maxlength="80" value="{{user.details.fullNameLatinSort}}">
+											</div>
+										</div>    
+									</div>
+
+									<div class="form-group">
+										<label for="details-nickname">* La nomo per kiu oni (formale) alvokas vin, kutime via persona nomo</label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="material-icons">person</i>
+											</span>
+											<div class="form-line">
+												<input class="form-control" name="nickname" placeholder="Alvoknomo" id="details-nickname" required maxlength="80" value="{{user.details.nickname}}">
+											</div>
+										</div>    
+									</div>
+
+									<div class="form-group">
+										<p>Se vi havas apartan kromnomon, kiu ne estas parto de via plena nomo:</p>
+										<label for="details-pet_name">Via (neformala) kromnomo</label>
+										<div class="input-group">
+											<span class="input-group-addon">
+												<i class="material-icons">person</i>
+											</span>
+											<div class="form-line">
+												<input class="form-control" name="pet_name" placeholder="Kromnomo" id="details-pet_name" maxlength="80" value="{{user.details.petName}}">
+											</div>
+										</div>    
+									</div>
+
+									<div class="form-group">
+										<label>* La pronomoj per kiuj oni priparolu vin</label>
+										<div class="radio">
+											<input type="radio" name="pronouns" id="details-pronouns_none" value="none" class="with-gap radio-col-green" required  {{^user.details.pronouns}}checked{{/user.details.pronouns}}>
+											<label for="details-pronouns_none">Mi ne volas indiki / Uzu mian nomon</label>
+										</div>
+										<div class="radio">
+											<input type="radio" name="pronouns" id="details-pronouns_list" value="list" class="with-gap radio-col-green" required {{#user.details.pronouns}}checked{{/user.details.pronouns}}>
+											<label for="details-pronouns_list">Uzu la jena(j)n:</label>
+											<div class="cr-pronouns-list">
+												<span>
+													<input type="checkbox" name="pronouns_list[]" value="li" id="details-pronouns_list_li" class="filled-in chk-col-orange">
+													<label for="details-pronouns_list_li">li</label>
+												</span>
+												<span>
+													<input type="checkbox" name="pronouns_list[]" value="ri" id="details-pronouns_list_ri" class="filled-in chk-col-orange">
+													<label for="details-pronouns_list_ri">ri</label>
+												</span>
+												<span>
+													<input type="checkbox" name="pronouns_list[]" value="ŝi" id="details-pronouns_list_shi" class="filled-in chk-col-orange">
+													<label for="details-pronouns_list_shi">ŝi</label>
+												</span>
+											</div>
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<button type="submit" class="btn btn-primary" id="details-button">ŜANĜI</button>
+									</div>
+
+									<div class="form-group">
+										<span>* deviga</span>
+									</div>
+								</form>
 							</div>
 
 							<div role="tabpanel" class="tab-pane" id="tab-contact">
@@ -33,46 +129,46 @@
 									</div>
 
 									<div class="form-group">
-                                        <div class="col-sm-offset-3 col-sm-9">
-                                            <button type="submit" class="btn btn-primary" id="email-button">ŜANĜi</button>
-                                        </div>
-                                    </div>
+										<div class="col-sm-offset-3 col-sm-9">
+											<button type="submit" class="btn btn-primary" id="email-button">ŜANĜI</button>
+										</div>
+									</div>
 								</form>
 							</div>
 
 							<div role="tabpanel" class="tab-pane" id="tab-password">
 								<form id="change-password" class="form-horizontal">
-                                    <div class="form-group">
-                                        <label for="password-old" class="col-sm-3 control-label">Malnova pasvorto</label>
-                                        <div class="col-sm-9">
-                                            <div class="form-line">
-                                                <input type="password" class="form-control" id="password-old" name="password_old" placeholder="Malnova pasvorto" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password-new" class="col-sm-3 control-label">Nova pasvorto</label>
-                                        <div class="col-sm-9">
-                                            <div class="form-line">
-                                                <input type="password" class="form-control" id="password-new" name="password-new" placeholder="Nova pasvorto" minlength="6" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password-confirm" class="col-sm-3 control-label">Nova pasvorto (retajpo)</label>
-                                        <div class="col-sm-9">
-                                            <div class="form-line">
-                                                <input type="password" class="form-control" id="password-confirm" name="password-confirm" placeholder="Nova pasvorto (retajpo)" required>
-                                            </div>
-                                        </div>
-                                    </div>
+									<div class="form-group">
+										<label for="password-old" class="col-sm-3 control-label">Malnova pasvorto</label>
+										<div class="col-sm-9">
+											<div class="form-line">
+												<input type="password" class="form-control" id="password-old" name="password_old" placeholder="Malnova pasvorto" required>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="password-new" class="col-sm-3 control-label">Nova pasvorto</label>
+										<div class="col-sm-9">
+											<div class="form-line">
+												<input type="password" class="form-control" id="password-new" name="password-new" placeholder="Nova pasvorto" minlength="6" required>
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="password-confirm" class="col-sm-3 control-label">Nova pasvorto (retajpo)</label>
+										<div class="col-sm-9">
+											<div class="form-line">
+												<input type="password" class="form-control" id="password-confirm" name="password-confirm" placeholder="Nova pasvorto (retajpo)" required>
+											</div>
+										</div>
+									</div>
 
-                                    <div class="form-group">
-                                        <div class="col-sm-offset-3 col-sm-9">
-                                            <button type="submit" class="btn btn-danger" id="password-button">ŜANĜi</button>
-                                        </div>
-                                    </div>
-                                </form>
+									<div class="form-group">
+										<div class="col-sm-offset-3 col-sm-3">
+											<button type="submit" class="btn btn-danger" id="password-button">ŜANĜi</button>
+										</div>
+									</div>
+								</form>
 							</div>
 						</div>
 					</div>
