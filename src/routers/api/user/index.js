@@ -5,6 +5,7 @@ import { wrap } from '../..';
 
 import apiActivate from './_activate';
 import apiAddGroups from './_add_groups';
+import apiChangePassword from './_change_password';
 import apiCreate from './_create';
 import apiDeleteUninitiated from './_delete_uninitiated';
 import apiEndGroupMemberships from './_end_group_memberships';
@@ -33,6 +34,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiAddGroups));
+
+	router.post('/change_password',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiChangePassword))
 
 	router.post('/create',
 		middleware.requireLogin,

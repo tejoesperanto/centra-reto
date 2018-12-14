@@ -12,6 +12,7 @@ import routerCirkuleroj from './cirkuleroj';
 import routerAdministrado from './administrado';
 
 import pageIndex from './_index';
+import pageAgordoj from './_agordoj';
 import pageAlighi from './_alighi';
 import pageEnsaluti from './_ensaluti';
 import pageNovaPasvorto from './_nova_pasvorto';
@@ -42,6 +43,11 @@ export function init () {
 	// Pages
 	router.get('/',
 		wrap(pageIndex));
+
+	router.get('/agordoj',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(pageAgordoj));
 
 	router.get('/alighi/:email/:activationKey',
 		wrap(pageAlighi));

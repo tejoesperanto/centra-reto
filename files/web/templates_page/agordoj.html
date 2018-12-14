@@ -1,0 +1,68 @@
+<div class="container-fluid">
+	<div class="block-header">
+		<h2>Agordoj</h2>
+	</div>
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="header">
+					<h2>Agordoj pri via konto</h2>
+				</div>
+				<div class="body">
+					<div>
+						<ul class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#tab-details" aria-controls="tab-details" role="tab" data-toggle="tab">Pri vi</a></li>
+							<li role="presentation"><a href="#tab-contact" aria-controls="tab-contact" role="tab" data-toggle="tab">Retpoŝtadreso</a></li>
+							<li role="presentation"><a href="#tab-password" aria-controls="tab-password" role="tab" data-toggle="tab">Ŝanĝi pasvorton</a></li>
+						</ul>
+
+						<div class="tab-content">
+							<div role="tabpanel" class="tab-pane active" id="tab-details">
+								Details
+							</div>
+
+							<div role="tabpanel" class="tab-pane" id="tab-contact">
+								Contact
+							</div>
+
+							<div role="tabpanel" class="tab-pane" id="tab-password">
+								<form id="change-password" class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="password-old" class="col-sm-3 control-label">Malnova pasvorto</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-line">
+                                                <input type="password" class="form-control" id="password-old" name="password_old" placeholder="Malnova pasvorto" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password-new" class="col-sm-3 control-label">Nova pasvorto</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-line">
+                                                <input type="password" class="form-control" id="password-new" name="password-new" placeholder="Nova pasvorto" minlength="6" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password-confirm" class="col-sm-3 control-label">Nova pasvorto (retajpo)</label>
+                                        <div class="col-sm-9">
+                                            <div class="form-line">
+                                                <input type="password" class="form-control" id="password-confirm" name="password-confirm" placeholder="Nova pasvorto (retajpo)" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-3 col-sm-9">
+                                            <button type="submit" class="btn btn-danger" id="password-button">ŜANĜi</button>
+                                        </div>
+                                    </div>
+                                </form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
