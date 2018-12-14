@@ -62,4 +62,44 @@ $(function () {
 			})
 		}
 	});
+
+	$('#change-email').submit(function (e) {
+		e.preventDefault();
+
+		swal({
+			title: 'Ŝanĝo de retpoŝtadreso',
+			text: 'Ĉu vi certas, ke vi volas ŝanĝi vian retpoŝtadreson?',
+			buttons: [
+				'Nuligi',
+				{
+					text: 'Ŝanĝi',
+					closeModal: false
+				}
+			]
+		}).then(function (isConfirm) {
+			if (!isConfirm) { return; }
+
+			var apiData = {
+				email: $('#email').val()
+			};
+
+			var button = $('#email-button');
+			button.attr('disabled', true);
+
+			performAPIRequest('post', '/api/user/change_email', apiData)
+				.then(function (res) {
+					button.removeAttr('disabled');
+					swal.stopLoading();
+					if (!res.success) { return; }
+
+					swal({
+						icon: 'success',
+						title: 'Retpoŝtadreso ŝanĝita',
+						button: 'Fermi'
+					});
+
+					$('#leftsidebar .email').text(apiData.email);
+				});
+		});
+	});
 });
