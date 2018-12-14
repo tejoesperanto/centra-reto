@@ -43,6 +43,7 @@ $(function () {
 							title: 'Pasvorto ŝanĝita',
 							button: 'Fermi'
 						});
+						form.reset();
 					})
 					.catch(function (err) {
 						if (err.error === 'WRONG_OLD_PASSWORD') {
