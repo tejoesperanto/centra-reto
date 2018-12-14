@@ -1,3 +1,22 @@
+import Handlebars from 'handlebars';
+import fs from 'pn/fs';
+
+/**
+ * Compiles and renders a handlebar template, much like the old Mustache api
+ * @param  {string} tmpl   The template string
+ * @param  {Object} [view] The view
+ * @return {string}        The rendered template
+ */
+export function renderTemplate (tmpl, view = {}) {
+	const template = Handlebars.compile(tmpl);
+	return template(view);
+}
+
+export async function renderFileTemplate (file, view = {}) {
+	const tmpl = await fs.readFile(file, 'utf8');
+	return renderTemplate(tmpl, view);
+}
+
 /**
  * Promise.all but for an object instead of an array
  * @param  {Object} promises string:Promise mapping

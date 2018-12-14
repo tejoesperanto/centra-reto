@@ -4,7 +4,7 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-			{{#permissions.users.create}}
+			{{#if permissions.users.create}}
 			<div class="card">
 				<div class="header">
 					<h2>Krei novan uzanton</h2>
@@ -36,7 +36,7 @@
 					</form>
 				</div>
 			</div>
-			{{/permissions.users.create}}
+			{{/if}}
 			<div class="card">
 				<div class="header">
 					<h2>Uzantoj en Centra Reto</h2>

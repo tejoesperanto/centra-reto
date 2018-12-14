@@ -170,3 +170,50 @@ a.collapsed>.panel-collapse-arrow:before {
 	content: '*';
 	margin-right: 10px
 }
+
+.cr.profile-header {
+	background-color: #2ABA52;
+}
+
+.cr.image-area {
+	display: flex;
+	justify-content: center;
+}
+
+.cr.image-area>div {
+	box-sizing: content-box;
+	width: 128px;
+	height: 128px;
+	border: 2px solid #2ABA52;
+    padding: 2px;
+    margin: 2px;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    -ms-border-radius: 50%;
+    border-radius: 50%;
+}
+
+.cr.profile-body {
+	padding: 20px;
+}
+
+#cr-profile-groups>span {
+	margin-bottom: 4px;
+	display: inline-block;
+}
+
+.cr.content-area {
+	border-bottom: none !important;
+}
+
+.cr-fact-list>.oneline {
+	display: flex;
+}
+
+.cr-fact-list>.oneline>.title {
+	margin-right: 10px;
+}
+
+.cr-fact-list>.oneline>.content {
+	line-height: 19px;
+}

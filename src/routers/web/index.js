@@ -1,15 +1,18 @@
 import express from 'express';
-import Mustache from 'mustache';
+import Handlebars from 'handlebars';
 import fs from 'pn/fs';
 import path from 'path';
 import moment from 'moment-timezone';
 
 import * as CRApi from '../api';
 import { wrap } from '..';
-import { safeInlineJSONStringify } from '../../util';
 
-import routerCirkuleroj from './cirkuleroj';
+import * as CRUtil from '../../util';
+const safeInlineJSONStringify = CRUtil.safeInlineJSONStringify;
+
 import routerAdministrado from './administrado';
+import routerAktivuloj from './aktivuloj';
+import routerCirkuleroj from './cirkuleroj';
 
 import pageIndex from './_index';
 import pageAgordoj from './_agordoj';
@@ -26,7 +29,6 @@ export function init () {
 
 	// TODO:
 	// /kondichoj
-	// /aktivulo/:email
 	
 	// Middleware for this router only
 	router.use(middlewareRequirePermissions);
@@ -36,8 +38,9 @@ export function init () {
 	router.use(middlewareSendFullPage);
 
 	// Routing
-	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/administrado', routerAdministrado());
+	router.use('/aktivuloj', routerAktivuloj());
+	router.use('/cirkuleroj', routerCirkuleroj());
 
 	// Pages
 	router.get('/',
@@ -124,7 +127,7 @@ function middlewareSendTemplate (req, res, next) {
 	 * @param {Object} view The render view
 	 */
 	res.sendTemplate = async function sendTemplate (file, view) {
-		const render = await renderTemplate(file, view);
+		const render = await CRUtil.renderFileTemplate(file, view);
 		res.send(render);
 	};
 	next();
@@ -161,23 +164,6 @@ function middlewareSendFullPage (req, res, next) {
 }
 
 /**
- * Renders a template from a file with the provided view
- * @param  {string} file The path to the file
- * @param  {Object} view The render view
- * @return {string} The rendered template
- */
-export async function renderTemplate (file, view) {
-	if (!CR.cacheEnabled) {
-		Mustache.clearCache();
-	}
-
-	const template = await fs.readFile(file, 'utf8');
-	const render = Mustache.render(template, view);
-
-	return render;
-}
-
-/**
  * Renders a regular page
  * @param  {string} page The template name. note: This is not the path, it's a name like `index`
  * @param  {Object} data The outer view with an inner object under `page` containing the inner view
@@ -185,9 +171,9 @@ export async function renderTemplate (file, view) {
  */
 export async function renderRegularPage (page, data) {
 	const innerPath = path.join(CR.filesDir, 'web', 'templates_page', page + '.html');
-	const inner = await renderTemplate(innerPath, data);
+	const inner = await CRUtil.renderFileTemplate(innerPath, data);
 	data.page = inner;
-	const outer = await renderTemplate(path.join(CR.filesDir, 'web', 'page.html'), data);
+	const outer = await CRUtil.renderFileTemplate(path.join(CR.filesDir, 'web', 'page.html'), data);
 	return outer;
 }
 

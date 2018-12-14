@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import Mustache from 'mustache';
+import Handlebars from 'handlebars';
 import fs from 'pn/fs';
 import path from 'path';
 import mergeOptions from 'merge-options';
@@ -38,10 +38,6 @@ export async function sendMail (options) {
  * @return {Object} Contains the keys `string html`, `string text` and `Object data`, which is the amended view including the data in the template json file.
  */
 export async function renderMail (template, templateData) {
-	if (!CR.cacheEnabled) {
-		Mustache.clearCache();
-	}
-
 	// Obtain template files
 	const templateDir = path.join(CR.filesDir, 'email', 'templates');
 	const templates = await CRUtil.promiseAllObject({
@@ -62,13 +58,13 @@ export async function renderMail (template, templateData) {
 	const mail = {};
 
 	// Render HTML
-	mail.html  = Mustache.render(templates.HTMLHead, view);
-	mail.html += Mustache.render(templates.HTMLTmpl, view);
-	mail.html += Mustache.render(templates.HTMLFoot, view);
+	mail.html  = CRUtil.renderTemplate(templates.HTMLHead, view);
+	mail.html += CRUtil.renderTemplate(templates.HTMLTmpl, view);
+	mail.html += CRUtil.renderTemplate(templates.HTMLFoot, view);
 
-	mail.text  = Mustache.render(templates.TextHead, view);
-	mail.text += Mustache.render(templates.TextTmpl, view);
-	mail.text += Mustache.render(templates.TextFoot, view);
+	mail.text  = CRUtil.renderTemplate(templates.TextHead, view);
+	mail.text += CRUtil.renderTemplate(templates.TextTmpl, view);
+	mail.text += CRUtil.renderTemplate(templates.TextFoot, view);
 
 	mail.data = view;
 

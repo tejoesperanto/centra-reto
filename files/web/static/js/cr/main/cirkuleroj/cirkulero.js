@@ -108,7 +108,7 @@ $(function () {
 
 						var anchor = document.createElement('a');
 						li.appendChild(anchor);
-						anchor.href = '/aktivulo/' + user.email;
+						anchor.href = '/aktivuloj/' + user.email;
 						anchor.target = '_blank';
 						anchor.textContent = user.long_name;
 
@@ -139,7 +139,7 @@ $(function () {
 						if (user.long_name) { // Has completed initial setup
 							var anchor = document.createElement('a');
 							li.appendChild(anchor);
-							anchor.href = '/aktivulo/' + user.email;
+							anchor.href = '/aktivuloj/' + user.email;
 							anchor.target = '_blank';
 							anchor.textContent = user.long_name;
 						}

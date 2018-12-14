@@ -33,11 +33,6 @@ export async function init () {
 		CR.log.warn("Helmet malŝaltita");
 	}
 
-	if (!CR.argv.cache) {
-		CR.cacheEnabled = false;
-		CR.log.warn("Cache malŝaltita");
-	}
-
 	let limiterMax = 0;
 	if (CR.argv.limiter) {
 		limiterMax = CR.conf.loginLimit.max;

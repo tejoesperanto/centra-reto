@@ -29,7 +29,6 @@ import * as CRTimer from './timer';
 		config: null, // init
 		db: {}, // init
 		app: null, // init
-		cacheEnabled: true,
 		loginLimiter: null, // init
 		smtp: null, // init
 		reader: readline.createInterface(process.stdin, process.stdout),
@@ -74,8 +73,8 @@ import * as CRTimer from './timer';
 	CR.argv = yargsParser.detailed(
 		process.argv.slice(2),
 		{
-			boolean: [ 'helmet', 'cache', 'secureCookie', 'limiter' ],
-			default: { helmet: true, cache: true, 'secureCookie': true, limiter: true, dev: false },
+			boolean: [ 'helmet', 'secureCookie', 'limiter' ],
+			default: { helmet: true, 'secureCookie': true, limiter: true, dev: false },
 			alias: { 'd': [ 'dev' ] }
 		}
 	).argv;
@@ -83,7 +82,6 @@ import * as CRTimer from './timer';
 	// Hard-coded argv aliases
 	if (CR.argv.dev) {
 		CR.argv.helmet = false;
-		CR.argv.cache = false;
 		CR.argv.secureCookie = false;
 		CR.argv.limiter = false;
 	}

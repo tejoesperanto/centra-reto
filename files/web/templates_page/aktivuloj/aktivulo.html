@@ -1,0 +1,62 @@
+<div class="container-fluid">
+	<div class="block-header">
+		<h2>Aktivuloj » {{page.aktivulo.longName}}</h2>
+	</div>
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card profile-card">
+				<div class="cr profile-header">&nbsp;</div>
+				<div class="cr profile-body">
+					<div class="cr image-area">
+						<div>
+							{{#page.aktivulo.hasPicture}}<img src="{{page.aktivulo.pictureSmall}}" width="128" height="128" alt="Bildo de {{page.aktivulo.longName}}" class="cr-user-picture">{{/page.aktivulo.hasPicture}}
+							{{^page.aktivulo.hasPicture}}<svg width="128" height="128" data-jdenticon-value="{{page.aktivulo.longName}}" class="cr-user-picture"></svg>{{/page.aktivulo.hasPicture}}
+						</div>
+					</div>
+					<div class="cr content-area">
+						<h2>{{page.aktivulo.longName}}</h2>
+						{{#page.aktivulo.details.fullNameNative}}<h3>{{.}}</h3>{{/page.aktivulo.details.fullNameNative}}
+						<div class="m-t-30" id="cr-profile-groups">
+							{{#page.aktivulo.groups}}
+							<span class="label bg-green">{{user.name}}</span>
+							{{/page.aktivulo.groups}}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card card-about-me">
+				<div class="header">
+					<h2>Pri {{page.aktivulo.shortName}}</h2>
+				</div>
+				<div class="body">
+					<ul class="cr-fact-list">
+						<li class="oneline">
+							<div class="title">
+								<i class="material-icons">favorite</i>
+								Pronomoj
+							</div>
+							<div class="content">
+								{{#page.aktivulo.details.pronouns}}
+								<span class="label bg-red">{{.}}</span>
+								{{/page.aktivulo.details.pronouns}}
+								{{^page.aktivulo.details.pronouns}}
+								Bonvolu uzi mian nomon.
+								{{/page.aktivulo.details.pronouns}}
+							</div>
+						</li>
+						<li class="oneline">
+							<div class="title">
+								<i class="material-icons">email</i>
+								Ĉefa retpoŝtadreso
+							</div>
+							<div class="content">
+								<a href="mailto:{{page.aktivulo.email}}">{{page.aktivulo.email}}</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

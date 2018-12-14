@@ -84,11 +84,11 @@
 									<div class="form-group">
 										<label>* La pronomoj per kiuj oni priparolu vin</label>
 										<div class="radio">
-											<input type="radio" name="pronouns" id="details-pronouns_none" value="none" class="with-gap radio-col-green" required  {{^user.details.pronouns}}checked{{/user.details.pronouns}}>
+											<input type="radio" name="pronouns" id="details-pronouns_none" value="none" class="with-gap radio-col-green" required  {{#unless user.details.pronouns}}checked{{/unless}}>
 											<label for="details-pronouns_none">Mi ne volas indiki / Uzu mian nomon</label>
 										</div>
 										<div class="radio">
-											<input type="radio" name="pronouns" id="details-pronouns_list" value="list" class="with-gap radio-col-green" required {{#user.details.pronouns}}checked{{/user.details.pronouns}}>
+											<input type="radio" name="pronouns" id="details-pronouns_list" value="list" class="with-gap radio-col-green" required {{#if user.details.pronouns}}checked{{/if}}>
 											<label for="details-pronouns_list">Uzu la jena(j)n:</label>
 											<div class="cr-pronouns-list">
 												<span>

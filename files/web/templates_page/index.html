@@ -7,11 +7,11 @@
             <div class="card">
 				<div class="body">
 					<h1>Bonvenon al Centra Reto{{#user}}, {{briefName}}{{/user}}!</h1>
-					{{^user}}
+					{{#unless user}}
 					<p class="lead">Centra Reto estas la ĉefa sistemo de TEJO por interna kunlaboro.</p>
 					<p>La sistemo estas publike alirebla de ĉiuj interesitoj pri la agado de TEJO, sed pluraj funkcioj estas nur alireblaj de aktivuloj de TEJO.</p>
 					<p><b>Vi ne estas ensalutinta. <a href="/ensaluti">Alklaku tie ĉi por ensaluti</a>.</b></p>
-					{{/user}}
+					{{/unless}}
 				</div>
 			</div>
 		</div>

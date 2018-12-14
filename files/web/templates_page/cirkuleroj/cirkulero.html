@@ -1,19 +1,19 @@
 <div class="container-fluid">
 	<div class="block-header">
-		<h2>Cirkuleroj » N-ro {{page.cirkulero.id}} por {{page.cirkulero.name}} {{#page.editor}}» Pretigi{{/page.editor}}</h2>
+		<h2>Cirkuleroj » N-ro {{page.cirkulero.id}} por {{page.cirkulero.name}} {{#if page.editor}}» Pretigi{{/if}}</h2>
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="card">
 				<div class="header">
-					<h2>{{#page.editor}}Pretigi cirkuleron{{/page.editor}}{{^page.editor}}Cirkulero{{/page.editor}} n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
+					<h2>{{#if page.editor}}Pretigi cirkuleron{{else}}Cirkulero{{/if}} n-ro {{page.cirkulero.id}} por {{page.cirkulero.name}}</h2>
 				</div>
 				<div class="body">
-					{{#page.editor}}
+					{{#if page.editor}}
 					<div class="m-b-30">
 						<b>La cirkulero aspektos kiel ĉi-sube post ĝia publikiĝo. Memoru ke la cirkulero ne estas publike legebla ĝis vi alklakis la butonon ‘Publikigi’.</b>
 					</div>
-					{{/page.editor}}
+					{{/if}}
 
 					<div id="loader">
 						<div class="preloader pl-size-xl">
@@ -38,7 +38,7 @@
 						<div id="cirkulero-contribs" class="panel-group m-t-20" role="tablist" aria-multiselectable="true">
 					</div>
 
-					{{#page.editor}}
+					{{#if page.editor}}
 					<h3 class="m-t-40">Publikigo</h3>
 					<p>Se vi plene certas, ke vi pretas publikigi la cirkuleron kiel ĝi aspektos ĉi-supre, kontrolu, kaj eventuale ŝanĝu, la agordojn ĉi-subajn kaj poste alklaku la butonon por publikigi la cirkuleron.</p>
 					<form id="cirkulero-publish-form">
@@ -62,7 +62,7 @@
 							<button type="submit" id="cirkulero-publish-button" class="btn btn-primary waves-effect">PUBLIKIGI</button>
 						</div>
 					</form>
-					{{/page.editor}}
+					{{/if}}
 				</div>
 			</div>
 		</div>
