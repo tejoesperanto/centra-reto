@@ -77,8 +77,11 @@
                 <div class="user-info">
                     <div class="image">
                         <a href="/aktivuloj/{{email}}">
-                            {{#hasPicture}}<img src="{{pictureSmall}}" width="48" height="48" alt="Bildo de {{longName}}" class="cr-user-picture">{{/hasPicture}}
-                            {{^hasPicture}}<svg width="48" height="48" data-jdenticon-value="{{longName}}" class="cr-user-picture"></svg>{{/hasPicture}}
+                            {{#if hasPicture}}
+                            <img src="{{pictures.[128]}}" width="48" height="48" alt="Bildo de {{longName}}" class="cr-user-picture">
+                            {{else}}
+                            <svg width="48" height="48" data-jdenticon-value="{{longName}}" class="cr-user-picture"></svg>
+                            {{/if}}
                         </a>
                     </div>
                     <div class="info-container">

@@ -186,11 +186,19 @@ a.collapsed>.panel-collapse-arrow:before {
 	height: 128px;
 	border: 2px solid #2ABA52;
     padding: 2px;
-    margin: 2px;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
     -ms-border-radius: 50%;
     border-radius: 50%;
+    background-color: white;
+    overflow: hidden;
+}
+
+.cr.image-area>div>img {
+	border: 0 !important;
+	padding: 0 !important;
+	margin: inherit !important;
+
 }
 
 .cr.profile-body {
@@ -216,4 +224,33 @@ a.collapsed>.panel-collapse-arrow:before {
 
 .cr-fact-list>.oneline>.content {
 	line-height: 19px;
+}
+
+.profile-header>.header-dropdown {
+	position: absolute;
+	top: 20px;
+	right: 15px;
+	list-style: none;
+}
+
+.profile-header>.header-dropdown>li {
+	display: inline-block;
+}
+
+.profile-header>.header-dropdown i {
+	font-size: 20px;
+	-moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.profile-header>.header-dropdown i:hover {
+	color: #666;
+}
+
+img.blur {
+	filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='10');
+	-webkit-filter: blur(10px);
+	filter: blur(10px);
 }

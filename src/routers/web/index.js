@@ -20,6 +20,8 @@ import pageAlighi from './_alighi';
 import pageEnsaluti from './_ensaluti';
 import pageNovaPasvorto from './_nova_pasvorto';
 
+import dataAktivuloImage from './_aktivulo_image';
+
 /**
  * Sets up the router
  * @return {express.Router} The router
@@ -58,7 +60,11 @@ export function init () {
 		wrap(pageEnsaluti));
 
 	router.get([ '/novapasvorto', '/novapasvorto/:email/:resetKey' ],
-		wrap(pageNovaPasvorto))
+		wrap(pageNovaPasvorto));
+
+	// Data
+	router.get('/img/aktivulo/:email/:size',
+		wrap(dataAktivuloImage));
 
 	return router;
 }
@@ -234,7 +240,9 @@ async function amendView (req, view) {
 			longName: req.user.getLongName(),
 			shortName: req.user.getShortName(),
 			briefName: req.user.getBriefName(),
-			details: req.user.getNameDetails()
+			details: req.user.getNameDetails(),
+			hasPicture: req.user.hasPicture(false),
+			pictures: req.user.getPictureURLs(false)
 		};
 
 		if (!view.permissionsCheck) { view.permissionsCheck = []; }

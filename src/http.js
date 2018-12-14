@@ -76,6 +76,7 @@ export async function init () {
 	CR.app.use('/api', CRRouters.api.init());
 	CR.app.use('/',    CRRouters.web.init());
 	
+	// Static content
 	CR.app.use(express.static(path.join(CR.filesDir, 'web', 'static')));
 
 	// Error handling

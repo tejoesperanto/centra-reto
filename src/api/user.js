@@ -257,6 +257,17 @@ class User {
 	}
 
 	/**
+	 * Gets a random pronoun from the list of the user's pronouns
+	 * @return {string|null|boolean} A pronoun string, false if the user wants you to use their name or null if they haven't completed the initial setup
+	 */
+	getRandomPronoun () {
+		const details = this.getNameDetails();
+		if (!details) { return null; }
+		if (!details.pronouns) { return -1; }
+		return details.pronouns[Math.floor(Math.random() * details.pronouns.length)];
+	}
+
+	/**
 	 * Gets all the user's groups
 	 * @return {Object}
 	 */
@@ -552,6 +563,59 @@ class User {
 		const stmt = CR.db.users.prepare('update users set password = ? where id = ?');
 		stmt.run(hashedPassword, this.id);
 		this.password = hashedPassword;
+	}
+
+	/**
+	 * Returns whether the user has a profile picture
+	 * @param  {boolean} mustBePublic Whether the picture must be public
+	 * @return {boolean} Whether the user has a profile picture and optionally whether it's public
+	 */
+	hasPicture (mustBePublic = true) {
+		const stmt = CR.db.users.prepare('select public from users_pictures where user_id = ?');
+		const row = stmt.get(this.id);
+		if (!row) { return false; }
+		if (mustBePublic) {
+			return !!row.public;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns the state of the user's profile picture
+	 * @return {number} 0 if the user has no picture, 1 if it's private, 2 if it's public
+	 */
+	getPictureState () {
+		const stmt = CR.db.users.prepare('select public from users_pictures where user_id = ?');
+		const row = stmt.get(this.id);
+		if (!row) {
+			return 0;
+		} else if (!row.public) {
+			return 1;
+		} else {
+			return 2;
+		}
+	}
+
+	/**
+	 * Obtains a map of pixel sizes to urls for obtaining the user's profile picture
+	 * @param  {boolean} mustBePublic Whether the picture must be public
+	 * @return {Object|null}
+	 */
+	getPictureURLs (mustBePublic = true) {
+		if (!this.hasPicture(mustBePublic)) { return null; }
+		const urls = {};
+		for (let size of User.getPictureSizes()) {
+			urls[size] = `/img/aktivulo/${this.email}/${size}.png`;
+		}
+		return urls;
+	}
+
+	/**
+	 * Gets the allowed user profile picture sizes
+	 * @return {number[]
+	 */
+	static getPictureSizes () {
+		return [ 512, 256, 128 ];
 	}
 }
 
