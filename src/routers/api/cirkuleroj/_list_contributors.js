@@ -18,9 +18,10 @@ async function list_contributors (req, res, next) {
 	 * Returns:
 	 *   groups (Object[])
 	 *     group (Object)
-	 *       id              (string) The id of the group
-	 *       name            (string) The name of the group
-	 *       members_allowed (boolean)     Whether this group may contain direct members
+	 *       id              (string)   The id of the group
+	 *       name            (string)   The name of the group
+	 *       members_allowed (boolean)  Whether this group may contain direct members
+	 *       children        (number[]) The group's child groups
 	 *     users (Object[])
 	 *       id                   (number)       The id of the user
 	 *       email                (string)       The email address of the user
@@ -143,7 +144,8 @@ async function list_contributors (req, res, next) {
 			group: {
 				id: group.id,
 				name: group.nameBase,
-				members_allowed: group.membersAllowed
+				members_allowed: group.membersAllowed,
+				children: (await group.getAllChildGroups()).map(x => x.id)
 			},
 			users: usersDetails
 		};

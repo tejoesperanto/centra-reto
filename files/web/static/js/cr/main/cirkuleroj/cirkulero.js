@@ -55,6 +55,13 @@ $(function () {
 							break;
 						}
 					}
+
+					for (var n in cirkuleroInfo.contributors) {
+						var childGroup = cirkuleroInfo.contributors[n];
+						if (contributorGroup.group.children.indexOf(childGroup.group.id) > -1) {
+							childGroup.hasStats = true;
+						}
+					}
 				}
 
 				if (contributorGroup.users.length < 1) {
@@ -90,7 +97,8 @@ $(function () {
 				var contribTitle = template.find('.cirkulero-contrib-overview-contributors-title');
 				var contribList = template.find('.cirkulero-contrib-overview-contributors');
 				if (contributors.length) {
-					if (contributorGroup.group.members_allowed) {
+					var isMainGroup = contributorGroup.group.members_allowed || contributorGroup.group.children.length > 0;
+					if (isMainGroup) {
 						contribList.attr('start', contribIter);
 					} else {
 						var newEl = $('<ul class="cirkulero-contrib-overview-contributors"></ul>');
@@ -101,7 +109,7 @@ $(function () {
 					contribTitle.text('Kontribuis (' + contributors.length + '/' + totalUsers + '):');
 					for (var n in contributors) {
 						var user = contributors[n];
-						if (contributorGroup.group.members_allowed) { contribIter++; }
+						if (isMainGroup) { contribIter++; }
 
 						var li = document.createElement('li');
 						contribList.append(li);

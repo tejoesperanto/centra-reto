@@ -126,6 +126,7 @@ export default class Group {
 	 * @return {Group[]}
 	 */
 	async getAllChildGroups () {
+		if (this.children) { return this.children; }
 		const groups = [];
 
 		const stmt = CR.db.users.prepare(`select id from groups where parent = ?`);
@@ -136,6 +137,7 @@ export default class Group {
 		const directChildren = await Promise.all(promises);
 		const indirectChildren = await Promise.all(groups.map(group => group.getAllChildGroups()));
 		groups.push(...directChildren, ...indirectChildren);
+		this.children = groups;
 		return groups;
 	}
 
