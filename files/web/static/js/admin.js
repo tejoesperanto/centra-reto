@@ -779,4 +779,24 @@ function serializeToObj (selector) {
     return data;
 }
 
+function rot13 (str) {
+    return str.replace(/[A-Za-z]/g, function (c) {
+        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+            .charAt(
+                "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm".indexOf(c)
+            );
+    });
+}
+
+function handleMailEls (selector) {
+    $(selector).find('[data-mail]').each(function () {
+        var obf = this.dataset.mail;
+        var mail = rot13(obf);
+        this.href = 'mailto:' + mail;
+        this.textContent = mail;
+        delete this.dataset.mail;
+    });
+}
+handleMailEls(document.body);
+
 // END Added for CR

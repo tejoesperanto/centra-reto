@@ -8,6 +8,7 @@ const csvParse = promisify(_csvParse);
 
 import Group from './group';
 import * as CRMail from '../mail';
+import * as CRUtil from '../util';
 
 /**
  * Represents a user in CR
@@ -616,6 +617,14 @@ class User {
 	 */
 	static getPictureSizes () {
 		return [ 512, 256, 128 ];
+	}
+
+	/**
+	 * Obtains the user's email address obfuscated using
+	 * @return {string}
+	 */
+	getObfuscatedEmail () {
+		return CRUtil.rot13(this.email);
 	}
 }
 

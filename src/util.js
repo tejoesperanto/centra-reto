@@ -84,6 +84,20 @@ const ESC_MAP = {
  */
 export function escapeHTML (str, forAttribute = false) {
 	return str.replace(forAttribute ? /[&<>'"]/g : /[&<>]/g, function (c) {
-        return ESC_MAP[c];
-    });
+		return ESC_MAP[c];
+	});
+}
+
+/**
+ * Performs the caesar cipher (ROT13) on the input string
+ * @param  {string} str
+ * @return {string}
+ */
+export function rot13 (str) {
+	return str.replace(/[A-Za-z]/g, c => {
+		return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+			.charAt(
+				"NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm".indexOf(c)
+			);
+	});
 }

@@ -23,6 +23,7 @@ async function aktivulo (req, res, next) {
 
 	const aktivuloObj = {
 		email: aktivulo.email,
+		emailObfuscated: aktivulo.getObfuscatedEmail(),
 		details: aktivuloDetails,
 		longName: await aktivulo.getLongName(),
 		shortName: await aktivulo.getShortName(),
