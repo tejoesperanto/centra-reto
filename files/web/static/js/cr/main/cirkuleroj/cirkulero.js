@@ -476,7 +476,7 @@ $(function () {
 	if (pageData.editor && pageData.cirkulero.open) {
 		swal({
 			title: 'Pretigo de cirkulero',
-			text: 'Ĉu vi certas, ke vi pretas pretigi tiun ĉi cirkuleron? Tiu ĉi ago tuj malfermos kontribuojn.',
+			text: 'Ĉu vi certas, ke vi volas jam nun finpretigi tiun ĉi cirkuleron? Tiu ĉi ago tuj fermos kontribuojn.',
 			buttons: [
 				'Nuligi',
 				'Pretigi'
