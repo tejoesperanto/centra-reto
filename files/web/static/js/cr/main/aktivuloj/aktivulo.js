@@ -81,7 +81,30 @@ $(function () {
 			acceptedFiles: 'image/*',
 			autoProcessQueue: false,
 			customHandler: uploadHandler
-		})
+		});
+
+		template.find('.remove-profile-picture-button').click(function () {
+			swal({
+				title: 'Forigo de profilbildo',
+				text: 'Ĉu vi certas, ke vi volas forigi vian profilbildon?',
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Forigi',
+						closeModal: false
+					}
+				]
+			}).then(function (isConfirm) {
+				if (!isConfirm) { return; }
+
+				performAPIRequest('post', '/api/user/remove_profile_picture')
+					.then(function (res) {
+						swal.stopLoading();
+						if (!res.success) { return; }
+						window.location.reload();
+					})
+			});
+		});
 
 		swal({
 			title: 'Ŝanĝi profilbildon',

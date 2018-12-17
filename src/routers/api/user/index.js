@@ -17,6 +17,7 @@ import apiInitialSetup from './_initial_setup';
 import apiList from './_list';
 import apiLogin from './_login';
 import apiLogout from './_logout';
+import apiRemoveProfilePicture from './_remove_profile_picture';
 import apiResetPasswordEmail from './_reset_password_email';
 import apiResetPasswordKey from './_reset_password_key';
 import apiSetProfilePicture from './_set_profile_picture';
@@ -84,6 +85,11 @@ export default function () {
 
 	router.post('/logout',
 		wrap(apiLogout));
+
+	router.post('/remove_profile_picture',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiRemoveProfilePicture));
 
 	router.post('/reset_password_email',
 		wrap(apiResetPasswordEmail));
