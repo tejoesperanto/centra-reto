@@ -1,4 +1,6 @@
 import express from 'express';
+import multer from 'multer';
+import os from 'os';
 
 import * as CRApi from '..';
 import { wrap } from '../..';
@@ -17,6 +19,7 @@ import apiLogin from './_login';
 import apiLogout from './_logout';
 import apiResetPasswordEmail from './_reset_password_email';
 import apiResetPasswordKey from './_reset_password_key';
+import apiSetProfilePicture from './_set_profile_picture';
 import apiToggleEnabled from './_toggle_enabled';
 
 /**
@@ -87,6 +90,13 @@ export default function () {
 
 	router.post('/reset_password_key',
 		wrap(apiResetPasswordKey))
+
+	router.post('/set_profile_picture',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		multer({ dest: os.tmpdir(), limits: { fieldSize: '3MB' } }).single('picture'),
+		middleware.handleMultipart,
+		wrap(apiSetProfilePicture));
 
 	router.post('/toggle_enabled',
 		middleware.requireLogin,

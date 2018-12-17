@@ -19,10 +19,10 @@ async function aktivulo (req, res, next) {
 	aktivuloGroups.sort((a, b) => a.user.name.localeCompare(b.user.name, 'eo'));
 
 	const publicOnly = !req.user; // If the user is not signed in we'll only be sending public info
-	const picturePrivate = req.user ? aktivulo.getPictureState() === 1 : false;
+	const pictureState = aktivulo.getPictureState();
+	const picturePrivate = req.user ? pictureState === 1 : false;
 
 	const aktivuloObj = {
-		email: aktivulo.email,
 		emailObfuscated: aktivulo.getObfuscatedEmail(),
 		details: aktivuloDetails,
 		longName: await aktivulo.getLongName(),
@@ -37,12 +37,25 @@ async function aktivulo (req, res, next) {
 		randomPronoun: aktivulo.getRandomPronoun()
 	};
 
+	if (aktivuloObj.isSelf) {
+		aktivuloObj.selfData = {
+			picturePublic: pictureState === 2
+		};
+	}
+
 	const data = {
-		title: await aktivulo.getLongName(),
+		title: aktivuloObj.longName,
+		stylesheets: [
+			'/plugins/dropzone/dropzone.min.css'
+		],
 		scripts: [
+			'/plugins/dropzone/dropzone.min.js',
 			'/js/cr/main/aktivuloj/aktivulo.js'
 		],
 		page: {
+			aktivulo: aktivuloObj
+		},
+		pageDataObj: {
 			aktivulo: aktivuloObj
 		}
 	};

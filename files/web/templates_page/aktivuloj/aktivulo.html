@@ -28,7 +28,7 @@
 				<div class="cr profile-header">
 					<ul class="header-dropdown">
 						{{#if page.aktivulo.isSelf}}
-						<li>
+						<li title="Ŝanĝi profilbildon">
 							<i class="material-icons clickable" id="edit-profile-picture">edit</i>
 						</li>
 						{{/if}}
@@ -90,3 +90,26 @@
 		</div>
 	</div>
 </div>
+
+{{#if page.aktivulo.isSelf}}
+<div class="template" id="template-edit-profile-picture">
+	<div class="m-b-20">
+		<label>Videbleco de via profilbildo:</label>
+		<div class="switch">
+			<label>Nur aktivuloj<input type="checkbox" class="edit-profile-picture-publicity" {{#if page.aktivulo.selfData.picturePublic}}checked{{/if}}><span class="lever switch-col-green"></span>Ĉiuj</label>
+		</div>
+	</div>
+
+	<div>
+		<label>Alŝuti novan profilbildon (jpg aŭ png, maks. 3MB):</label>
+		<div class="dropzone edit-profile-picture-upload">
+			<div class="dz-message">
+				<div class="drag-icon-cph">
+					<i class="material-icons">touch_app</i>
+				</div>
+				<h3>Ĵetu dosieron tien ĉi aŭ alklaku por alŝuti.</h3>
+			</div>
+		</div>
+	</div>
+</div>
+{{/if}}

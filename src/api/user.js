@@ -571,7 +571,7 @@ class User {
 	 * @param  {boolean} mustBePublic Whether the picture must be public
 	 * @return {boolean} Whether the user has a profile picture and optionally whether it's public
 	 */
-	hasPicture (mustBePublic = true) {
+	hasPicture (mustBePublic = false) {
 		const stmt = CR.db.users.prepare('select public from users_pictures where user_id = ?');
 		const row = stmt.get(this.id);
 		if (!row) { return false; }

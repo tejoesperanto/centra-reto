@@ -254,3 +254,11 @@ img.blur {
 	-webkit-filter: blur(10px);
 	filter: blur(10px);
 }
+
+.dropzone .dz-preview.dz-image-preview {
+	background-color: inherit;
+}
+
+.dropzone .dz-preview .dz-image {
+	border-radius: 100%
+}

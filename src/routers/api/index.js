@@ -133,6 +133,22 @@ export const middleware = {
 		} else {
 			res.sendAPIError('INITIAL_SETUP_REQUIRED');
 		}
+	},
+
+	handleMultipart: function middlewareHandleMultipart (req, res, next) {
+		if (!req.body.json) {
+			next();
+			return;
+		}
+
+		try {
+			req.body = JSON.parse(req.body.json);
+		} catch (e) {
+			next(e);
+			return;
+		}
+
+		next();
 	}
 };
 
