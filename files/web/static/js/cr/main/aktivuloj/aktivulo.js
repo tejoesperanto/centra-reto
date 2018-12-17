@@ -34,6 +34,11 @@ $(function () {
 						dropzone._handleUploadError(files, xhr);
 					}
 				};
+			} else {
+				if (!pageData.aktivulo.hasPicture) {
+					swal.close();
+					return;
+				}
 			}
 
 			var finalFn;
