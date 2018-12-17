@@ -4,7 +4,7 @@ $(function () {
 		$('#user-image>img').removeClass('blur');
 	});
 
-	$('#edit-profile-picture').click(function () {
+	$('#edit-profile-picture,#user-image.clickable').click(function () {
 		var template = cloneTemplate('#template-edit-profile-picture');
 
 		var dropzone;

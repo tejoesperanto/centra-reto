@@ -36,7 +36,7 @@
 				</div>
 				<div class="cr profile-body">
 					<div class="cr image-area">
-						<div id="user-image">
+						<div id="user-image" {{#if page.aktivulo.isSelf}}class="clickable"{{/if}}>
 							{{#if page.aktivulo.hasPicture}}
 							<img src="{{page.aktivulo.pictures.[256]}}" width="128" height="128" alt="Bildo de {{page.aktivulo.longName}}" {{#if page.aktivulo.picturePrivate}}class="blur"{{/if}}>
 							{{else}}
