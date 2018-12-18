@@ -1,4 +1,5 @@
 import * as CRMail from '../../../mail';
+import * as CRCirkulero from '../../../api/cirkulero';
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
 async function publish (req, res, next) {
@@ -78,7 +79,6 @@ async function publish (req, res, next) {
 	}
 
 	// Update contribs
-	stmt = CR.db.cirkuleroj.prepare('update cirkuleroj_contributions set modified_by_admin = 1, faris = @faris, faras = @faras, faros = @faros, comment = @comment, user_role_comment = @user_role_comment where cirkulero_id = @cirkulero_id and user_id = @user_id and group_id = @group_id');
 	const data = [];
 	for (let i in req.body.contribs) {
 		const contrib = req.body.contribs[i];
@@ -136,9 +136,41 @@ async function publish (req, res, next) {
 		});
 	}
 
+	stmt = CR.db.cirkuleroj.prepare('update cirkuleroj_contributions set modified_by_admin = 1, faris = @faris, faras = @faras, faros = @faros, comment = @comment, user_role_comment = @user_role_comment where cirkulero_id = @cirkulero_id and user_id = @user_id and group_id = @group_id');
 	CR.db.cirkuleroj.transaction(rows => {
 		for (let row of rows) stmt.run(row);
 	})(data);
+
+	// Add the published info
+	const allowedContributorsUsers = await CRCirkulero.getAllowedContributors();
+	const allowedContributors = [];
+	for (let user of allowedContributorsUsers) {
+		allowedContributors.push({
+			user: user.id,
+			groups: (await CRCirkulero.getUserCirkuleroContributionGroups(user)).map(group => {
+				return {
+					id: group.group.id,
+					name: group.user.name
+				};
+			})
+		});
+	}
+
+	const cirkuleroGroupsRaw = await CRCirkulero.getGroups(false);
+	const cirkuleroGroups = {};
+	for (let purpose in cirkuleroGroupsRaw) {
+		const purposeGroups = cirkuleroGroupsRaw[purpose];
+		cirkuleroGroups[purpose] = purposeGroups.map(x => x.id).join(',');
+	}
+
+	stmt = CR.db.cirkuleroj.prepare('insert into cirkuleroj_published (cirkulero_id, allowed_contributors, groups_contribute, groups_appear, groups_statistics) values (@cirkulero_id, @allowed_contributors, @groups_contribute, @groups_appear, @groups_statistics)');
+	stmt.run({
+		cirkulero_id: req.body.cirkulero_id,
+		allowed_contributors: JSON.stringify(allowedContributors),
+		groups_contribute: cirkuleroGroups.contribute,
+		groups_appear: cirkuleroGroups.appear,
+		groups_statistics: cirkuleroGroups.statistics
+	});
 
 	// Update the cirkulero
 	stmt = CR.db.cirkuleroj.prepare('update cirkuleroj set published = 1 where id = ?');
@@ -149,7 +181,7 @@ async function publish (req, res, next) {
 		await CRMail.sendMail({
 			subject: `Cirkulero ${req.body.cirkulero_id} pretas!`,
 			to: publishEmail,
-			cc: req.user.email,
+			cc: req.user.email, // TODO: Replace this with responsible users
 			text: publishMessage
 		});
 	}

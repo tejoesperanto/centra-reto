@@ -36,13 +36,9 @@ async function numero (req, res, next) {
 			page: {
 				cirkulero: row,
 				editor: false
-			},
-			pageDataObj: {
-				cirkulero: row,
-				editor: false,
-				groups: await cirkulero.getGroups()
 			}
 		};
+		data.pageDataObj = data.page;
 		await res.sendRegularPage('cirkuleroj/cirkulero', data);
 		return;
 	}

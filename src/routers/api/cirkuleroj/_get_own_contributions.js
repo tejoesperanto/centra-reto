@@ -1,4 +1,4 @@
-import * as cirkulero from '../../../api/cirkulero';
+import * as CRCirkulero from '../../../api/cirkulero';
 
 async function get_own_contributions (req, res, next) {
 	/**
@@ -27,7 +27,7 @@ async function get_own_contributions (req, res, next) {
 	 * INVALID_CIRKULERO             The cirkulero with the provided id either doesn't exist or isn't open to contributions
 	 */
 
-	if (!await cirkulero.mayUserContributeToCirkuleroj(req.user)) {
+	if (!await CRCirkulero.mayUserContributeToCirkuleroj(req.user)) {
 		res.sendAPIError('MAY_NOT_CONTRIBUTE');
 		return;
 	}

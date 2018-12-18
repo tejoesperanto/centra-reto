@@ -8,7 +8,7 @@ import { promiseAllObject, escapeHTML } from '../util';
 /**
  * Returns all groups a user belongs to that relate to cirkuleroj
  * @param  {User} user
- * @return {Object} A map of `{ purpose string, groups Group[] }`
+ * @return {Object} A map of `{ purpose string, groups Object (group Group, user Object) }`
  */
 export async function getUserCirkuleroGroups (user) {
 	const stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
@@ -36,7 +36,7 @@ export async function getUserCirkuleroGroups (user) {
 /**
  * Returns the groups to credit contributions to cirkuleroj to
  * @param  {User} user
- * @return {Group[]}
+ * @return {Object[]} (group Group, user Object)
  */
 export async function getUserCirkuleroContributionGroups (user) {
 	const userGroups = await user.getGroups();
@@ -71,19 +71,44 @@ export async function mayUserContributeToCirkuleroj (user) {
 
 /**
  * Obtains all the groups related to cirkuleroj
+ * @param  {boolean} [withChildren] Whether to include the groups' children
  * @return {Object} A map of `{ purpose string: groups Group[] }`
  */
-export async function getGroups () {
+export async function getGroups (withChildren = false) {
 	const stmt = CR.db.cirkuleroj.prepare('select purpose, groups from groups');
 	const rows = stmt.all();
 
 	const groups = {};
 	for (let row of rows) {
 		const groupIds = row.groups.split(',');
-		groups[row.purpose.toLowerCase()] = await Promise.all(groupIds.map(id => Group.getGroupById(id)));
+		groups[row.purpose.toLowerCase()] = await Promise.all(groupIds.map(async id => {
+			const group = await Group.getGroupById(id);
+			if (withChildren) {
+				await group.getAllChildGroups();
+			}
+			return group;
+		}));
 	};
 
 	return groups;
+}
+
+/**
+ * Obtains all the allowed contributors to cirkuleroj
+ * @return {User[]}
+ */
+export async function getAllowedContributors () {
+	const contributorGroups = (await getGroups()).contribute;
+	const userArrs = await Promise.all(contributorGroups.map(group => group.getAllUsers(true)));
+	const usersRaw = [].concat(...userArrs);
+	const users = [];
+	const userIds = [];
+	for (let user of usersRaw) {
+		if (userIds.indexOf(user.id) > -1) { continue; }
+		userIds.push(user.id);
+		users.push(user);
+	}
+	return users;
 }
 
 /**
@@ -92,7 +117,7 @@ export async function getGroups () {
  * @return {Object[]}
  */
 export function getAllContributions (id) {
-	const stmt = CR.db.cirkuleroj.prepare('select user_id, group_id, user_role, user_role_comment, faris, faras, faros, comment, modified_by_admin from cirkuleroj_contributions where cirkulero_id = ?');
+	const stmt = CR.db.cirkuleroj.prepare('select user_id, group_id, user_role_comment, faris, faras, faros, comment, modified_by_admin from cirkuleroj_contributions where cirkulero_id = ?');
 	const rows = stmt.all(id);
 	return rows;
 }

@@ -1,7 +1,18 @@
 import * as cirkulero from '../../../api/cirkulero';
 
 async function venontaj (req, res, next) {
-	const groups = await cirkulero.getGroups();
+	const groupsRaw = await cirkulero.getGroups(true);
+	const groups = {};
+	for (let purpose in groupsRaw) {
+		groups[purpose] = await Promise.all(groupsRaw[purpose].map(async group => {
+			const children = await group.getAllChildGroups();
+			return {
+				id: group.id,
+				name: group.nameBase,
+				children: children.map(x => x.id)
+			}
+		}));
+	}
 
 	const data = {
 		title: 'Venontaj cirkuleroj',

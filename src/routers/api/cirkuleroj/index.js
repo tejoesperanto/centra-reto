@@ -16,7 +16,6 @@ import apiGetRemindersLists from './_get_reminders_lists';
 import apiInsertReminderDirect from './_insert_reminder_direct';
 import apiInsertReminderList from './_insert_reminder_list';
 import apiList from './_list';
-import apiListContributors from './_list_contributors';
 import apiPublish from './_publish';
 import apiSetPublishMessage from './_set_publish_message';
 import apiUpdateGroups from './_update_groups';
@@ -62,7 +61,6 @@ export default function () {
 		wrap(apiGetContributions));
 
 	router.post('/get_groups',
-		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiGetGroups));
 
@@ -95,10 +93,6 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiList));
-
-	router.post('/list_contributors',
-		middleware.requireInitialSetup,
-		wrap(apiListContributors));
 
 	router.post('/publish',
 		middleware.requireLogin,

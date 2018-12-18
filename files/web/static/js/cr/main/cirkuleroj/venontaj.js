@@ -114,48 +114,69 @@ $(function () {
 			});
 
 			// Obtain contributions
-			performAPIRequest('post', '/api/cirkuleroj/list_contributors', { cirkulero_id: rowData.id })
+			performAPIRequest('post', '/api/cirkuleroj/get_contributions', { cirkulero_id: rowData.id })
 				.then(function (res) {
 					if (!res.success) { return; }
 
 					var template = cloneTemplate('#template-cirkulero-modal');
-					for (var i in pageData.groups.statistics) {
-						var group = pageData.groups.statistics[i];
 
-						var contribGroup;
-						for (var n in res.groups) {
-							if (res.groups[n].group.id === group.id) {
-								contribGroup = res.groups[n];
-								break; 
+					// Actions
+					template.find('.cirkulero-modal-prepare').click(function () {
+						window.location.href = '/cirkuleroj/' + rowData.id + '/pretigi';
+					});
+
+					// Statistics
+					var createStatsHandler = function (group) {
+						var contribs = [];
+						for (var n in res.contributions) {
+							var contrib = res.contributions[n];
+							if (!group && contrib.hasStats) { continue; }
+							if (!group) { // Remainder
+								contrib.hasStats = true;
+								contribs.push(contrib);
+								continue;
 							}
+							// Not remainder
+							if (group.id !== contrib.user.group_id && group.children.indexOf(contrib.user.group_id) === -1) {
+								continue;
+							}
+							contrib.hasStats = true;
+							contribs.push(contrib);
 						}
 
+						if (!contribs.length) { return; } // Group is empty, no action needed
+
+						if (!group) { // Remainder
+							group = {
+								name: 'Aliaj'
+							};
+						}
+
+						var totalUsers = contribs.length;
 						var contributors = [];
 						var nonContributors = [];
-						var totalUsers = contribGroup.users.length;
-						for (var n in contribGroup.users) {
-							var user = contribGroup.users[n];
-							var name = user.long_name + ' (' + user.group_name + ')';
-							if (user.contributed) {
+
+						for (var i in contribs) {
+							var contrib = contribs[i];
+							var name = contrib.user.long_name || contrib.user.email;
+							if (contrib.user.role !== group.name) {
+								name += ' – ' + contrib.user.role;
+							}
+							if (contrib.contrib) {
 								contributors.push(name);
 							} else {
-								nonContributors.push(name)
+								nonContributors.push(name);
 							}
 						}
 
-						// Actions
-						template.find('.cirkulero-modal-prepare').click(function () {
-							window.location.href = '/cirkuleroj/' + rowData.id + '/pretigi';
-						});
-
-						// Statitics
+						// Statistics
 						var stats = template.find('.cirkulero-modal-statistics');
 						var div = document.createElement('div');
 						stats.append(div);
 
 						var h4 = document.createElement('h4');
 						div.appendChild(h4);
-						h4.textContent = contribGroup.group.name + ' (' +  contributors.length + '/' + totalUsers + ')';
+						h4.textContent = group.name + ' (' +  contributors.length + '/' + totalUsers + ')';
 
 						if (totalUsers > 0) {
 							var contribEl = document.createElement('p');
@@ -186,7 +207,11 @@ $(function () {
 							div.appendChild(el);
 							el.textContent = 'Neniuj membroj';
 						}
+					};
+					for (var i in pageData.groups.statistics) {
+						createStatsHandler(pageData.groups.statistics[i]);
 					}
+					createStatsHandler(null);
 
 					swal({
 						title: modalTitle,

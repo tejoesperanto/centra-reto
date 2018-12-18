@@ -50,7 +50,10 @@ $(function () {
 			// Add the groups
 			for (var x in groupFields) {
 				var field = groupFields[x];
-				var groupIds = res[field];
+				var groupIds = [];
+				for (var i in res[field]) {
+					groupIds.push(res[field][i].id);
+				}
 				var el = $('#manage-cirkuleroj-form-groups-' + field);
 
 				for (var y in groupIds) {

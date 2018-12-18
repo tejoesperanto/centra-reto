@@ -131,12 +131,11 @@ async function contribute (req, res, next) {
 	const group = groups[groupIndex];
 
 	// Submit the contribution
-	stmt = CR.db.cirkuleroj.prepare('insert or replace into cirkuleroj_contributions (cirkulero_id, user_id, group_id, user_role, user_role_comment, faris, faras, faros, comment) values (@cirkulero_id, @user_id, @group_id, @user_role, @user_role_comment, @faris, @faras, @faros, @comment)');
+	stmt = CR.db.cirkuleroj.prepare('insert or replace into cirkuleroj_contributions (cirkulero_id, user_id, group_id, user_role_comment, faris, faras, faros, comment) values (@cirkulero_id, @user_id, @group_id, @user_role_comment, @faris, @faras, @faros, @comment)');
 	stmt.run({
 		cirkulero_id: req.body.cirkulero_id,
 		user_id: req.user.id,
 		group_id: req.body.group_id,
-		user_role: group.user.name,
 		user_role_comment: userRoleComment,
 		faris: JSON.stringify(faris),
 		faras: JSON.stringify(faras),

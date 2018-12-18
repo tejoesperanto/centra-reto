@@ -47,7 +47,6 @@ async function pretigi (req, res, next) {
 		pageDataObj: {
 			cirkulero: cirk,
 			editor: true,
-			groups: await cirkulero.getGroups(),
 			publishMessage: publishMessage,
 			publishEmail: publishEmail,
 			cirkURL: url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirk.id}`)

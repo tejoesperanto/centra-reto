@@ -148,19 +148,7 @@ export default class Group {
 	 */
 	async getAllUsers (noDuplicates = false) {
 		// Obtain all the group's children
-		const groups = [ this ];
-		const getChildren = async ids => {
-			const params = '?,'.repeat(ids.length).slice(0, -1);
-			const stmt = CR.db.users.prepare(`select id from groups where parent in (${params})`);
-			const rows = stmt.all(...ids);
-
-			if (rows.length === 0) { return; }
-			const promises = rows.map(row => Group.getGroupById(row.id)); // No await on purpose
-			const newGroups = await Promise.all(promises);
-			groups.push(...newGroups);
-			await getChildren(rows.map(row => row.id));
-		};
-		await getChildren([ this.id ]);
+		const groups = [ this ].concat(await this.getAllChildGroups());
 
 		// Obtain all users in the group and all of its children
 		const params = '?,'.repeat(groups.length).slice(0, -1);

@@ -1,169 +1,135 @@
 $(function () {
-	var cirkuleroInfo = {};
-
-	var getContribTitle = function (contrib) {
-		var title = contrib.user.long_name || 'Nealiĝinto';
-		title += ' – ' + contrib.user.role;
-		if (contrib.user.role_comment) {
-			title += ' – ' + contrib.user.role_comment;
-		}
-		return title;
-	};
-
 	var setUpCirkulero = function () {
 		var apiData = { cirkulero_id: pageData.cirkulero.id };
 		Promise.all([
 			performAPIRequest('post', '/api/cirkuleroj/get_contributions', apiData),	
-			performAPIRequest('post', '/api/cirkuleroj/list_contributors', apiData)
+			performAPIRequest('post', '/api/cirkuleroj/get_groups', apiData)
 		]).then(function (res) {
 			if (!res[0].success || !res[1].success) { return; }
-			cirkuleroInfo.contributions = res[0].contributions;
-			cirkuleroInfo.contributors  = res[1].groups;
 
-			// Set up the overview
-			$('.data-contribs-total').text(cirkuleroInfo.contributions.length);
+			var cirkuleroInfo = {
+				contributions: res[0].contributions,
+				groups: {
+					contribute: res[1].contribute,
+					appear: res[1].appear,
+					statistics: res[1].statistics
+				}
+			};
 
+			var getContribTitle = function (contrib) {
+				var title = contrib.user.long_name || contrib.user.email;
+				title += ' – ' + contrib.user.role;
+				if (contrib.contrib.role_comment) {
+					title += ' – ' + contrib.contrib.role_comment;
+				}
+				return title;
+			};
+
+			var actualContributions = [];
+			for (var i in cirkuleroInfo.contributions) {
+				var contrib = cirkuleroInfo.contributions[i];
+				if (contrib.contrib !== null) {
+					actualContributions.push(contrib);
+				}
+			}
+
+			// STATISTICS OVERVIEW
+			// General
+			$('.data-contribs-total').text(actualContributions.length);
+			$('.data-contribs-allowed').text(cirkuleroInfo.contributions.length);
+
+			// Per statistics group
 			var overview = $('#cirkulero-contrib-overview');
-			var contribIter = 1;
-			var statisticsGroups = pageData.groups.statistics;
-			statisticsGroups.push(null); // Remainder group
-			for (var i in statisticsGroups) {
-				var group = statisticsGroups[i];
-				var contributorGroup;
 
-				if (group === null) {
-					var users = [];
-					for (var n in cirkuleroInfo.contributors) {
-						var group = cirkuleroInfo.contributors[n];
-						if (group.hasStats || !group.users.length) { continue; }
-						users = users.concat(group.users);
+			var statisticsGroups = cirkuleroInfo.groups.statistics;
+
+			var createStatsHandler = function (group) {
+				var contribs = [];
+				for (var n in cirkuleroInfo.contributions) {
+					var contrib = cirkuleroInfo.contributions[n];
+					if (!group && contrib.hasStats) { continue; }
+					if (!group) { // Remainder
+						contrib.hasStats = true;
+						contribs.push(contrib);
+						continue;
 					}
+					// Not remainder
+					if (group.id !== contrib.user.group_id && group.children.indexOf(contrib.user.group_id) === -1) {
+						continue;
+					}
+					contrib.hasStats = true;
+					contribs.push(contrib);
+				}
 
-					contributorGroup = {
-						isRemainder: true,
-						group: {
-							name: 'Aliaj',
-							members_allowed: true
-						},
-						users: users
+				if (!contribs.length) { return; } // Group is empty, no action needed
+
+				if (!group) { // Remainder
+					group = {
+						name: 'Aliaj'
 					};
-				} else {
-					for (var n in cirkuleroInfo.contributors) {
-						contributorGroup = cirkuleroInfo.contributors[n];
-						if (contributorGroup.group.id === group.id) {
-							contributorGroup.hasStats = true;
-							break;
-						}
-					}
-
-					for (var n in cirkuleroInfo.contributors) {
-						var childGroup = cirkuleroInfo.contributors[n];
-						if (contributorGroup.group.children.indexOf(childGroup.group.id) > -1) {
-							childGroup.hasStats = true;
-						}
-					}
 				}
-
-				if (contributorGroup.users.length < 1) {
-					continue; // Nothing to report on this group
-				}
-
-				contributorGroup.users.sort(function (a, b) {
-					if (a.full_name_latin_sort < b.full_name_latin_sort) {
-						return -1;
-					} else {
-						return 1;
-					}
-				});
 
 				var contributors = [];
 				var nonContributors = [];
-				var totalUsers = contributorGroup.users.length;
-				for (var n in contributorGroup.users) {
-					var user = contributorGroup.users[n];
-					if (user.contributed) {
-						contributors.push(user);
+
+				for (var n in contribs) {
+					var contrib = contribs[n];
+					if (contrib.contrib) {
+						contributors.push(contrib);
 					} else {
-						nonContributors.push(user);
+						nonContributors.push(contrib);
 					}
 				}
 
 				var template = cloneTemplate('#template-cirkulero-contrib-overview');
 				overview.append(template);
+				template.find('.cirkulero-contrib-overview-name').text(group.name);
 
-				template.find('.cirkulero-contrib-overview-name').text(contributorGroup.group.name);
+				var insertContributorGroup = function (options) {
+					if (options.contribs.length) {
+						options.titleEl.text(options.titleText + ' (' + options.contribs.length + '/' + contribs.length + '):');
 
-				// Kontribuis
-				var contribTitle = template.find('.cirkulero-contrib-overview-contributors-title');
-				var contribList = template.find('.cirkulero-contrib-overview-contributors');
-				if (contributors.length) {
-					var isMainGroup = contributorGroup.group.members_allowed || contributorGroup.group.children.length > 0;
-					if (isMainGroup) {
-						contribList.attr('start', contribIter);
+						for (var n in options.contribs) {
+							var contrib = options.contribs[n];
+
+							var li = document.createElement('li');
+							options.listEl.append(li);
+
+							if (contrib.user.long_name) {
+								var anchor = document.createElement('a');
+								li.appendChild(anchor);
+								anchor.href = '/aktivuloj/' + contrib.user.email;
+								anchor.target = '_blank';
+								anchor.textContent = contrib.user.long_name;
+							}
+
+							var span = document.createElement('span');
+							li.appendChild(span);
+							if (contrib.user.long_name) {
+								span.textContent = ' – ' + contrib.user.role;
+							} else {
+								span.textContent = contrib.user.email + ' – ' + contrib.user.role;
+							}
+						}
 					} else {
-						var newEl = $('<ul class="cirkulero-contrib-overview-contributors"></ul>');
-						contribList.replaceWith(newEl);
-						contribList = newEl;
+						options.titleEl.remove();
+						options.listEl.remove();
 					}
+				};
 
-					contribTitle.text('Kontribuis (' + contributors.length + '/' + totalUsers + '):');
-					for (var n in contributors) {
-						var user = contributors[n];
-						if (isMainGroup) { contribIter++; }
+				insertContributorGroup({
+					titleEl: template.find('.cirkulero-contrib-overview-contributors-title'),
+					listEl: template.find('.cirkulero-contrib-overview-contributors'),
+					contribs: contributors,
+					titleText: 'Kontribuis'
+				});
 
-						var li = document.createElement('li');
-						contribList.append(li);
-
-						var anchor = document.createElement('a');
-						li.appendChild(anchor);
-						anchor.href = '/aktivuloj/' + user.email;
-						anchor.target = '_blank';
-						anchor.textContent = user.long_name;
-
-						var span = document.createElement('span');
-						li.appendChild(span);
-						if (user.long_name) {
-							span.textContent = ' – ' + user.group_name;
-						} else {
-							span.textContent = 'Nealiĝinto – ' + user.group_name;
-						}
-					}
-				} else {
-					contribTitle.remove();
-					contribList.remove();
-				}
-
-				// Ne kontribuis
-				var noContribTitle = template.find('.cirkulero-contrib-overview-noncontributors-title');
-				var noContribList = template.find('.cirkulero-contrib-overview-noncontributors');
-				if (nonContributors.length) {
-					noContribTitle.text('Ne kontribuis (' + nonContributors.length + '/' + totalUsers + '):');
-					for (var n in nonContributors) {
-						var user = nonContributors[n];
-
-						var li = document.createElement('li');
-						noContribList.append(li);
-
-						if (user.long_name) { // Has completed initial setup
-							var anchor = document.createElement('a');
-							li.appendChild(anchor);
-							anchor.href = '/aktivuloj/' + user.email;
-							anchor.target = '_blank';
-							anchor.textContent = user.long_name;
-						}
-
-						var span = document.createElement('span');
-						li.appendChild(span);
-						if (user.long_name) {
-							span.textContent = ' – ' + user.group_name;
-						} else {
-							span.textContent = 'Nealiĝinto – ' + user.group_name;
-						}
-					}
-				} else {
-					noContribTitle.remove();
-					noContribList.remove();
-				}
+				insertContributorGroup({
+					titleEl: template.find('.cirkulero-contrib-overview-noncontributors-title'),
+					listEl: template.find('.cirkulero-contrib-overview-noncontributors'),
+					contribs: nonContributors,
+					titleText: 'Ne kontribuis'
+				});
 
 				// Chart
 				var chartEl = template.find('.cirkulero-contrib-overview-chart');
@@ -183,53 +149,20 @@ $(function () {
 					},
 					options: {
 						responsive: false,
-						rotation: Math.PI
+						rotation: .5 * Math.PI
 					}
 				});
+			};
+			for (var i in statisticsGroups) {
+				createStatsHandler(statisticsGroups[i]);
 			}
+			createStatsHandler(null); // Remainder
 
-			// Contributions
-			var contributionsGroups = [];
-			var remainder = [];
-			for (var i in cirkuleroInfo.contributions) {
-				var contrib = cirkuleroInfo.contributions[i];
-				
-				var index = null;
-				for (var n = 0; n < pageData.groups.appear.length; n++) {
-					var group = pageData.groups.appear[n];
-					if (contrib.user.group_id === group.id) {
-						index = n;
-						break;
-					}
-				}
-
-				if (index) {
-					if (!contributionsGroups[index]) {
-						contributionsGroups[index] = [];
-					}
-					contributionsGroups[index].push(contrib);
-				} else {
-					remainder.push(contrib);
-				}
-			}
-			contributionsGroups.push(remainder);
-			var contributions = [];
-			for (var i in contributionsGroups) {
-				var group = contributionsGroups[i];
-				group.sort(function (a, b) {
-					if (a.full_name_latin_sort < b.full_name_latin_sort) {
-						return -1;
-					} else {
-						return 1;
-					}
-				});
-				contributions = contributions.concat(group);
-			}
-
-			var handleFaro = function (contrib, name) {
+			// CONTRIBUTIONS
+			var handleFaro = function (template, contrib, name) {
 				var fares = template.find('.cirkulero-contrib-' + name);
 				var faresListEl = fares.find('ul');
-				var faresList = contrib[name].slice();
+				var faresList = contrib.contrib[name].slice();
 				if (faresList.length < 1) {
 					faresList.push('-');
 				}
@@ -241,129 +174,171 @@ $(function () {
 				}
 			};
 
-			var contribsEl = $('#cirkulero-contribs');
-			for (var i in contributions) {
-				var contrib = contributions[i];
+			var appearGroups = cirkuleroInfo.groups.appear;
+			var contribIter = 1;
+			var createContribHandler = function (group) {
+				var contribs = [];
+				for (var i in actualContributions) {
+					var contrib = actualContributions[i];
+					if (contrib.hasEntry) { continue; }
+					if (!group) { // Remainder
+						contrib.hasEntry = true;
+						contribs.push(contrib);
+						continue;
+					}
+					// Not remainder
+					if (group.id !== contrib.user.group_id && group.children.indexOf(contrib.user.group_id) === -1) {
+						continue;
+					}
+					contrib.hasEntry = true;
+					contribs.push(contrib);
+				}
 
-				var template = cloneTemplate('#template-cirkulero-contrib');
-				template[0].dataset.contribIndex = i;
-				template[0].dataset.edited = contrib.modified_by_admin;
-				contribsEl.append(template);
+				if (!contribs.length) { return; } // Group is empty, no action needed
 
-				var prefix = 'contrib-' + i;
-				template.find('.panel-heading')[0].id = prefix;
-				template.find('.collapsed')
-					.attr('href', '#' + prefix + '-collapse')
-					.attr('aria-controls', prefix + '-collapse');
-				template.find('.panel-collapse')
-					.attr('id', prefix + '-collapse')
-					.attr('aria-labelledby', prefix);
+				if (!group) { // Remainder
+					group = {
+						name: 'Aliaj'
+					};
+				}
 
-				var title = getContribTitle(contrib);
-				template.find('.cirkulero-contrib-title').text(title);
+				var contribsEl = $('#cirkulero-contribs');
+				for (var i in contribs) {
+					var contrib = contribs[i];
 
-				handleFaro(contrib, 'faris');
-				handleFaro(contrib, 'faras');
-				handleFaro(contrib, 'faros');
+					var template = cloneTemplate('#template-cirkulero-contrib');
+					template[0].dataset.edited = contrib.contrib.modified_by_admin;
+					template[0].dataset.userId = contrib.user.id;
+					template[0].dataset.groupId = contrib.user.group_id;
+					contribsEl.append(template);
 
-				var commentEl = template.find('.cirkulero-contrib-comment textarea');
-				commentEl.val(contrib.comment || '');
+					var prefix = 'contrib-' + contribIter;
+					template.find('.panel-heading')[0].id = prefix;
+					template.find('.collapsed')
+						.attr('href', '#' + prefix + '-collapse')
+						.attr('aria-controls', prefix + '-collapse');
+					template.find('.panel-collapse')
+						.attr('id', prefix + '-collapse')
+						.attr('aria-labelledby', prefix);
 
-				var editButton = template.find('.cirkulero-contrib-edit-button');
-				if (pageData.editor) {
-					editButton.click(function () {
-						var panel = $(this).parents('.panel');
-						var contribIndex = panel[0].dataset.contribIndex;
-						var contrib = contributions[contribIndex];
+					var title = getContribTitle(contrib);
+					template.find('.cirkulero-contrib-title').text(title);
 
-						var template = cloneTemplate('#template-edit-contrib-modal');
-						template.find('.data-name').text(contrib.user.long_name);
+					handleFaro(template, contrib, 'faris');
+					handleFaro(template, contrib, 'faras');
+					handleFaro(template, contrib, 'faros');
 
-						var faroj = [ 'faris', 'faras', 'faros' ];
-						for (var n in faroj) {
-							var faroName = faroj[n];
-							var faroList = contrib[faroName];
-							var el = template.find('.edit-contrib-modal-' + faroName);
+					var commentEl = template.find('.cirkulero-contrib-comment textarea');
+					commentEl.val(contrib.contrib.comment || '');
 
-							if (!faroList.length) {
-								el.remove();
-								continue;
+					// Editing
+					var editButton = template.find('.cirkulero-contrib-edit-button');
+					if (!pageData.editor) {
+						editButton.parent().remove();
+					} else {
+						editButton.click(function () {
+							var panel = $(this).parents('.panel');
+							var contrib;
+							for (var i in cirkuleroInfo.contributions) {
+								contrib = cirkuleroInfo.contributions[i];
+								var userId  = parseInt(panel[0].dataset.userId,  10);
+								var groupId = parseInt(panel[0].dataset.groupId, 10);
+								if (contrib.user.id === userId && contrib.user.group_id === groupId) { break; }
 							}
 
-							var ul = el.children('ul');
+							var template = cloneTemplate('#template-edit-contrib-modal');
+							template.find('.data-name').text(contrib.user.long_name);
 
-							for (var x in faroList) {
-								var faro = faroList[x];
-
-								var li = document.createElement('li');
-								ul.append(li);
-								li.contentEditable = true;
-								li.textContent = faro;
-								$(li).on('keydown', function (e) {
-									if (e.which === 13) { // Enter
-										e.preventDefault();
-									}
-								});
-							}
-						}
-
-						template.find('.cirkulero-contrib-comment textarea').val(contrib.comment);
-						template.find('.cirkulero-contrib-user_role_comment input').val(contrib.user.role_comment);
-
-						window.setTimeout(function () {
-							$.AdminBSB.input.activate(template);
-							autosize(template.find('.cirkulero-contrib-comment textarea'));
-						}, 0);
-
-						swal({
-							title: 'Redakti cirkulerkontribuon',
-							content: template[0],
-							buttons: [
-								'Nuligi',
-								'Konservi'
-							]
-						}).then(function (isConfirm) {
-							if (!isConfirm) { return; }
-
-							panel[0].dataset.edited = true;
-							contrib.edited = true;
-
+							var faroj = [ 'faris', 'faras', 'faros' ];
 							for (var n in faroj) {
 								var faroName = faroj[n];
-								var contribList = panel.find('.cirkulero-contrib-' + faroName + '>ul').children();
-								template.find('.edit-contrib-modal-' + faroName + '>ul>li').each(function (n) {
-									contribList.eq(n).text(this.textContent);
-									contrib[faroName][n] = this.textContent;
-								});
+								var faroList = contrib.contrib[faroName];
+								var el = template.find('.edit-contrib-modal-' + faroName);
+
+								if (!faroList.length) {
+									el.remove();
+									continue;
+								}
+
+								var ul = el.children('ul');
+
+								for (var x in faroList) {
+									var faro = faroList[x];
+
+									var li = document.createElement('li');
+									ul.append(li);
+									li.contentEditable = true;
+									li.textContent = faro;
+									$(li).on('keydown', function (e) {
+										if (e.which === 13) { // Enter
+											e.preventDefault();
+										}
+									});
+								}
 							}
 
-							var comment = template.find('.cirkulero-contrib-comment textarea').val().trim();
-							if (!comment || comment.length < 1) { comment = null; }
-							contrib.comment = comment;
-							var commentElPanel = panel.find('.cirkulero-contrib-comment textarea')
-							commentElPanel.val(comment);
-
-							var roleComment = template.find('.cirkulero-contrib-user_role_comment input').val().trim();
-							if (!roleComment || roleComment.length < 1) { roleComment = null;}
-							contrib.user.role_comment = roleComment;
-							var roleCommentPanel = panel.find('.cirkulero-contrib-title');
-							roleCommentPanel.text(getContribTitle(contrib));
+							template.find('.cirkulero-contrib-comment textarea').val(contrib.contrib.comment);
+							template.find('.cirkulero-contrib-user_role_comment input').val(contrib.contrib.role_comment);
 
 							window.setTimeout(function () {
-								autosize.update(commentElPanel);
-								// Necessary to update the label
-								commentElPanel.removeAttr('disabled');
-								commentElPanel.trigger('focus').trigger('blur');
-								commentElPanel.attr('disabled', true);
+								$.AdminBSB.input.activate(template);
+								autosize(template.find('.cirkulero-contrib-comment textarea'));
 							}, 0);
-						})
-					});
-				} else {
-					editButton.parent().remove();
-				}
-			}
 
-			// Publish
+							swal({
+								title: 'Redakti cirkulerkontribuon',
+								content: template[0],
+								buttons: [
+									'Nuligi',
+									'Konservi'
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								panel[0].dataset.edited = true;
+								contrib.edited = true;
+
+								for (var n in faroj) {
+									var faroName = faroj[n];
+									var contribList = panel.find('.cirkulero-contrib-' + faroName + '>ul').children();
+									template.find('.edit-contrib-modal-' + faroName + '>ul>li').each(function (n) {
+										contribList.eq(n).text(this.textContent);
+										contrib.contrib[faroName][n] = this.textContent;
+									});
+								}
+
+								var comment = template.find('.cirkulero-contrib-comment textarea').val().trim();
+								if (!comment || comment.length < 1) { comment = null; }
+								contrib.contrib.comment = comment;
+								var commentElPanel = panel.find('.cirkulero-contrib-comment textarea')
+								commentElPanel.val(comment);
+
+								var roleComment = template.find('.cirkulero-contrib-user_role_comment input').val().trim();
+								if (!roleComment || roleComment.length < 1) { roleComment = null;}
+								contrib.contrib.role_comment = roleComment;
+								var roleCommentPanel = panel.find('.cirkulero-contrib-title');
+								roleCommentPanel.text(getContribTitle(contrib));
+
+								window.setTimeout(function () {
+									autosize.update(commentElPanel);
+									// Necessary to update the label
+									commentElPanel.removeAttr('disabled');
+									commentElPanel.trigger('focus').trigger('blur');
+									commentElPanel.attr('disabled', true);
+								}, 0);
+							});
+						});
+					}
+				}
+
+				contribIter++;
+			};
+			for (var i in appearGroups) {
+				createContribHandler(appearGroups[i]);
+			}
+			createContribHandler(appearGroups[i]); // Remainder
+
+			// PUBLISH
 			if (pageData.editor) {
 				var msgCirkulero = 'Cirkulero n-ro ' + pageData.cirkulero.id + ' de ' + pageData.cirkulero.name;
 				var msgStatistics = 'Al tiu ĉi cirkulero venis ' + cirkuleroInfo.contributions.length + ' kontribuoj.';
@@ -425,17 +400,17 @@ $(function () {
 						}
 
 						var contribs = [];
-						for (var i in contributions) {
-							var contrib = contributions[i];
+						for (var i in cirkuleroInfo.contributions) {
+							var contrib = cirkuleroInfo.contributions[i];
 							if (!contrib.edited) { continue; }
 							contribs.push({
 								user_id: contrib.user.id,
 								group_id: contrib.user.group_id,
-								faris: contrib.faris,
-								faras: contrib.faras,
-								faros: contrib.faros,
-								comment: contrib.comment,
-								user_role_comment: contrib.user.role_comment
+								faris: contrib.contrib.faris,
+								faras: contrib.contrib.faras,
+								faros: contrib.contrib.faros,
+								comment: contrib.contrib.comment,
+								user_role_comment: contrib.contrib.role_comment
 							});
 						}
 
@@ -465,8 +440,8 @@ $(function () {
 				});
 			}
 
+			// Show the cirkulero
 			$('#loader').hide();
-
 			var cirkulero = $('#cirkulero');
 			cirkulero.show(0, function () {
 				$.AdminBSB.input.activate(cirkulero);
@@ -501,7 +476,7 @@ $(function () {
 					pageData.cirkulero.open = false;
 					setUpCirkulero();
 				});
-		})
+		});
 	} else {
 		setUpCirkulero();
 	}
