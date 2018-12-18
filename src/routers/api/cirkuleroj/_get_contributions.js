@@ -19,6 +19,7 @@ async function get_contributions (req, res, next) {
 	 * contributions (Object[]) The contributions in the order in which they came
 	 *   user (Object) The details of the contributor
 	 *     id                   (number|null) The user's id or null if the user has been deleted
+	 *     enabled              (boolean)     Whether the user's account is enabled
 	 *     email                (string)      The user's email address
 	 *     group_id             (number)      The user's group id for this contribution
 	 *     role                 (string)      The user's role
@@ -73,6 +74,7 @@ async function get_contributions (req, res, next) {
 		contribsRes.push({
 			user: {
 				id: contrib.user_id,
+				enabled: user.enabled,
 				email: user.email,
 				group_id: contrib.group_id,
 				role: userRole,
@@ -112,6 +114,7 @@ async function get_contributions (req, res, next) {
 			contribsRes.push({
 				user: {
 					id: entry.user.id,
+					enabled: entry.user.enabled,
 					email: entry.user.email,
 					group_id: entry.group,
 					role: entry.groupName,
@@ -134,6 +137,7 @@ async function get_contributions (req, res, next) {
 				contribsRes.push({
 					user: {
 						id: user.id,
+						enabled: user.enabled,
 						email: user.email,
 						group_id: group.group.id,
 						role: group.user.name,

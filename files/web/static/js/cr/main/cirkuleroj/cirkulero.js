@@ -95,7 +95,7 @@ $(function () {
 							var li = document.createElement('li');
 							options.listEl.append(li);
 
-							if (contrib.user.long_name) {
+							if (contrib.user.long_name && contrib.user.enabled) {
 								var anchor = document.createElement('a');
 								li.appendChild(anchor);
 								anchor.href = '/aktivuloj/' + contrib.user.email;
@@ -105,11 +105,16 @@ $(function () {
 
 							var span = document.createElement('span');
 							li.appendChild(span);
+							var spanText = '';
 							if (contrib.user.long_name) {
-								span.textContent = ' – ' + contrib.user.role;
+								if (!contrib.user.enabled) {
+									spanText = contrib.user.long_name + ' (' + contrib.user.email + ')';
+								}
+								spanText += ' – ' + contrib.user.role;
 							} else {
-								span.textContent = contrib.user.email + ' – ' + contrib.user.role;
+								spanText = contrib.user.email + ' – ' + contrib.user.role;
 							}
+							span.textContent = spanText;
 						}
 					} else {
 						options.titleEl.remove();
