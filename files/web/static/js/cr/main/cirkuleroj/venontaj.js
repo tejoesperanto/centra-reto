@@ -25,8 +25,13 @@ $(function () {
 
 		var submitButton = $('#create-cirkulero-form-button');
 
+		var modalText = '';
+		if (apiData.reminders) {
+			modalText = 'Memorigoj kiuj devus esti senditaj antaŭ la nuna horo ne estos senditaj.';
+		}
 		swal({
 			title: 'Ĉu vi certas, ke vi volas krei novan cirkuleron?',
+			text: modalText,
 			buttons: [
 				'Nuligi',
 				{
