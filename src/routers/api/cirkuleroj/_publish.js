@@ -1,5 +1,6 @@
 import * as CRMail from '../../../mail';
 import * as CRCirkulero from '../../../api/cirkulero';
+import Group from '../../../api/group';
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
 async function publish (req, res, next) {
@@ -178,10 +179,15 @@ async function publish (req, res, next) {
 
 	// Send out the announcement if necessary
 	if (publishEmail && publishMessage) {
+		// Obtain the responsible users
+		stmt = CR.db.cirkuleroj.prepare('select value from settings where key = "responsible_group"');
+		const responsibleGroup = await Group.getGroupById(parseInt(stmt.get().value, 10));
+		const users = await responsibleGroup.getAllUsers();
+
 		await CRMail.sendMail({
 			subject: `Cirkulero ${req.body.cirkulero_id} pretas!`,
 			to: publishEmail,
-			cc: req.user.email, // TODO: Replace this with responsible users
+			cc: users.map(x => x.email),
 			text: publishMessage
 		});
 	}
