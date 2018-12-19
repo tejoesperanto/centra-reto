@@ -558,6 +558,17 @@ jQuery.fn.sortElements = (function(){
 })();
 
 function showError (error) {
+	if (error.error === 'NOT_LOGGED_IN') {
+		swal({
+			icon: 'warning',
+			title: 'Vi estis elsalutita',
+			text: 'Vi ne plu estas ensalutinta en Centra Reto. Bonvolu konservi eventualajn gravajn ŝanĝojn aliloke kaj reensaluti.',
+			button: 'Bone'
+		});
+
+		return;
+	}
+
 	if (typeof error === 'object' && !(error instanceof Error)) {
 		error.frontend_location = window.location.href;
 		error.frontend_useragent = navigator.userAgent;
