@@ -56,9 +56,6 @@ async function numero (req, res, next) {
 			return;
 		}
 
-		const roles = await cirkulero.getUserCirkuleroGroups(req.user);
-		const creditRoles = await cirkulero.getUserCirkuleroContributionGroups(req.user);
-
 		// Get the user's existing contributions
 		const stmt = CR.db.cirkuleroj.prepare('select group_id, user_role_comment, faris, faras, faros, comment from cirkuleroj_contributions where cirkulero_id = ? and user_id = ?');
 		const rows = stmt.all(row.id, req.user.id);
@@ -90,8 +87,7 @@ async function numero (req, res, next) {
 			},
 			pageDataObj: {
 				cirkulero: row,
-				roles: roles,
-				creditRoles: creditRoles,
+				creditRoles: await cirkulero.getUserCirkuleroContributionGroups(req.user),
 				contributions: contribs
 			}
 		};

@@ -307,9 +307,10 @@ class User {
 					const children = pairings[row.id].map(x => this.groups.get(x));
 					timeFrom = Math.min(...children.map(x => x.user.from));
 					timeTo = Math.max(...children.map(x => {
-						if (!x.user.to) { return 0; }
+						if (!x.user.to) { return Infinity; }
 						return x.user.to;
 					}));
+					if (!isFinite(timeTo)) { timeTo = null; }
 				}
 
 				let active = true;

@@ -44,6 +44,7 @@ export async function getUserCirkuleroContributionGroups (user) {
 	const handleGroups = groups => {
 		let nextLookup = [];
 		for (let group of groups) {
+			if (!group.user.active) { continue; }
 			if (group.user.direct) {
 				creditGroups.push(group);
 			} else {
