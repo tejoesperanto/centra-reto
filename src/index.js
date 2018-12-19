@@ -146,7 +146,7 @@ import * as CRTimer from './timer';
 
 	// Handle shutdown signal
 	let shuttingDown = false;
-	const performCleanup = signal => {
+	const performCleanup = async signal => {
 		if (shuttingDown) { return; }
 		shuttingDown = true;
 
@@ -164,6 +164,9 @@ import * as CRTimer from './timer';
 
 		CR.log.info('... Malŝaltas tempeventojn');
 		CRTimer.removeAllTimers();
+
+		CR.log.info('... Maŝaltas SMTP-klienton');
+		await CR.smtp.close();
 
 		// Shut down
 		process.exit();

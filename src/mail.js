@@ -10,9 +10,9 @@ import * as CRUtil from './util';
  * Sets up the mail system
  */
 export function init () {
-	CR.log.info("Pretigas SMTP-servilon")
+	CR.log.info("Pretigas SMTP-klienton")
 	CR.smtp = nodemailer.createTransport(CR.conf.servers.smtp);
-	CR.log.info("SMTP-servilo pretas")
+	CR.log.info("SMTP-kliento pretas")
 }
 
 /**
