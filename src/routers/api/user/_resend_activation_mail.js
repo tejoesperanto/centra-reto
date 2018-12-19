@@ -52,7 +52,8 @@ async function resend_activation_mail (req, res, next) {
 	const activationURL = user.getActivationURL();
 
 	await CRMail.renderSendMail('new_account', {
-		activation_link: activationURL
+		activation_link: activationURL,
+		sender_name: req.user.getLongName()
 	}, {
 		to: user.email
 	});

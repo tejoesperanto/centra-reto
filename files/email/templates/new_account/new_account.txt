@@ -1,7 +1,12 @@
 Bonvenon al Centra Reto
 =======================
 
-Vi estis invitita al Centra Reto de TEJO, la ĉefa interna sistemo por aktivuloj de TEJO.
+{{#if sender_name~}}
+	{{&sender_name}} invitis vin
+{{~else~}}
+	Vi estis invitita
+{{~/if}} {{_~}}
+al Centra Reto de TEJO, la ĉefa interna sistemo por aktivuloj de TEJO.
 
 Bonvolu malfermi la ĉi-suban retadreson por krei konton.
 

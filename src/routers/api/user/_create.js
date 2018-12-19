@@ -46,7 +46,8 @@ async function user_create (req, res, next) {
 	if (req.body.send_email) {
 		const activationURL = user.getActivationURL();
 		await CRMail.renderSendMail('new_account', {
-			activation_link: activationURL
+			activation_link: activationURL,
+			sender_name: req.user.getLongName()
 		}, {
 			to: email
 		});
