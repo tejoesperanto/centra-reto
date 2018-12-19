@@ -1,0 +1,11 @@
+Ŝanĝo de via retpoŝtadreso
+==========================
+
+Kara {{&name}}
+
+Ni skribis al vi por informi vin, ke la retpoŝtadreso de via konto en Centra Reto estis ŝanĝita al {{&new_email}}.
+
+Se vi ne mem faris tiun ŝanĝon, bonvolu tuj kontakti nin.
+
+Salutas
+Centra Reto-roboto

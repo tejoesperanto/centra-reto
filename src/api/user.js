@@ -79,6 +79,27 @@ class User {
 	}
 
 	/**
+	 * Changes the user's email address
+	 * @param  {string}  email     The new email address
+	 * @param  {boolean} sendEmail Whether to send an email to the old address informing that the email has been changed
+	 */
+	async changeEmail (email, sendEmail = false) {
+		const stmt = CR.db.users.prepare('update users set email = ? where id = ?');
+		stmt.run(email, this.id);
+		const oldEmail = this.email;
+		this.email = email;
+
+		if (sendEmail) {
+			await CRMail.renderSendMail('new_email', {
+				name: this.getBriefName(),
+				new_email: email
+			}, {
+				to: oldEmail
+			});
+		}
+	}
+
+	/**
 	 * Enabled or disables the user
 	 * @return {boolean} The new enabled state
 	 */

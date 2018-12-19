@@ -53,9 +53,7 @@ async function change_email_admin (req, res, next) {
 		return;
 	}
 
-	const stmt = CR.db.users.prepare('update users set email = ? where id = ?');
-	stmt.run(email, user.id);
-	user.email = email;
+	await user.changeEmail(email, false);
 
 	res.sendAPIResponse();
 }

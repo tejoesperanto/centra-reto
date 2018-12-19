@@ -1,8 +1,8 @@
-Kara {{name}}
+Kara {{&name}}
 
-Venis la limdato por cirkulero {{cirk_id}} por {{cirk_name}}. Daŭre eblas kontribui al la cirkulero ĝis vi faras ion.
+Venis la limdato por cirkulero {{&cirk_id}} por {{&cirk_name}}. Daŭre eblas kontribui al la cirkulero ĝis vi faras ion.
 
-Ĝis nun venis {{contribs}} kontribuoj.
+Ĝis nun venis {{&contribs}} kontribuoj.
 
 Vi povas prokrasti la limdaton, sendi memorigojn kaj simile, aŭ vi povas jam nun tralegi, aprobi kaj publikigi la cirkuleron.
 

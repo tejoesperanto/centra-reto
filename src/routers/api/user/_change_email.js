@@ -34,9 +34,7 @@ async function change_email (req, res, next) {
 		return;
 	}
 
-	const stmt = CR.db.users.prepare('update users set email = ? where id = ?');
-	stmt.run(email, req.user.id);
-	req.user.email = email;
+	await req.user.changeEmail(email, true);
 
 	res.sendAPIResponse();
 }
