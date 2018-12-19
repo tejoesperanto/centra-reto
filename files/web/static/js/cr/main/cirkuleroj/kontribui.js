@@ -50,7 +50,7 @@ $(function () {
 
 		swal({
 			title: 'Kontribuo al cirkulero',
-			text: 'Ĉu vi certas, ke vi pretas sendi vian cirkulerkontribuon?',
+			text: 'Ĉu vi certas, ke vi pretas sendi vian cirkulerkontribuon?\nVi povas ĉiam reveni por redakti vian kontribuon ĝis la limdato.',
 			buttons: [
 				'Nuligi',
 				{
