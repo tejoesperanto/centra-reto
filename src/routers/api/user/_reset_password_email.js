@@ -30,7 +30,7 @@ async function reset_password_email (req, res, next) {
 		return;
 	}
 
-	res.sendAPIResponse(); // We do this now to prevent timing attacks
+	res.sendAPIResponse(); // We do this now to prevent timing attacks on the email address
 
 	const user = User.getUserByEmail(req.body.email);
 	if (!user || !user.enabled) { return; }
