@@ -7,6 +7,14 @@ $(function () {
 		]).then(function (res) {
 			if (!res[0].success || !res[1].success) { return; }
 
+			if (pageData.editor) {
+				window.onbeforeunload = function (e) {
+					e.preventDefault();
+					e.returnValue = 'Ĉu vi certas ke vi volas forlasi la paĝon?\nViaj ŝanĝoj ne estos konservitaj.';
+					return e.returnValue;
+				};
+			}
+
 			var cirkuleroInfo = {
 				contributions: res[0].contributions,
 				groups: {

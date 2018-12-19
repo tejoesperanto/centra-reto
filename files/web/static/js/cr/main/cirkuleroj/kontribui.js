@@ -1,4 +1,10 @@
 $(function () {
+	window.onbeforeunload = function (e) {
+		e.preventDefault();
+		e.returnValue = 'Ĉu vi certas ke vi volas forlasi la paĝon?\nEventualaj ŝanĝoj ne estos konservitaj.';
+		return e.returnValue;
+	};
+
 	autosize($('.autosize'));
 
 	$('#deadline').text(moment.unix(pageData.cirkulero.deadline).format('LLL [UTC]'));
