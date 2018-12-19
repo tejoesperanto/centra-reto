@@ -1,4 +1,5 @@
 import { removeUnsafeCharsOneLine } from '../../../util';
+import User from '../../../api/user';
 
 async function change_email (req, res, next) {
 	/**
@@ -13,6 +14,7 @@ async function change_email (req, res, next) {
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
+	 * EMAIL_TAKEN
 	 */
 	
 	const fields = [
@@ -24,7 +26,13 @@ async function change_email (req, res, next) {
 		res.sendAPIError('INVALID_ARGUMENT', ['email']);
 		return;
 	}
+
 	const email = removeUnsafeCharsOneLine(req.body.email);
+
+	if (User.isEmailTaken(email)) {
+		res.sendAPIError('EMAIL_TAKEN');
+		return;
+	}
 
 	const stmt = CR.db.users.prepare('update users set email = ? where id = ?');
 	stmt.run(email, req.user.id);

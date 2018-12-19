@@ -19,6 +19,7 @@ async function change_email_admin (req, res, next) {
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
 	 * USER_NOT_FOUND
+	 * EMAIL_TAKEN
 	 */
 	
 	if (!await req.requirePermissions('users.modify')) { return; }
@@ -46,6 +47,11 @@ async function change_email_admin (req, res, next) {
 	}
 
 	const email = removeUnsafeCharsOneLine(req.body.email);
+
+	if (User.isEmailTaken(email)) {
+		res.sendAPIError('EMAIL_TAKEN');
+		return;
+	}
 
 	const stmt = CR.db.users.prepare('update users set email = ? where id = ?');
 	stmt.run(email, user.id);
