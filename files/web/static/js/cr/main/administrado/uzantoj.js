@@ -335,7 +335,7 @@ $(function () {
 						if (rowData.active) {
 							div.find('.user-modal-resend-activation-mail-row').remove();
 						} else {
-							div.find('.user-modal-resend-activation-mail-row').on('click', function () {
+							div.find('.user-modal-resend-activation-mail-row').click(function () {
 								swal({
 									title: 'Resendo de aktivigmesaĝo',
 									text: 'Ĉu vi certas, ke vi volas resendi la aktivigmesaĝon al la uzanto kun la retpoŝtadreso ' + rowData.email + '?',
@@ -361,6 +361,67 @@ $(function () {
 								});
 							});
 						}
+
+						div.find('.user-modal-change-email').click(function () {
+							var changeEmailTemplate = cloneTemplate('#template-change-email-modal');
+
+							var form = changeEmailTemplate.find('.change-email-modal-form');
+							var input = changeEmailTemplate.find('.change-email-modal-input');
+							input.val(rowData.email);
+							input.on('input', function () {
+								var valid = form[0].checkValidity();
+								$('.swal-button--confirm').attr('disabled', !valid);
+							});
+							$.AdminBSB.input.activate(form);
+
+							form.submit(function (e) {
+								e.preventDefault();
+								$('.swal-button--confirm').click();
+							});
+
+							swal({
+								title: 'Ŝanĝo de retpoŝtadreso',
+								content: changeEmailTemplate[0],
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Ŝanĝi',
+										closeModal: false
+									}
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								swal({
+									title: 'Ŝanĝo de retpoŝtadreso',
+									text: 'Ĉu vi certas, ke vi volas ŝanĝi la retpoŝtadreson de ' + rowData.email + ' al ' + input.val() + '?',
+									buttons: [
+										'Nuligi',
+										{
+											text: 'Ŝanĝi',
+											closeModal: false
+										}
+									]
+								}).then(function (isConfirm) {
+									if (!isConfirm) { return; }
+
+									var apiData = {
+										user_id: rowData.id,
+										email: input.val()
+									};
+
+									performAPIRequest('post', '/api/user/change_email_admin', apiData)
+										.then(function (res) {
+											table.draw();
+											swal.stopLoading();
+
+											if (!res.success) { return; }
+
+											swal.close();
+										});
+								});
+							});
+						});
 
 						showUserModal();
 					});

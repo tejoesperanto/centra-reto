@@ -9,7 +9,7 @@ async function change_email (req, res, next) {
 	 * Initial setup required
 	 * 
 	 * Parameters:
-	 * emaik (string) The new email address
+	 * email (string) The new email address
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]

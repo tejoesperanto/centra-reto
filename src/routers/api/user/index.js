@@ -8,6 +8,7 @@ import { wrap } from '../..';
 import apiActivate from './_activate';
 import apiAddGroups from './_add_groups';
 import apiChangeEmail from './_change_email';
+import apiChangeEmailAdmin from './_change_email_admin';
 import apiChangePassword from './_change_password';
 import apiCreate from './_create';
 import apiDeleteUninitiated from './_delete_uninitiated';
@@ -45,6 +46,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiChangeEmail));
+
+	router.post('/change_email_admin',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiChangeEmailAdmin));
 
 	router.post('/change_password',
 		middleware.requireLogin,
