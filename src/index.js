@@ -165,7 +165,7 @@ import * as CRTimer from './timer';
 		CR.log.info('... Malŝaltas tempeventojn');
 		CRTimer.removeAllTimers();
 
-		CR.log.info('... Maŝaltas SMTP-klienton');
+		CR.log.info('... Malŝaltas SMTP-klienton');
 		await CR.smtp.close();
 
 		// Shut down

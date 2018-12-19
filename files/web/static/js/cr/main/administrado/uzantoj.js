@@ -332,6 +332,36 @@ $(function () {
 							});
 						}
 
+						if (rowData.active) {
+							div.find('.user-modal-resend-activation-mail-row').remove();
+						} else {
+							div.find('.user-modal-resend-activation-mail-row').on('click', function () {
+								swal({
+									title: 'Resendo de aktivigmesaĝo',
+									text: 'Ĉu vi certas, ke vi volas resendi la aktivigmesaĝon al la uzanto kun la retpoŝtadreso ' + rowData.email + '?',
+									buttons: [
+										'Nuligi',
+										{
+											text: 'Resendi',
+											closeModal: false
+										}
+									]
+								}).then(function (isConfirm) {
+									if (!isConfirm) { return; }
+
+									performAPIRequest('post', '/api/user/resend_activation_mail', { user_id: rowData.id })
+										.then(function (res) {
+											table.draw();
+											swal.stopLoading();
+
+											if (res.success) {
+												swal.close();
+											}
+										});
+								});
+							});
+						}
+
 						showUserModal();
 					});
 			});

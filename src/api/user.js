@@ -27,15 +27,23 @@ class User {
 	}
 
 	/**
+	 * Generates a random activation key
+	 * @return {string} An activation key
+	 */
+	static async createActivationKey () {
+		const activationKeyBytes = await crypto.randomBytes(CR.conf.activationKeySize);
+		const activationKey = activationKeyBytes.toString('hex');
+		return activationKey;
+	}
+
+	/**
 	 * Creates a new user
 	 * @param  {string} email The user's primary email address
 	 * @return {User} The new user
 	 */
 	static async createUser (email) {
 		// Generate activation key
-		const activationKeyBytes = await crypto.randomBytes(CR.conf.activationKeySize);
-		const activationKey = activationKeyBytes.toString('hex');
-
+		const activationKey = await User.createActivationKey();
 		const activationKeyTime = moment().unix();
 
 		const stmt = CR.db.users.prepare("insert into users (email, activation_key, activation_key_time) values (?, ?, ?)");
@@ -45,6 +53,20 @@ class User {
 		user.activationKey = activationKey;
 		user.activationKeyTime = activationKeyTime;
 		return user;
+	}
+
+	/**
+	 * Creates a new activation key for the user
+	 * @return {string} The new activation key
+	 */
+	async createNewActivationKey () {
+		const activationKey = await User.createActivationKey();
+		const activationKeyTime = moment().unix();
+
+		const stmt = CR.db.users.prepare('update users set activation_key = ?, activation_key_time = ? where id = ?');
+		stmt.run(activationKey, activationKeyTime, this.id);
+
+		return activationKey;
 	}
 
 	/**

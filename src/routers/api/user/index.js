@@ -18,6 +18,7 @@ import apiList from './_list';
 import apiLogin from './_login';
 import apiLogout from './_logout';
 import apiRemoveProfilePicture from './_remove_profile_picture';
+import apiResendActivationMail from './_resend_activation_mail.js';
 import apiResetPasswordEmail from './_reset_password_email';
 import apiResetPasswordKey from './_reset_password_key';
 import apiSetProfilePicture from './_set_profile_picture';
@@ -90,6 +91,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiRemoveProfilePicture));
+
+	router.post('/resend_activation_mail',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiResendActivationMail));
 
 	router.post('/reset_password_email',
 		wrap(apiResetPasswordEmail));
