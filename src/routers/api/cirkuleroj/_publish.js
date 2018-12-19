@@ -177,6 +177,16 @@ async function publish (req, res, next) {
 	stmt = CR.db.cirkuleroj.prepare('update cirkuleroj set published = 1 where id = ?');
 	stmt.run(req.body.cirkulero_id);
 
+	// Delete the old reminders
+	stmt = CR.db.cirkuleroj.prepare('delete from cirkulero_deadline_sent where cirkulero_id = ?');
+	stmt.run(req.body.cirkulero_id);
+
+	stmt = CR.db.cirkuleroj.prepare('delete from reminders_direct_sent where cirkulero_id = ?');
+	stmt.run(req.body.cirkulero_id);
+
+	stmt = CR.db.cirkuleroj.prepare('delete from reminders_lists_sent where cirkulero_id = ?');
+	stmt.run(req.body.cirkulero_id);
+
 	// Send out the announcement if necessary
 	if (publishEmail && publishMessage) {
 		// Obtain the responsible users
