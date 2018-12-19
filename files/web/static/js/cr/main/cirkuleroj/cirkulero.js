@@ -441,6 +441,8 @@ $(function () {
 								swal.stopLoading();
 								if (!res.success) { return; }
 
+								window.onbeforeunload = undefined;
+
 								swal({
 									title: 'Cirkulero sukcese publikigita',
 									icon: 'success',
