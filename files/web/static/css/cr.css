@@ -262,3 +262,22 @@ img.blur {
 .dropzone .dz-preview .dz-image {
 	border-radius: 100%
 }
+
+.cr-privacy-policy-page {
+	max-width: calc(100vw - 64px);
+}
+
+#cr-privacy-policy-logo-container {
+	margin: auto;
+	max-width: 500px;
+	margin-bottom: 65px;
+}
+
+#cr-privacy-policy-logo-container img {
+	width: 100%;
+}
+
+.num:before {
+	content: attr(data-num) ".";
+	margin-right: 16px
+}

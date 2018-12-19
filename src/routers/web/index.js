@@ -18,6 +18,7 @@ import pageIndex from './_index';
 import pageAgordoj from './_agordoj';
 import pageAlighi from './_alighi';
 import pageEnsaluti from './_ensaluti';
+import pageKondichoj from './_kondichoj';
 import pageNovaPasvorto from './_nova_pasvorto';
 
 import dataAktivuloImage from './_aktivulo_image';
@@ -28,9 +29,6 @@ import dataAktivuloImage from './_aktivulo_image';
  */
 export function init () {
 	const router = express.Router();
-
-	// TODO:
-	// /kondichoj
 	
 	// Middleware for this router only
 	router.use(middlewareRequirePermissions);
@@ -61,6 +59,9 @@ export function init () {
 
 	router.get([ '/novapasvorto', '/novapasvorto/:email/:resetKey' ],
 		wrap(pageNovaPasvorto));
+
+	router.get('/kondichoj',
+		wrap(pageKondichoj));
 
 	// Data
 	router.get('/img/aktivulo/:email/:size',
