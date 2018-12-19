@@ -561,7 +561,7 @@ function showError (error) {
 	if (error.error === 'NOT_LOGGED_IN') {
 		swal({
 			icon: 'warning',
-			title: 'Vi estis elsalutita',
+			title: 'Vi estis elsalutigita',
 			text: 'Vi ne plu estas ensalutinta en Centra Reto. Bonvolu konservi eventualajn gravajn ŝanĝojn aliloke kaj reensaluti.',
 			button: 'Bone'
 		});
