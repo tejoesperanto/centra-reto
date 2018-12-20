@@ -1,4 +1,4 @@
-import { removeUnsafeChars } from '../../../util';
+import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
 async function insert_reminder_list (req, res, next) {
 	/**
@@ -36,8 +36,9 @@ async function insert_reminder_list (req, res, next) {
 		res.sendAPIError('INVALID_ARGUMENT', ['list_email']);
 		return;
 	}
+	const listEmail = removeUnsafeCharsOneLine(req.body.list_email);
 
-	if (!Number.isSafeInteger(req.body.delta_time)) {
+	if (!Number.isSafeInteger(req.body.delta_time) || req.body.delta_time < 1) {
 		res.sendAPIError('INVALID_ARGUMENT', ['delta_time']);
 		return;
 	}
@@ -46,9 +47,10 @@ async function insert_reminder_list (req, res, next) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}
+	const message = removeUnsafeChars(req.body.message);
 
 	const stmt = CR.db.cirkuleroj.prepare('insert into reminders_lists (list_email, delta_time, message) values (?, ?, ?)');
-	const info = stmt.run(req.body.list_email, req.body.delta_time,  removeUnsafeChars(req.body.message));
+	const info = stmt.run(listEmail, req.body.delta_time, message);
 
 	res.sendAPIResponse({
 		id: info.lastInsertRowid

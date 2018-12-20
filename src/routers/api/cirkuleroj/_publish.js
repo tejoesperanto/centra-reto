@@ -108,8 +108,11 @@ async function publish (req, res, next) {
 			return;
 		}
 
-		for (let faro of contrib.faris.concat(contrib.faras, contrib.faros)) {
-			if (typeof faro !== 'string') {
+		for (let arr of [ contrib.faris, contrib.faras, contrib.faros ]) {
+			for (let n in arr) {
+				arr[n] = removeUnsafeCharsOneLine(arr[n]);
+			}
+			if (typeof arr[n] !== 'string') {
 				res.sendAPIError('INVALID_CONTRIB', [i]);
 				return;
 			}

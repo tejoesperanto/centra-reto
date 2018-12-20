@@ -19,6 +19,7 @@ async function user_create (req, res, next) {
 	 *
 	 * Throws:
 	 * EMAIL_TAKEN
+	 * INVALID_ARGUMENT [argument]
 	 *
 	 * Returns:
 	 * uid            (number) The user's id
@@ -33,7 +34,16 @@ async function user_create (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
+	if (typeof req.body.email !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['email']);
+		return;
+	}
 	const email = removeUnsafeCharsOneLine(req.body.email);
+
+	if (typeof req.body.send_email !== 'boolean') {
+		res.sendAPIError('INVALID_ARGUMENT', ['send_email']);
+		return;
+	}
 
 	const isTaken = User.isEmailTaken(email);
 	if (isTaken) {

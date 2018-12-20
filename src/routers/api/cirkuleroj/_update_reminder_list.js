@@ -42,7 +42,7 @@ async function update_reminder_list (req, res, next) {
 		return;
 	}
 
-	if (!Number.isSafeInteger(req.body.delta_time)) {
+	if (!Number.isSafeInteger(req.body.delta_time) || req.body.delta_time < 1) {
 		res.sendAPIError('INVALID_ARGUMENT', ['delta_time']);
 		return;
 	}

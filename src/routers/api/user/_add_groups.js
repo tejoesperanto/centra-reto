@@ -26,7 +26,7 @@ async function add_groups (req, res, next) {
 	 * Throws:
 	 * USER_NOT_FOUND
 	 * GROUP_NOT_FOUND  [group_id]
-	 * INVALID_ARGUMENT
+	 * INVALID_ARGUMENT [argument]
 	 */
 
 	 if (!await req.requirePermissions('users.modify')) { return; }
@@ -36,6 +36,11 @@ async function add_groups (req, res, next) {
 		'groups'
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
+
+	if (!Number.isSafeInteger(req.body.user_id)) {
+		res.sendAPIError('INVALID_ARGUMENT', ['user_id']);
+		return;
+	}
 
 	const user = User.getUserById(req.body.user_id);
 	if (!user) {
@@ -52,11 +57,12 @@ async function add_groups (req, res, next) {
 	const groupIds = [];
 	for (let group of groupsInput) {
 		if (!('id' in group &&
-			typeof group.id === 'number' &&
+			Number.isSafeInteger(group.id) &&
 			'from' in group &&
-			(typeof group.from === 'number' || group.from === null) &&
+			(Number.isSafeInteger(group.from) || group.from === null) &&
 			'to' in group &&
-			(typeof group.to === 'number' || group.to === null))) {
+			(Number.isSafeInteger(group.to) || group.to === null))) {
+			
 			res.sendAPIError('INVALID_ARGUMENT', ['groups']);
 			return;
 		}

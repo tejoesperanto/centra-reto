@@ -32,7 +32,6 @@ async function get_own_contributions (req, res, next) {
 		return;
 	}
 	
-	// Begin data validation
 	const fields = [
 		'cirkulero_id'
 	];

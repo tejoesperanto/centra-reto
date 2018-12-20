@@ -1,4 +1,4 @@
-import { removeUnsafeChars } from '../../../util';
+import { removeUnsafeChars, removeUnsafeCharsOneline } from '../../../util';
 
 async function set_publish_message (req, res, next) {
 	/**
@@ -37,7 +37,7 @@ async function set_publish_message (req, res, next) {
 		res.sendAPIError('INVALID_ARGUMENT', ['email']);
 		return;
 	}
-	const email = removeUnsafeChars(req.body.email);
+	const email = removeUnsafeCharsOneLine(req.body.email);
 
 	const stmt = CR.db.cirkuleroj.prepare('update settings set value = ? where key = ?');
 	stmt.run(message, "publish_message");

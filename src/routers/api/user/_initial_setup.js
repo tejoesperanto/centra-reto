@@ -34,6 +34,10 @@ async function user_initial_setup (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
+	if (typeof req.body.full_name_latin !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin']);
+		return;
+	}
 	let fullNameLatin = removeUnsafeCharsOneLine(req.body.full_name_latin);
 	if (fullNameLatin.length < 1 || fullNameLatin.length > 80) {
 		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin']);
@@ -42,6 +46,10 @@ async function user_initial_setup (req, res, next) {
 
 	let fullNameNative = null;
 	if (req.body.full_name_native) {
+		if (typeof req.body.full_name_native !== 'string') {
+			res.sendAPIError('INVALID_ARGUMENT', ['full_name_native']);
+			return;
+		}
 		fullNameNative = removeUnsafeCharsOneLine(req.body.full_name_native);
 		if (fullNameNative.length < 1 || fullNameNative.length > 80) {
 			res.sendAPIError('INVALID_ARGUMENT', ['full_name_native']);
@@ -49,12 +57,20 @@ async function user_initial_setup (req, res, next) {
 		}
 	}
 
+	if (typeof req.body.full_name_latin_sort !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin_sort']);
+		return;
+	}
 	let fullNameLatinSort = removeUnsafeCharsOneLine(req.body.full_name_latin_sort);
 	if (fullNameLatinSort.length < 1 || fullNameLatinSort.length > 80) {
 		res.sendAPIError('INVALID_ARGUMENT', ['full_name_latin_sort']);
 		return;
 	}
 
+	if (typeof req.body.nickname !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['nickname']);
+		return;
+	}
 	let nickname = removeUnsafeCharsOneLine(req.body.nickname);
 	if (nickname.length < 1 || nickname.length > 80) {
 		res.sendAPIError('INVALID_ARGUMENT', ['nickname']);
@@ -63,6 +79,10 @@ async function user_initial_setup (req, res, next) {
 
 	let petName = null;
 	if (req.body.pet_name) {
+		if (typeof req.body.pet_name !== 'string') {
+			res.sendAPIError('INVALID_ARGUMENT', ['pet_name']);
+			return;
+		}
 		petName = removeUnsafeCharsOneLine(req.body.pet_name);
 		if (nickname.length < 1 || nickname.length > 80) {
 			res.sendAPIError('INVALID_ARGUMENT', ['pet_name']);

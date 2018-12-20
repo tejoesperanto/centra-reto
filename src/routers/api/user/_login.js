@@ -17,6 +17,9 @@ async function user_login (req, res, next) {
 	 *
 	 * Returns:
 	 * id (number) The user's id
+	 *
+	 * Throws:
+	 * INVALID_ARGUMENT [argument]
 	 */
 
 	 if (req.user) {
@@ -29,6 +32,16 @@ async function user_login (req, res, next) {
 		'password'
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
+
+	if (typeof req.body.email !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['email']);
+		return;
+	}
+
+	if (typeof req.body.password !== 'string') {
+		res.sendAPIError('INVALID_ARGUMENT', ['password']);
+		return;
+	}
 
 	passport.authenticate('local', (err, user, info) => {
 		if (err) { return next(err); }

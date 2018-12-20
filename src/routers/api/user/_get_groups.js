@@ -32,6 +32,7 @@ async function get_groups (req, res, next) {
 	 *
 	 * Throws:
 	 * USER_NOT_FOUND
+	 * INVALID_ARGUMENT [argument]
 	 */
 
 	 if (!await req.requirePermissions('users.view')) { return; }
@@ -40,6 +41,11 @@ async function get_groups (req, res, next) {
 		'user_id'
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
+
+	if (!Number.isSafeInteger(req.body.user_id)) {
+		res.sendAPIError('INVALID_ARGUMENT', [user_id]);
+		return;
+	}
 
 	const user = User.getUserById(req.body.user_id);
 	if (!user) {

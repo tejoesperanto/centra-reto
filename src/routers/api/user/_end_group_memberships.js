@@ -33,6 +33,11 @@ async function end_group_memberships (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
+	if (!Number.isSafeInteger(req.body.user_id)) {
+		res.sendAPIError('INVALID_ARGUMENT', ['user_id']);
+		return;
+	}
+
 	const user = User.getUserById(req.body.user_id);
 	if (!user) {
 		res.sendAPIError('USER_NOT_FOUND');
@@ -42,6 +47,13 @@ async function end_group_memberships (req, res, next) {
 	if (!(req.body.groups instanceof Array) || req.body.groups.length > 20) {
 		res.sendAPIError('INVALID_ARGUMENT', ['groups']);
 		return;
+	}
+
+	for (let id of req.body.groups) {
+		if (!Number.isSafeInteger(id)) {
+			res.sendAPIError('INVALID_ARGUMENT', ['groups']);
+			return;
+		}
 	}
 
 	// Get all the groups
