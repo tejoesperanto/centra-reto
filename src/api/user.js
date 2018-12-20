@@ -619,6 +619,16 @@ class User {
 	}
 
 	/**
+	 * Removes outdated activation keys and their respective accounts.
+	 * This function is automatically called by the event loop.
+	 */
+	static cleanUpActivationKeys () {
+		let stmt = CR.db.users.prepare('delete from users where activation_key_time < ?');
+		const time = moment().unix() - CR.conf.activationKeyValidity;
+		stmt.run(time);
+	}
+
+	/**
 	 * Updates the user's password
 	 * @param  {string} hashedPassword The password, prehashed
 	 */

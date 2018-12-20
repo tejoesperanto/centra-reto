@@ -31,8 +31,10 @@
 	"timers": {
 		"cirkuleroReminders": 900,
 		"cirkuleroDeadlines": 900,
-		"passwordResetCleanup": 3600
+		"passwordResetCleanup": 3600,
+		"activationKeyCleanup": 3600
 	},
 	"passwordResetValidity": 86400,
-	"passwordResetMax": 3
+	"passwordResetMax": 3,
+	"activationKeyValidity": 2592000
 }

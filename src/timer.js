@@ -26,6 +26,12 @@ export function init () {
 		fn: User.cleanUpPasswordResets,
 		immediate: true
 	});
+
+	addTimer({
+		time: CR.conf.timers.activationKeyCleanup,
+		fn: User.cleanUpActivationKeys,
+		immediate: true
+	});
 };
 
 /**

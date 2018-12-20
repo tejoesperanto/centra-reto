@@ -8,6 +8,6 @@ Bonvenon al Centra Reto
 {{~/if}} {{_~}}
 al Centra Reto de TEJO, la ĉefa interna sistemo por aktivuloj de TEJO.
 
-Bonvolu malfermi la ĉi-suban retadreson por krei konton.
+Bonvolu malfermi la ĉi-suban retadreson por krei konton. La ligilo validas dum 30 tagoj.
 
 {{&activation_link}}
