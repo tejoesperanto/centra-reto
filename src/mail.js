@@ -17,9 +17,10 @@ export function init () {
 
 /**
  * Applies necessary headers such as `from`, then sends a mail
- * @param  {Object} options The options to be sent to nodemailer
+ * @param  {Object}  options       The options to be sent to nodemailer
+ * @param  {boolean} [throwErrors] If true errors won't be silently eaten
  */
-export async function sendMail (options) {
+export async function sendMail (options, throwErrors = false) {
 	if (!options.from) {
 		options.from = CR.conf.emailFrom;
 	}
@@ -28,7 +29,26 @@ export async function sendMail (options) {
 		options.subject = CR.conf.emailSubjectPrefix + options.subject;
 	}
 
-	await CR.smtp.sendMail(options); // might throw an error
+	try {
+		await CR.smtp.sendMail(options);
+	} catch (e) {
+		if (throwErrors) { throw e; }
+		
+		if (e.code === 'EENVELOPE') {
+			const bits = /^(\d{3}) (\d.\d.\d) (.*)$/.exec(e.response);
+			if (bits) {
+				const smtpError = bits[2].split('.').map(x => parseInt(x, 10));
+
+				// See https://www.iana.org/assignments/smtp-enhanced-status-codes/smtp-enhanced-status-codes.xhtml
+				if (smtpError[1] >= 1 && smtpError[1] <= 5) { // Recipient/user error, silently ignore
+					return;
+				}
+			}
+		}
+
+		// It's actually our fault, silently ignore it and log it to the console for future inspection
+		CR.log.error(e);
+	}
 }
 
 /**
