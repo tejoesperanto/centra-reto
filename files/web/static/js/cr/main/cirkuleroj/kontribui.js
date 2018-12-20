@@ -162,8 +162,8 @@ $(function () {
 
 		// Add roles to role picker
 		var option = document.createElement('option');
-		option.textContent = role.user.name;
-		option.value = role.group.id;
+		option.textContent = role.name;
+		option.value = role.id;
 		rolePicker.append(option);
 	}
 

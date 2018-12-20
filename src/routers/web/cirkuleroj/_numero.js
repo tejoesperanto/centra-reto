@@ -72,6 +72,14 @@ async function numero (req, res, next) {
 			});
 		}
 
+		const creditRolesRaw = await cirkulero.getUserCirkuleroContributionGroups(req.user);
+		const creditRoles = creditRolesRaw.map(x => {
+			return {
+				name: x.user.name,
+				id: x.group.id
+			};
+		});
+
 		const data = {
 			title: `Kontribui al cirkulero n-ro ${row.id} por ${row.name}`,
 			scripts: [
@@ -87,7 +95,7 @@ async function numero (req, res, next) {
 			},
 			pageDataObj: {
 				cirkulero: row,
-				creditRoles: await cirkulero.getUserCirkuleroContributionGroups(req.user),
+				creditRoles: creditRoles,
 				contributions: contribs
 			}
 		};
