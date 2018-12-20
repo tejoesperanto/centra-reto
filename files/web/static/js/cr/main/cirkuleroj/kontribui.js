@@ -1,8 +1,15 @@
 $(function () {
+	var unsavedChanges = false;
+	var checkUnsavedChanges = function () {
+		var els = $('form[data-saved=false]');
+		unsavedChanges = !!els.length;
+	};
 	window.onbeforeunload = function (e) {
-		e.preventDefault();
-		e.returnValue = 'Ĉu vi certas ke vi volas forlasi la paĝon?\nEventualaj ŝanĝoj ne estos konservitaj.';
-		return e.returnValue;
+		if (unsavedChanges) {
+			e.preventDefault();
+			e.returnValue = 'Ĉu vi certas ke vi volas forlasi la paĝon?\nEventualaj ŝanĝoj ne estos konservitaj.';
+			return e.returnValue;	
+		}
 	};
 
 	autosize($('.autosize'));
@@ -35,6 +42,9 @@ $(function () {
 					focusEl.find('input').focus();
 				}
 			}
+
+			template.parents('form[data-saved]')[0].dataset.saved = false;
+			checkUnsavedChanges();
 		});
 
 		if (after) {
@@ -111,6 +121,8 @@ $(function () {
 					if (self.hasClass('contrib-new')) {
 						self.removeClass('contrib-new');
 						self[0].dataset.id = apiData.group_id;
+						self[0].dataset.saved = true;
+						checkUnsavedChanges();
 						insertNewContribution();
 					}
 
@@ -131,6 +143,11 @@ $(function () {
 			insertCirkFaro(template.find('[name=faras]'));
 			insertCirkFaro(template.find('[name=faros]'));
 		}
+		checkUnsavedChanges();
+		template.find('[name=user_role_comment],[name=comment]').on('input', function () {
+			template[0].dataset.saved = false;
+			checkUnsavedChanges();
+		});
 		template.submit(handleSubmit);
 		template.hide();
 
