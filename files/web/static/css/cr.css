@@ -281,3 +281,11 @@ img.blur {
 	content: attr(data-num) ".";
 	margin-right: 16px
 }
+
+.card>.body.full-image {
+	padding: 0;
+}
+
+.card>.body.full-image>img {
+	width: 100%;
+}
