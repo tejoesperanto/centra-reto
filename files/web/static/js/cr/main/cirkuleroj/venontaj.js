@@ -130,6 +130,86 @@ $(function () {
 						window.location.href = '/cirkuleroj/' + rowData.id + '/pretigi';
 					});
 
+					var toggleOpenBtn = template.find('.cirkulero-modal-toggle-open');
+					if (rowData.open) {
+						toggleOpenBtn.children('i').text('lock');
+						toggleOpenBtn.children('span').text('Fermi kontribuojn');
+						var toggleOpenModalTitle = 'Fermo de kontribuoj';
+						var toggleOpenModalText = 'Ĉu vi certas, ke vi volas fermi la eblon kontribui al cirkulero n-ro ' + rowData.id + '?';
+						var toggleOpenModalConfirmBtn = 'Fermi';
+						var toggleOpenModalAPIMethod = '/api/cirkuleroj/close';
+					} else {
+						toggleOpenBtn.children('i').text('lock_open');
+						toggleOpenBtn.children('span').text('Malfermi cirkuleron');
+						var toggleOpenModalTitle = 'Malfermo de kontribuoj';
+						var toggleOpenModalText = 'Ĉu vi certas, ke vi volas malfermi la eblon kontribui al cirkulero n-ro ' + rowData.id + '?';
+						var toggleOpenModalConfirmBtn = 'Malfermi';
+						var toggleOpenModalAPIMethod = '/api/cirkuleroj/open';
+					}
+					toggleOpenBtn.click(function () {
+						swal({
+							title: toggleOpenModalTitle,
+							text: toggleOpenModalText,
+							buttons: [
+								'Nuligi',
+								{
+									text: toggleOpenModalConfirmBtn,
+									closeModal: false
+								}
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							performAPIRequest('post', toggleOpenModalAPIMethod, { cirkulero_id: rowData.id })
+								.then(function (res) {
+									swal.stopLoading();
+									table.draw();
+									if (!res.success) { return; }
+									swal.close();
+								});
+						});
+					});
+
+					var toggleRemindersBtn = template.find('.cirkulero-modal-toggle-reminders');
+					if (rowData.reminders) {
+						toggleRemindersBtn.children('i').text('notifications_off');
+						toggleRemindersBtn.children('span').text('Malaktivigi sciigojn');
+						var toggleRemindersModalTitle = 'Malaktivigo de sciigoj';
+						var toggleRemindersModalText = 'Ĉu vi certas, ke vi volas malaktivigi sciigojn por cirkulero n-ro ' + rowData.id + '?';
+						var toggleRemindersModalConfirmBtn = 'Malaktivigi';
+						var toggleRemindersModalAPIMethod = '/api/cirkuleroj/reminders_disable';
+					} else {
+						toggleRemindersBtn.children('i').text('notifications_active');
+						toggleRemindersBtn.children('span').text('Aktivigi sciigojn');
+						var toggleRemindersModalTitle = 'Aktivigo de sciigoj';
+						var toggleRemindersModalText = 'Ĉu vi certas, ke vi volas aktivigi sciigojn por cirkulero n-ro ' + rowData.id + '?';
+						var toggleRemindersModalConfirmBtn = 'Aktivigi';
+						var toggleRemindersModalAPIMethod = '/api/cirkuleroj/reminders_enable';
+					}
+					toggleRemindersBtn.click(function () {
+						swal({
+							title: toggleRemindersModalTitle,
+							text: toggleRemindersModalText,
+							buttons: [
+								'Nuligi',
+								{
+									text: toggleRemindersModalConfirmBtn,
+									closeModal: false
+								}
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							performAPIRequest('post', toggleRemindersModalAPIMethod, { cirkulero_id: rowData.id })
+								.then(function (res) {
+									swal.stopLoading();
+									table.draw();
+									if (!res.success) { return; }
+									swal.close();
+								});
+						});
+					});
+
 					// Statistics
 					var createStatsHandler = function (group) {
 						var contribs = [];
