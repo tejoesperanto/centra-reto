@@ -579,9 +579,17 @@ class User {
 
 	/**
 	 * Generates a key to reset the user's password, optionally sending an email
-	 * @return {string} The user's password reset key
+	 * @param  {boolean} [sendEmail] Whether to send an email to the user with the password reset link
+	 * @param  {boolean} [rateLimit] Whether to rate limit the amount of consecutive password resets
+	 * @return {string|null} The user's password reset key or null if the rate limit has been reached
 	 */
-	async generatePasswordReset (sendEmail = true) {
+	async generatePasswordReset (sendEmail = true, rateLimit = true) {
+		if (rateLimit) {
+			const stmt = CR.db.users.prepare('select count(1) as `count` from users_password_reset where user_id = ?');
+			const count = stmt.get(this.id).count;
+			if (count >= CR.conf.passwordResetMax) { return null; }
+		}
+
 		const keyBytes = await crypto.randomBytes(CR.conf.activationKeySize)
 		const key = keyBytes.toString('hex');
 
@@ -598,6 +606,16 @@ class User {
 		}
 
 		return key;
+	}
+
+	/**
+	 * Removes outdated password resets.
+	 * This function is automatically called by the event loop.
+	 */
+	static cleanUpPasswordResets () {
+		const stmt = CR.db.users.prepare('delete from users_password_reset where `time` < ?');
+		const time = moment().unix() - CR.conf.passwordResetValidity;
+		stmt.run(time);
 	}
 
 	/**

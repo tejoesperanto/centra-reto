@@ -3,7 +3,7 @@ import User from '../../../api/user';
 async function reset_password_email (req, res, next) {
 	/**
 	 * POST /reset_password_email
-	 * Sends a password reset mail to a given user. If the email is not found it still counts as a success.
+	 * Sends a password reset mail to a given user unless the rate limit has been reached. If the email is not found it still counts as a success.
 	 *
 	 * Login not permitted
 	 *
@@ -34,7 +34,7 @@ async function reset_password_email (req, res, next) {
 
 	const user = User.getUserByEmail(req.body.email);
 	if (!user || !user.enabled) { return; }
-	await user.generatePasswordReset();
+	await user.generatePasswordReset(true, true);
 }
 
 export default reset_password_email;
