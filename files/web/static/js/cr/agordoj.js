@@ -138,12 +138,8 @@ $(function () {
 			var button = $('#email-button');
 			button.attr('disabled', true);
 
-			performAPIRequest('post', '/api/user/change_email', apiData)
+			performAPIRequest('post', '/api/user/change_email', apiData, false)
 				.then(function (res) {
-					button.removeAttr('disabled');
-					swal.stopLoading();
-					if (!res.success) { return; }
-
 					swal({
 						icon: 'success',
 						title: 'Retpoŝtadreso ŝanĝita',
@@ -151,6 +147,21 @@ $(function () {
 					});
 
 					$('#leftsidebar .email').text(apiData.email);
+				})
+				.catch(function (err) {
+					if (err.error === 'EMAIL_TAKEN') {
+						swal({
+					        title: 'Retpoŝtadreso jam uzata',
+					        icon: 'error',
+					        button: 'Bone'
+					    });
+					} else {
+						showError(err);
+					}
+				})
+				.finally(function () {
+					button.removeAttr('disabled');
+					swal.stopLoading();
 				});
 		});
 	});

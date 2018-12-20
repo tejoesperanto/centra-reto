@@ -410,14 +410,24 @@ $(function () {
 										email: input.val()
 									};
 
-									performAPIRequest('post', '/api/user/change_email_admin', apiData)
+									performAPIRequest('post', '/api/user/change_email_admin', apiData, false)
 										.then(function (res) {
 											table.draw();
-											swal.stopLoading();
-
-											if (!res.success) { return; }
-
 											swal.close();
+										})
+										.catch(function (err) {
+											if (err.error === 'EMAIL_TAKEN') {
+												swal({
+											        title: 'Retpoŝtadreso jam uzata',
+											        icon: 'error',
+											        button: 'Bone'
+											    });
+											} else {
+												showError(err);
+											}
+										})
+										.finally(function () {
+											swal.stopLoading();
 										});
 								});
 							});
