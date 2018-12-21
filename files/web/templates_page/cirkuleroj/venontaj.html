@@ -112,20 +112,48 @@
 <div class="template" id="template-cirkulero-modal">
 	<div class="row m-b-15">
 		<div class="col col-sm-6">
-			<button class="cirkulero-modal-toggle-open btn btn-primary waves-effect">
+			<button class="cirkulero-modal-toggle-open btn btn-primary btn-block waves-effect">
 				<i class="material-icons"></i>
 				<span></span>
 			</button>
 		</div>
 		<div class="col col-sm-6">
-			<button class="cirkulero-modal-toggle-reminders btn btn-primary waves-effect">
+			<button class="cirkulero-modal-toggle-reminders btn btn-primary btn-block waves-effect">
 				<i class="material-icons"></i>
 				<span></span>
 			</button>
 		</div>
 	</div>
+	<div class="row m-b-15">
+		<div class="col col-sm-6">
+			<button class="cirkulero-modal-rename btn btn-primary btn-block waves-effect">
+				<i class="material-icons">edit</i>
+				Renomi cirkuleron
+			</button>
+		</div>
+		<div class="col col-sm-6">
+			<button class="cirkulero-modal-change-note btn btn-primary btn-block waves-effect">
+				<i class="material-icons">edit</i>
+				Ŝanĝi noton
+			</button>
+		</div>
+	</div>
+	<div class="row m-b-15">
+		<div class="col col-sm-6">
+			<button class="cirkulero-modal-change-deadline btn btn-primary btn-block waves-effect">
+				<i class="material-icons">calendar_today</i>
+				Movi limdaton
+			</button>
+		</div>
+		<div class="col col-sm-6">
+			<button class="cirkulero-modal-send-direct-reminder btn btn-primary btn-block waves-effect">
+				<i class="material-icons">email</i>
+				Sendi rektan memorigon
+			</button>
+		</div>
+	</div>
 	<div class="m-b-30">
-		<button class="cirkulero-modal-prepare btn btn-primary waves-effect">
+		<button class="cirkulero-modal-prepare btn btn-primary btn-block btn-lg waves-effect">
 			<i class="material-icons">publish</i>
 			Pretigi por publikiĝo
 		</button>
@@ -133,4 +161,73 @@
 	<div class="cirkulero-modal-statistics align-left">
 		<h3>Kontribuoj</h3>
 	</div>
+</div>
+<div class="template" id="template-rename-cirkulero-modal">
+	<form>
+		<div class="form-group form-float m-t-15">
+			<div class="form-line">
+				<input type="text" class="form-control" required>
+				<label class="form-label">Nomo de cirkulero (ekz. “januaro 2099”)</label>
+			</div>
+		</div>
+	</form>
+</div>
+<div class="template" id="template-change-note-modal">
+	<form>
+		<div class="form-group form-float m-t-15">
+			<div class="form-line">
+				<textarea rows="1" class="form-control no-resize" required></textarea>
+				<label class="form-label">Nomo de cirkulero (ekz. “januaro 2099”)</label>
+			</div>
+		</div>
+	</form>
+</div>
+<div class="template" id="template-change-deadline-modal">
+	<form>
+		<div class="form-group form-float m-t-15">
+			<div class="form-line">
+				<input type="text" class="form-control" required>
+				<label class="form-label">Limdato (UTC)</label>
+			</div>
+		</div>
+	</form>
+</div>
+<div class="template" id="template-send-direct-reminder-modal">
+	<div class="align-left m-b-30">
+		<p>Tiu ĉi formularo lasas vin sendi rektan memorigon al ĉiuj cirkulerkontribuantoj, kiuj ankoraŭ ne kontribuis al la cirkulero.</p>
+		<p>Eblas uzi la jenajn kodojn en la mesaĝo:</p>
+		<ul>
+			<li><code>\{{nomo}}</code> por skribi la nomon de la ricevonto de la mesaĝo (ekz. “Zamenhof”)</li>
+			<li><code>\{{ligilo}}</code> skribi la ligilon por kontribui al la cirkulero (necesas ensaluto)</li>
+		</ul>
+	</div>
+	<form>
+		<div class="form-group form-float m-t-15">
+			<div class="form-line">
+				<textarea rows="1" class="form-control no-resize" required>
+Kara \{{nomo}}
+
+Vi ankoraŭ ne kontribuis al cirkulero n-ro \{{numero}} por \{{monato}}.
+
+\{{noto}}
+
+Bonvolu iri al la ĉi-suba ligilo por sendi vian kontribuon:
+\{{ligilo}}
+
+Limdato: \{{limdato}}
+
+Mi dankus se vi:
+- uzus literajn ĉapelojn;
+- evitus strangajn mallongigojn, kiujn ne ĉiuj tuj povos deĉifri;
+- aldonus ligilojn al via kontribuo;
+- estus akurata!
+
+Havu belan tagon,
+Centra Reto-roboto
+nome de la Ĝenerala Sekretario{{_~}}
+				</textarea>
+				<label class="form-label">Mesaĝo</label>
+			</div>
+		</div>
+	</form>
 </div>

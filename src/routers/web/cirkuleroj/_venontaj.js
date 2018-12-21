@@ -31,7 +31,8 @@ async function venontaj (req, res, next) {
 			'/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'
 		],
 		pageDataObj: {
-			groups: groups
+			groups: groups,
+			dateFormat: CR.timeFormats.dateTimeFull
 		}
 	};
 	await res.sendRegularPage('cirkuleroj/venontaj', data);

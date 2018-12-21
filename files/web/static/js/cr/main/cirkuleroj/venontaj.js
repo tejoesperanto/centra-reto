@@ -79,7 +79,7 @@ $(function () {
 		el: '#cirkuleroj-table',
 		method: 'post'	,
 		url: '/api/cirkuleroj/list',
-		select: [ 'id', 'name', 'deadline', 'open', 'reminders' ],
+		select: [ 'id', 'name', 'deadline', 'open', 'reminders', 'note' ],
 		defaultOrder: [ 0, 'asc' ],
 		options: {
 			searching: false
@@ -208,6 +208,248 @@ $(function () {
 									swal.close();
 								});
 						});
+					});
+
+					template.find('.cirkulero-modal-rename').click(function () {
+						var modalTemplate = cloneTemplate('#template-rename-cirkulero-modal');
+
+						var form = modalTemplate.find('form');
+						var input = modalTemplate.find('input');
+						input.val(rowData.name);
+						input.on('input', function () {
+							var valid = form[0].checkValidity();
+							$('.swal-button--confirm').attr('disabled', !valid);
+						});
+						$.AdminBSB.input.activate(form);
+
+						form.submit(function (e) {
+							e.preventDefault();
+							$('.swal-button--confirm').click();
+						});
+
+						swal({
+							title: 'Renomi cirkuleron n-ro ' + rowData.id,
+							content: modalTemplate[0],
+							buttons: [
+								'Nuligi',
+								'Renomi'
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							swal({
+								title: 'Renomi cirkuleron n-ro ' + rowData.id,
+								text: 'Ĉu vi certas, ke vi volas renomi la cirkuleron?',
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Renomi',
+										closeModal: false
+									}
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								performAPIRequest('post', '/api/cirkuleroj/rename', { cirkulero_id: rowData.id, name: input.val() })
+									.then(function (res) {
+										swal.stopLoading();
+										table.draw();
+										if (!res.success) { return; }
+										swal.close();
+									});
+							});
+						});
+					});
+
+					template.find('.cirkulero-modal-change-note').click(function () {
+						var modalTemplate = cloneTemplate('#template-change-note-modal');
+
+						var form = modalTemplate.find('form');
+						var input = modalTemplate.find('textarea');
+						input.val(rowData.note);
+						input.on('input', function () {
+							var valid = form[0].checkValidity();
+							$('.swal-button--confirm').attr('disabled', !valid);
+						});
+						$.AdminBSB.input.activate(form);
+
+						form.submit(function (e) {
+							e.preventDefault();
+							$('.swal-button--confirm').click();
+						});
+
+						swal({
+							title: 'Ŝanĝi noton de cirkulero n-ro ' + rowData.id,
+							content: modalTemplate[0],
+							buttons: [
+								'Nuligi',
+								'Ŝanĝi'
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							swal({
+								title: 'Ŝanĝi noton de cirkulero n-ro ' + rowData.id,
+								text: 'Ĉu vi certas, ke vi volas ŝanĝi la noton de la cirkulero?',
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Ŝanĝi',
+										closeModal: false
+									}
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								performAPIRequest('post', '/api/cirkuleroj/update_note', { cirkulero_id: rowData.id, note: input.val() })
+									.then(function (res) {
+										swal.stopLoading();
+										table.draw();
+										if (!res.success) { return; }
+										swal.close();
+									});
+							});
+						});
+
+						window.setTimeout(function () {
+							autosize(input);
+						}, 0);
+					});
+
+					template.find('.cirkulero-modal-change-deadline').click(function () {
+						var modalTemplate = cloneTemplate('#template-change-deadline-modal');
+
+						var form = modalTemplate.find('form');
+						var input = modalTemplate.find('input');
+						input.datetimepicker({
+							locale: 'eo',
+							minDate: moment(),
+							defaultDate: moment.unix(rowData.deadline).format('YYYY-MM-DD HH:mm')
+						});
+						input.on('input', function () {
+							var valid = form[0].checkValidity();
+							$('.swal-button--confirm').attr('disabled', !valid);
+						});
+						$.AdminBSB.input.activate(form);
+
+						form.submit(function (e) {
+							e.preventDefault();
+							$('.swal-button--confirm').click();
+						});
+
+						swal({
+							title: 'Movi limdaton de cirkulero n-ro ' + rowData.id,
+							content: modalTemplate[0],
+							buttons: [
+								'Nuligi',
+								'Movi'
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							swal({
+								title: 'Movi limdaton de cirkulero n-ro ' + rowData.id,
+								text: 'Ĉu vi certas, ke vi volas movi la limdaton de la cirkulero?',
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Movi',
+										closeModal: false
+									}
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								performAPIRequest('post', '/api/cirkuleroj/update_deadline', {
+									cirkulero_id: rowData.id,
+									deadline: input.data("DateTimePicker").date().unix()
+								}).then(function (res) {
+									swal.stopLoading();
+									table.draw();
+									if (!res.success) { return; }
+									swal.close();
+								});
+							});
+						});
+
+						window.setTimeout(function () {
+							autosize(input);
+						}, 0);
+					});
+
+					template.find('.cirkulero-modal-send-direct-reminder').click(function () {
+						var modalTemplate = cloneTemplate('#template-send-direct-reminder-modal');
+
+						var form = modalTemplate.find('form');
+						var input = modalTemplate.find('textarea');
+						
+						var deadline = moment.unix(rowData.deadline).format(pageData.dateFormat);
+						var text = input.val();
+						text = text.replace(/{{numero}}/g, rowData.id);
+						text = text.replace(/{{monato}}/g, rowData.name);
+						text = text.replace(/{{noto}}/g, rowData.note || '');
+						text = text.replace(/{{limdato}}/g, deadline);
+
+						// Remove consecutive newlines
+						text = text.replace(/(?:\r?\n){3}((?:\r?\n)*)/g, '\n\n');
+						input.val(text);
+
+						input.on('input', function () {
+							var valid = form[0].checkValidity();
+							$('.swal-button--confirm').attr('disabled', !valid);
+						});
+						$.AdminBSB.input.activate(form);
+
+						form.submit(function (e) {
+							e.preventDefault();
+							$('.swal-button--confirm').click();
+						});
+
+						swal({
+							title: 'Sendi rektan memorigon pri cirkulero n-ro ' + rowData.id,
+							content: modalTemplate[0],
+							buttons: [
+								'Nuligi',
+								'Sendi'
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							swal({
+								title: 'Sendi rektan memorigon pri cirkulero n-ro ' + rowData.id,
+								text: 'Ĉu vi certas, ke vi volas sendi rektan memorigon pri la cirkulero?',
+								buttons: [
+									'Nuligi',
+									{
+										text: 'Sendi',
+										closeModal: false
+									}
+								]
+							}).then(function (isConfirm) {
+								if (!isConfirm) { return; }
+
+								performAPIRequest('post', '/api/cirkuleroj/send_reminder_direct', {
+									cirkulero_id: rowData.id,
+									message: input.val()
+								}).then(function (res) {
+									swal.stopLoading();
+									table.draw();
+									if (!res.success) { return; }
+									
+									swal({
+										icon: 'success',
+										title: 'Sukcese sendis rektan memorigon',
+										text: ' ', // To solve issues with missing body margin
+										timer: 3000,
+										button: false
+									});
+								});
+							});
+						});
+
+						window.setTimeout(function () {
+							autosize(input);
+						}, 0);
 					});
 
 					// Statistics

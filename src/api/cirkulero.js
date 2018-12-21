@@ -124,6 +124,35 @@ export function getAllContributions (id) {
 }
 
 /**
+ * Gets all the user's who haven't contributed to a cirkulero
+ * @param  {number} id The id of the cirkulero
+ * @return {Object} A map of {id (number): user (User)}
+ */
+export async function getAllNonContributors (id) {
+	const stmt = CR.db.cirkuleroj.prepare('select user_id from cirkuleroj_contributions where cirkulero_id = ?');
+	const contributors = stmt.all(id).map(x => x.user_id);
+
+	const cirkGroups = await getGroups();
+	const childrenObjPromises = {};
+	for (let group of cirkGroups.contribute) {
+		childrenObjPromises[group.id] = group.getAllChildGroups();
+	}
+	const childrenObj = await promiseAllObject(childrenObjPromises);
+	const children = [].concat(...Object.values(childrenObj));
+	const allGroups = cirkGroups.contribute.concat(children);
+	const groups = allGroups.filter(group => group.membersAllowed);
+	const usersArrs = await Promise.all(groups.map(group => group.getAllUsers(true)));
+	const users = {};
+	for (let user of [].concat(...usersArrs)) {
+		if (user.id in users) { continue; }
+		if (contributors.indexOf(user.id) > -1) { continue; }
+		users[user.id] = user;
+	}
+
+	return users;
+}
+
+/**
  * Checks all cirkuleroj to see if a reminder should be sent out.
  * This function is automatically called by the event loop.
  */
@@ -194,26 +223,7 @@ export async function checkReminders () {
 		stmt = CR.db.cirkuleroj.prepare('select reminder_id from reminders_direct_sent where cirkulero_id = ?');
 		const sentDirectReminders = new Set(stmt.all(cirk.id).map(x => x.reminder_id));
 
-		stmt = CR.db.cirkuleroj.prepare('select user_id from cirkuleroj_contributions where cirkulero_id = ?');
-		const contributors = stmt.all(cirk.id).map(x => x.user_id);
-
-		// Get all users who haven't contributed
-		const cirkGroups = await getGroups();
-		const childrenObjPromises = {};
-		for (let group of cirkGroups.contribute) {
-			childrenObjPromises[group.id] = group.getAllChildGroups();
-		}
-		const childrenObj = await promiseAllObject(childrenObjPromises);
-		const children = [].concat(...Object.values(childrenObj));
-		const allGroups = cirkGroups.contribute.concat(children);
-		const groups = allGroups.filter(group => group.membersAllowed);
-		const usersArrs = await Promise.all(groups.map(group => group.getAllUsers(true)));
-		const users = {};
-		for (let user of [].concat(...usersArrs)) {
-			if (user.id in users) { continue; }
-			if (contributors.indexOf(user.id) > -1) { continue; }
-			users[user.id] = user;
-		}
+		const users = await getAllNonContributors(cirk.id);
 
 		for (let reminder of directReminders) {
 			// Ensure we haven't already sent the reminder

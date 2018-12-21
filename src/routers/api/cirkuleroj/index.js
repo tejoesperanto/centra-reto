@@ -20,8 +20,12 @@ import apiOpen from './_open';
 import apiPublish from './_publish';
 import apiRemindersDisable from './_reminders_disable';
 import apiRemindersEnable from './_reminders_enable';
+import apiRename from './_rename';
+import apiSendReminderDirect from './_send_reminder_direct';
 import apiSetPublishMessage from './_set_publish_message';
+import apiUpdateDeadline from './_update_deadline';
 import apiUpdateGroups from './_update_groups';
+import apiUpdateNote from './_update_note';
 import apiUpdateReminderDirect from './_update_reminder_direct';
 import apiUpdateReminderList from './_update_reminder_list';
 
@@ -117,15 +121,35 @@ export default function () {
 		middleware.requireInitialSetup,
 		wrap(apiRemindersEnable));
 
+	router.post('/rename',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiRename));
+
+	router.post('/send_reminder_direct',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiSendReminderDirect));
+
 	router.post('/set_publish_message',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiSetPublishMessage));
 
+	router.post('/update_deadline',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiUpdateDeadline));
+
 	router.post('/update_groups',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiUpdateGroups));
+
+	router.post('/update_note',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiUpdateNote));
 
 	router.post('/update_reminder_direct',
 		middleware.requireLogin,
