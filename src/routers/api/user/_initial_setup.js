@@ -19,7 +19,7 @@ async function user_initial_setup (req, res, next) {
 	 *                                    Length: 1-80
 	 * [pet_name]           (string)      (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
 	 *                                    Length: 1-80
-	 * pronouns             (string|null) The user's pronouns (li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
+	 * pronouns             (string|null) The user's pronouns (ĝi, li, ri, ŝi) in csv format. If null the user's nickname is used in generated text.
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -95,7 +95,7 @@ async function user_initial_setup (req, res, next) {
 		pronouns = pronouns.toString();
 		const pronounsArr = pronouns.split(',');
 		for (let pronoun of pronounsArr) {
-			if (['li','ri','ŝi'].indexOf(pronoun) === -1) {
+			if (['ĝi', 'li','ri','ŝi'].indexOf(pronoun) === -1) {
 				res.sendAPIError('INVALID_ARGUMENT', ['pronouns']);
 				return;
 			}

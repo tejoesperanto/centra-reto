@@ -3,6 +3,7 @@ $(function () {
 	// Default settings
 	if (pageData.userDetails.pronouns) {
 		var pronounsEls = {
+			'ĝi': $('#details-pronouns_list_ghi'),
 			'li': $('#details-pronouns_list_li'),
 			'ri': $('#details-pronouns_list_ri'),
 			'ŝi': $('#details-pronouns_list_shi')

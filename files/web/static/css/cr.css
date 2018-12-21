@@ -289,3 +289,13 @@ img.blur {
 .card>.body.full-image>img {
 	width: 100%;
 }
+
+.row-eq-height {
+	display: flex;
+	display: -webkit-flex;
+	flex-wrap: wrap;
+}
+
+.row-eq-height .card {
+	height: calc(100% - 30px)
+}
