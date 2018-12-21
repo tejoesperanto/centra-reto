@@ -6,6 +6,7 @@ import { wrap } from '../..';
 import apiClose from './_close';
 import apiContribute from './_contribute';
 import apiCreate from './_create';
+import apiDelete from './_delete';
 import apiDeleteReminderDirect from './_delete_reminder_direct';
 import apiDeleteReminderList from './_delete_reminder_list';
 import apiGetContributions from './_get_contributions';
@@ -52,6 +53,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiCreate));
+
+	router.post('/delete',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiDelete));
 
 	router.post('/delete_reminder_direct',
 		middleware.requireLogin,

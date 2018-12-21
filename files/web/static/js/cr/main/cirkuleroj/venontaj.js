@@ -452,6 +452,30 @@ $(function () {
 						}, 0);
 					});
 
+					template.find('.cirkulero-modal-delete').click(function () {
+						swal({
+							title: 'Forigo de cirkulero ' + rowData.id,
+							text: 'Ĉu vi certas, ke vi volas forigi cirkuleron ' + rowData.id + '?',
+							buttons: [
+								'Nuligi',
+								{
+									text: 'Forigi',
+									closeModal: false
+								}
+							]
+						}).then(function (isConfirm) {
+							if (!isConfirm) { return; }
+
+							performAPIRequest('post', '/api/cirkuleroj/delete', { cirkulero_id: rowData.id })
+								.then(function (res) {
+									swal.stopLoading();
+									table.draw();
+									if (!res.success) { return; }
+									swal.close();
+								});
+						});
+					});
+
 					// Statistics
 					var createStatsHandler = function (group) {
 						var contribs = [];

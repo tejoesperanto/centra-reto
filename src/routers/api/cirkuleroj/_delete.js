@@ -1,7 +1,7 @@
-async function open (req, res, next) {
+async function delete_cirkulero (req, res, next) {
 	/**
-	 * POST /open
-	 * Opens a cirkulero for contributions
+	 * POST /delete
+	 * Deletes a cirkulero
 	 *
 	 * Login required
 	 * Initial setup required
@@ -10,7 +10,7 @@ async function open (req, res, next) {
 	 * cirkuleroj.manage
 	 *
 	 * Parameters:
-	 *   cirkulero_id (number) The id of the cirkulero to open
+	 *   cirkulero_id (number) The id of the cirkulero to remove
 	 *   
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -29,7 +29,7 @@ async function open (req, res, next) {
 		return;
 	}
 
-	const stmt = CR.db.cirkuleroj.prepare('update cirkuleroj set open = 1 where id = ?');
+	const stmt = CR.db.cirkuleroj.prepare('delete from cirkuleroj where id = ?');
 	const info = stmt.run(req.body.cirkulero_id);
 
 	if (info.changes === 0) {
@@ -40,4 +40,4 @@ async function open (req, res, next) {
 	res.sendAPIResponse();
 }
 
-export default open;
+export default delete_cirkulero;
