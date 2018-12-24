@@ -19,7 +19,7 @@
 		"name": ""
 	},
 	"emailSubjectPrefix": "",
-	"addressPrefix": "https://reto.tejo.org/",
+	"addressPrefix": "http://localhost:1887/",
 	"bcryptSaltRounds": 10,
 	"trustLocalProxy": true,
 	"loginLimit": {
