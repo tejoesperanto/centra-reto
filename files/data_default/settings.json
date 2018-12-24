@@ -27,6 +27,7 @@
 		"time": 900
 	},
 	"sessionSecret": null,
+	"sessionLife": 2592000,
 	"activationKeySize": 8,
 	"timers": {
 		"cirkuleroReminders": 900,

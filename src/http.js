@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import RateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-import expressSession from 'express-session';
+import session from 'cookie-session';
 import passport from 'passport';
 import flash from 'connect-flash';
 import util from 'util';
@@ -57,9 +57,8 @@ export async function init () {
 		CR.log.error("Neniu session secret difinita en agordoj");
 		process.exit(1);
 	}
-	CR.app.use(expressSession({
-		resave: false,
-		saveUninitialized: false,
+	CR.app.use(session({
+		maxAge: CR.conf.sessionLife * 1000,
 		secret: CR.conf.sessionSecret,
 		name: 'CR_SESSION'
 	}));
