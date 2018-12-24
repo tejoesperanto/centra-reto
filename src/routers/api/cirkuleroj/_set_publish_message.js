@@ -1,4 +1,4 @@
-import { removeUnsafeChars, removeUnsafeCharsOneline } from '../../../util';
+import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
 async function set_publish_message (req, res, next) {
 	/**
