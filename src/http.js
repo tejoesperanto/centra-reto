@@ -58,7 +58,6 @@ export async function init () {
 		process.exit(1);
 	}
 	CR.app.use(session({
-		maxAge: CR.conf.sessionLife * 1000,
 		secret: CR.conf.sessionSecret,
 		name: 'CR_SESSION'
 	}));
