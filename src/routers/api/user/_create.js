@@ -12,6 +12,7 @@ async function user_create (req, res, next) {
 	 * 
 	 * Parameters:
 	 * email      (string)  The email of the user
+	 *                      Max length: 500 chars
 	 * send_email (boolean) Whether to send an email with the activation link
 	 *
 	 * Permissions required:
@@ -34,7 +35,7 @@ async function user_create (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
-	if (typeof req.body.email !== 'string') {
+	if (typeof req.body.email !== 'string' || req.body.email.length > 500) {
 		res.sendAPIError('INVALID_ARGUMENT', ['email']);
 		return;
 	}

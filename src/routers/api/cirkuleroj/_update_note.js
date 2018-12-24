@@ -14,6 +14,7 @@ async function update_note (req, res, next) {
 	 * Parameters:
 	 *   cirkulero_id (number) The id of the cirkulero
 	 *   note         (string) The new note of the cirkulero
+	 *                         Max length: 1000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -33,7 +34,7 @@ async function update_note (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.note !== 'string') {
+	if (typeof req.body.note !== 'string' || req.body.note.length > 1000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['note']);
 		return;
 	}

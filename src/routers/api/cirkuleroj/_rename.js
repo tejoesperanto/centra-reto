@@ -14,6 +14,7 @@ async function rename (req, res, next) {
 	 * Parameters:
 	 *   cirkulero_id (number) The id of the cirkulero
 	 *   name         (string) The new name of the cirkulero
+	 *                         Max length: 50 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -33,7 +34,7 @@ async function rename (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.name !== 'string') {
+	if (typeof req.body.name !== 'string' || req.body.name.length > 50) {
 		res.sendAPIError('INVALID_ARGUMENT', ['name']);
 		return;
 	}

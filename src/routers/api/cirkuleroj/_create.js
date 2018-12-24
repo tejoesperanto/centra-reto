@@ -16,10 +16,12 @@ async function create (req, res, next) {
 	 * Parameters:
 	 *   id        (number)  The id of the cirkulero
 	 *   name      (string)  The name of the cirkulero
+	 *                       Max length: 50 chars
 	 *   deadline  (number)  The unix time of the cirkulero deadline
 	 *                       Must be higher than the current unix time
 	 *   open      (boolean) Whether the cirkulero is open for contributions right away
 	 *   [note]    (string)  The note for use in cirkulero reminders
+	 *                       Max length: 1000 chars
 	 *   reminders (boolean) Whether to send automatic reminders for this cirkulero
 	 *
 	 * Throws:
@@ -46,7 +48,7 @@ async function create (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.name !== 'string') {
+	if (typeof req.body.name !== 'string' || req.body.name.length > 50) {
 		res.sendAPIError('INVALID_ARGUMENT', ['name']);
 		return;
 	}
@@ -68,6 +70,10 @@ async function create (req, res, next) {
 	}
 	if (req.body.note) {
 		note = removeUnsafeCharsOneLine(req.body.note);
+		if (req.body.note.length > 1000) {
+			res.sendAPIError('INVALID_ARGUMENT', ['note']);
+			return;
+		}
 	}
 
 	if (typeof req.body.reminders !== 'boolean') {

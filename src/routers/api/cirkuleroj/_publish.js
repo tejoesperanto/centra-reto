@@ -17,15 +17,17 @@ async function publish (req, res, next) {
 	 * Parameters:
 	 *   cirkulero_id    (number)      The id of the cirkulero
 	 *   publish_message (string|null) The message used to announce the compiled cirkulero. If null no announcement is made.
+	 *                                 Max length: 5000 chars
 	 *   publish_email   (string|null) The email to send the announcement to. If null no announcement is made.
+	 *                                 Max length: 500 chars
 	 *   contribs (Object[]) The modified cirkulero contributions
 	 *     user_id           (number)
 	 *     group_id          (number)
-	 *     faris             (string[])
-	 *     faras             (string[])
-	 *     faros             (string[])
-	 *     comment           (string|null)
-	 *     user_role_comment (string|null)
+	 *     faris             (string[])    Max length: 500 chars
+	 *     faras             (string[])    Max length: 500 chars
+	 *     faros             (string[])    Max length: 500 chars
+	 *     comment           (string|null) Max length: 1000 chars
+	 *     user_role_comment (string|null) Max length: 1000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT  [argument]
@@ -55,6 +57,10 @@ async function publish (req, res, next) {
 	let publishMessage = null;
 	if (req.body.publish_message) {
 		publishMessage = removeUnsafeChars(req.body.publish_message);
+		if (publishMessage.length > 5000) {
+			res.sendAPIError('INVALID_ARGUMENT', ['publish_message']);
+			return;
+		}
 	}
 
 	if (req.body.publish_email !== null && typeof req.body.publish_email !== 'string') {
@@ -64,6 +70,10 @@ async function publish (req, res, next) {
 	let publishEmail = null;
 	if (req.body.publish_email) {
 		publishEmail = removeUnsafeCharsOneLine(req.body.publish_email);
+		if (publishEmail.length > 500) {
+			res.sendAPIError('INVALID_ARGUMENT', ['publish_email']);
+			return;
+		}
 	}
 
 	let stmt = CR.db.cirkuleroj.prepare('select open, published from cirkuleroj where id = ?');
@@ -101,8 +111,18 @@ async function publish (req, res, next) {
 			contrib.faras instanceof Array &&
 			contrib.faros instanceof Array &&
 
-			(contrib.comment === null || typeof contrib.comment === 'string') &&
-			(contrib.user_role_comment === null || typeof contrib.user_role_comment === 'string')
+			(
+				contrib.comment === null || (
+					typeof contrib.comment === 'string' &&
+					contrib.comment.length <= 1000
+				)
+			) &&
+			(
+				contrib.user_role_comment === null || (
+					typeof contrib.user_role_comment === 'string' &&
+					contrib.user_role_comment.length <= 1000
+				)
+			)
 		)) {
 			res.sendAPIError('INVALID_CONTRIB', [i]);
 			return;
@@ -111,10 +131,10 @@ async function publish (req, res, next) {
 		for (let arr of [ contrib.faris, contrib.faras, contrib.faros ]) {
 			for (let n in arr) {
 				arr[n] = removeUnsafeCharsOneLine(arr[n]);
-			}
-			if (typeof arr[n] !== 'string') {
-				res.sendAPIError('INVALID_CONTRIB', [i]);
-				return;
+				if (typeof arr[n] !== 'string' || arr[n].length > 500) {
+					res.sendAPIError('INVALID_CONTRIB', [i]);
+					return;
+				}
 			}
 		}
 

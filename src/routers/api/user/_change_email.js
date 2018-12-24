@@ -11,6 +11,7 @@ async function change_email (req, res, next) {
 	 * 
 	 * Parameters:
 	 * email (string) The new email address
+	 *                Max length: 500 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -22,7 +23,7 @@ async function change_email (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
-	if (typeof req.body.email !== 'string') {
+	if (typeof req.body.email !== 'string' || req.body.email.length > 500) {
 		res.sendAPIError('INVALID_ARGUMENT', ['email']);
 		return;
 	}

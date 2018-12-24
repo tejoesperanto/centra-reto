@@ -15,10 +15,15 @@ async function contribute (req, res, next) {
 	 *   cirkulero_id        (number)   The id of the cirkulero to contribute to
 	 *   group_id            (number)   The id of the group the user is contributing on behalf of
 	 *   [user_role_comment] (string)   An optional comment on the user's role
+	 *                                  Max length: 1000 chars
 	 *   faris               (string[]) What the user did during the month
+	 *                                  Max per string length: 500 chars
 	 *   faras               (string[]) What the user is currently doing
+	 *                                  Max per string length: 500 chars
 	 *   faros               (string[]) What the user will be doing
+	 *                                  Max per string length: 500 chars
 	 *   [comment]           (string)   A comment on the user's contribution
+	 *                                  Max length: 1000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT   [argument]
@@ -58,6 +63,10 @@ async function contribute (req, res, next) {
 			return;
 		}
 		userRoleComment = removeUnsafeCharsOneLine(req.body.user_role_comment);
+		if (userRoleComment.length > 1000) {
+			res.sendAPIError('INVALID_ARGUMENT', ['user_role_comment']);
+			return;
+		}
 		if (userRoleComment.length === 0) { userRoleComment = null; }
 	}
 
@@ -67,7 +76,7 @@ async function contribute (req, res, next) {
 	}
 	const faris = [];
 	for (let faro of req.body.faris) {
-		if (typeof faro !== 'string') {
+		if (typeof faro !== 'string' || faro.length > 500) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faris']);
 			return;
 		}
@@ -80,7 +89,7 @@ async function contribute (req, res, next) {
 	}
 	const faras = [];
 	for (let faro of req.body.faras) {
-		if (typeof faro !== 'string') {
+		if (typeof faro !== 'string' || faro.length > 500) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faras']);
 			return;
 		}
@@ -93,7 +102,7 @@ async function contribute (req, res, next) {
 	}
 	const faros = [];
 	for (let faro of req.body.faros) {
-		if (typeof faro !== 'string') {
+		if (typeof faro !== 'string' || faro.length > 500) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faros']);
 			return;
 		}
@@ -107,6 +116,10 @@ async function contribute (req, res, next) {
 			return;
 		}
 		comment = removeUnsafeChars(req.body.comment);
+		if (comment.length > 1000) {
+			res.sendAPIError('INVALID_ARGUMENT', ['comment']);
+			return;
+		}
 		if (comment.length === 0) { comment = null; }
 	}
 	// End data validation

@@ -15,6 +15,7 @@ async function update_reminder_direct (req, res, next) {
 	 *   id         (number) The id of the cirkulero reminder
 	 *   delta_time (number) The new delta time
 	 *   message    (string) The new message
+	 *                       Max length: 5000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -40,7 +41,7 @@ async function update_reminder_direct (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}

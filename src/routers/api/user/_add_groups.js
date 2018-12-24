@@ -16,10 +16,10 @@ async function add_groups (req, res, next) {
 	 *
 	 * Parameters:
 	 * user_id (number)   The id of the user
-	 * groups  (Object[]) The groups to add the user to. Of format `{ id, [args], from, to }`.
+	 * groups  (Object[]) The groups to add the user to. Of format `{ id (number), [args] (string[]), from (number), to (number) }`.
 	 *                    May not contain more than 20 entries.
 	 *                    id is the group's id
-	 *                    args is an array of the user's role formatting arguments
+	 *                    args is an array of the user's role formatting arguments. Max length: 50 chars/string
 	 *                    from is the time from which the group membership is valid, must be a unix time or null to default to the current time
 	 *                    to is the time until which the group membership is valid, must be a unix time or null for it to never expire
 	 *
@@ -71,6 +71,12 @@ async function add_groups (req, res, next) {
 		if (group.from === null) { group.from = moment().unix(); }
 
 		if (!group.args || group.args.length === 0) { group.args === []; }
+		for (let arg of group.args) {
+			if (typeof arg !== 'string' || arg.length > 50) {
+				res.sendAPIError('INVALID_ARGUMENT', ['groups']);
+				return;
+			}
+		}
 	}
 
 	// Get all the groups

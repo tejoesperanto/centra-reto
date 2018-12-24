@@ -14,6 +14,7 @@ async function insert_reminder_direct (req, res, next) {
 	 * Parameters:
 	 *   delta_time (number) The new delta time
 	 *   message    (string) The new message
+	 *                       Max length: 5000 chars
 	 *
 	 * Returns:
 	 *   id (number) The id of the reminder
@@ -35,7 +36,7 @@ async function insert_reminder_direct (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}

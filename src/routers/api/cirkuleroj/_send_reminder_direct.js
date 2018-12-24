@@ -18,6 +18,7 @@ async function send_reminder_direct (req, res, next) {
 	 * Parameters:
 	 *   cirkulero_id (number) The id of the cirkulero
 	 *   message      (string) The message to send
+	 *                         Max length: 5000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -35,7 +36,7 @@ async function send_reminder_direct (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}

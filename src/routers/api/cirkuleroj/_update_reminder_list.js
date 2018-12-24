@@ -14,8 +14,10 @@ async function update_reminder_list (req, res, next) {
 	 * Parameters:
 	 *   id         (number) The id of the cirkulero reminder
 	 *   list_email (string) The new email address of the list
+	 *                       Max length: 500 chars
 	 *   delta_time (number) The new delta time
 	 *   message    (string) The new message
+	 *                       Max length: 5000 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT    [argument]
@@ -37,7 +39,7 @@ async function update_reminder_list (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.list_email !== 'string') {
+	if (typeof req.body.list_email !== 'string' || req.body.list_email.length > 500) {
 		res.sendAPIError('INVALID_ARGUMENT', ['list_email']);
 		return;
 	}
@@ -47,7 +49,7 @@ async function update_reminder_list (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}

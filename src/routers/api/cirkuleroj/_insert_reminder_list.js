@@ -12,9 +12,11 @@ async function insert_reminder_list (req, res, next) {
 	 * cirkuleroj.manage
 	 *
 	 * Parameters:
-	 *   list_email (string) The new email address of the list
-	 *   delta_time (number) The new delta time
-	 *   message    (string) The new message
+	 *   list_email (string) The email address of the list
+	 *                       Max length: 500 chars
+	 *   delta_time (number) The delta time
+	 *   message    (string) The message
+	 *                       Max length: 5000 chars
 	 *
 	 * Returns:
 	 *   id (number) The id of the reminder
@@ -32,7 +34,7 @@ async function insert_reminder_list (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
-	if (typeof req.body.list_email !== 'string') {
+	if (typeof req.body.list_email !== 'string' || req.body.list_email.length > 500) {
 		res.sendAPIError('INVALID_ARGUMENT', ['list_email']);
 		return;
 	}
@@ -43,7 +45,7 @@ async function insert_reminder_list (req, res, next) {
 		return;
 	}
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}

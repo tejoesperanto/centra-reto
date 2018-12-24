@@ -12,8 +12,8 @@ async function set_publish_message (req, res, next) {
 	 * cirkuleroj.manage
 	 *
 	 * Parameters:
-	 *   message (string)
-	 *   email   (string)
+	 *   message (string) Max length: 5000 charss
+	 *   email   (string) Max length: 500 chars
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
@@ -27,13 +27,13 @@ async function set_publish_message (req, res, next) {
 	];
 	if (!req.handleRequiredFields(fields)) { return; }
 
-	if (typeof req.body.message !== 'string') {
+	if (typeof req.body.message !== 'string' || req.body.message.length > 5000) {
 		res.sendAPIError('INVALID_ARGUMENT', ['message']);
 		return;
 	}
 	const message = removeUnsafeChars(req.body.message);
 
-	if (typeof req.body.email !== 'string') {
+	if (typeof req.body.email !== 'string' || req.body.email.length > 500) {
 		res.sendAPIError('INVALID_ARGUMENT', ['email']);
 		return;
 	}
