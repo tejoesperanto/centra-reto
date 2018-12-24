@@ -70,13 +70,21 @@ async function add_groups (req, res, next) {
 
 		if (group.from === null) { group.from = moment().unix(); }
 
-		if (!group.args || group.args.length === 0) { group.args === []; }
-		for (let arg of group.args) {
+		const args = [];
+		if ('group' in args) {
+			if (!(group.args instanceof Array)) {
+				res.sendAPIError('INVALID_ARGUMENT', ['groups']);
+				return;
+			}
+			args = group.args;
+		}
+		for (let arg of args) {
 			if (typeof arg !== 'string' || arg.length > 50) {
 				res.sendAPIError('INVALID_ARGUMENT', ['groups']);
 				return;
 			}
 		}
+		group.args = args;
 	}
 
 	// Get all the groups
