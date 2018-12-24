@@ -264,7 +264,7 @@ class User {
 	static formatLongName (fullNameLatin, petName = null) {
 		let name = fullNameLatin;
 		if (petName) {
-			name += ` ${petName}`
+			name += ` (${petName})`
 		}
 		return name;
 	}
