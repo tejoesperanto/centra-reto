@@ -80,12 +80,25 @@ textarea.cr-code {
 	div.dataTables_paginate,div.dataTables_filter {
 		margin-left: -32px !important;
 	}
+
+	.dataTables_info {
+		padding: 0 16px;
+	}
 }
 
 @media screen and (max-width: 500px) {
 	td.dataTables_empty {
 		text-align: left !important;
 	}
+}
+
+/* Fixes issues with multi-line floating form labels in AdminBSB */ 
+.form-label {
+	bottom: -5px;
+	top: unset !important;
+}
+.form-group .form-line.focused .form-label {
+	bottom: 20px;
 }
 
 .clickable {
