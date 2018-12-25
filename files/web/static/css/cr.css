@@ -92,13 +92,14 @@ textarea.cr-code {
 	}
 }
 
-/* Fixes issues with multi-line floating form labels in AdminBSB */ 
+/* Fixes issues with multi-line floating form labels in AdminBSB */
 .form-label {
-	bottom: -2px;
-	top: unset !important;
+	width: 100%;
 }
-.form-group .form-line.focused .form-label {
-	bottom: 20px;
+.form-label span {
+	width: 100%;
+	position: absolute;
+	bottom: -16px;
 }
 
 .clickable {
