@@ -577,6 +577,17 @@ function showError (error) {
 		return;
 	}
 
+	if (error.error === 'HTTP' && error.info[0] === 500) {
+		swal({
+			icon: 'error',
+			title: 'Okazis interna eraro',
+			text: 'Okazis interna servileraro. Estas nenio kion vi povas fari.\nBonvolu provi denove poste.',
+			button: 'Bone'
+		});
+
+		return
+	}
+
 	if (error.error === 'NOT_LOGGED_IN') {
 		swal({
 			icon: 'warning',
