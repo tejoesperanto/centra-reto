@@ -19,14 +19,13 @@ async function administrado_uzantoj (req, res, next) {
 		title: 'Administrado de uzantoj',
 		scripts: [
 			'/js/cr/main/administrado/uzantoj.js',
-			'/plugins/jquery-datatable/jquery.dataTables.js',
+			'/plugins/jquery-datatable/datatables.min.js',
 			'/js/jquery.dataTables.eo.js',
-			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js',
 			'/plugins/typeahead/typeahead.js',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js'
 		],
 		stylesheets: [
-			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css',
+			'/plugins/jquery-datatable/datatables.min.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css'
 		],

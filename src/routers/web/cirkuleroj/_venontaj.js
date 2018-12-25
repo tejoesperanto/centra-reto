@@ -18,14 +18,13 @@ async function venontaj (req, res, next) {
 		title: 'Venontaj cirkuleroj',
 		scripts: [
 			'/js/cr/main/cirkuleroj/venontaj.js',
-			'/plugins/jquery-datatable/jquery.dataTables.js',
+			'/plugins/jquery-datatable/datatables.min.js',
 			'/js/jquery.dataTables.eo.js',
-			'/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js',
 			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
 			'/plugins/autosize/autosize.min.js'
 		],
 		stylesheets: [
-			'/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.min.css',
+			'/plugins/jquery-datatable/datatables.min.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
 			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css',
 			'/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'

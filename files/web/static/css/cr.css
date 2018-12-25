@@ -68,6 +68,20 @@ textarea.cr-code {
 	overflow-x: hidden;
 }
 
+.dataTables_wrapper>.row:nth-child(2) {
+	overflow-x: auto;
+}
+
+.dataTables_wrapper>.row:not(:nth-child(2)) {
+	padding-top: 16px;
+}
+
+@media screen and (max-width: 767px) {
+	div.dataTables_paginate,div.dataTables_filter {
+		margin-left: -32px !important;
+	}
+}
+
 .clickable {
 	cursor: pointer;
 }
