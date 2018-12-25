@@ -113,6 +113,12 @@ textarea.cr-code {
 	display: flex;
 }
 
+@media screen and (max-width: 761px) {
+	.tagsinput-group {
+		flex-direction: column;
+	}
+}
+
 .tagsinput-group>label {
 	min-width: fit-content;
 }
