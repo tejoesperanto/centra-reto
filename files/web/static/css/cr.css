@@ -94,7 +94,7 @@ textarea.cr-code {
 
 /* Fixes issues with multi-line floating form labels in AdminBSB */ 
 .form-label {
-	bottom: -5px;
+	bottom: -2px;
 	top: unset !important;
 }
 .form-group .form-line.focused .form-label {
