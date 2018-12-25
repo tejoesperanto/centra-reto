@@ -558,6 +558,25 @@ jQuery.fn.sortElements = (function(){
 })();
 
 function showError (error) {
+	if (error instanceof ProgressEvent && error.type === 'error') {
+		if (navigator.onLine) {
+			swal({
+				icon: 'error',
+				title: 'Ne sukcesis konekti al la servilo',
+				text: 'Ni ne sukcesis konekti al la servilo.\nBonvolu reŝarĝi la paĝon kaj provi denove.',
+				button: 'Bone'
+			});
+		} else {
+			swal({
+				icon: 'error',
+				title: 'Vi ne estas konektita al la interreto',
+				text: 'Via interretkonekto malaperis.\nBonvolu reŝarĝi la paĝon kaj provi denove.',
+				button: 'Bone'
+			});
+		}
+		return;
+	}
+
 	if (error.error === 'NOT_LOGGED_IN') {
 		swal({
 			icon: 'warning',
