@@ -299,3 +299,7 @@ img.blur {
 .row-eq-height .card {
 	height: calc(100% - 30px)
 }
+
+.sidebar .legal .copyright a:hover {
+	text-decoration: underline;
+}
