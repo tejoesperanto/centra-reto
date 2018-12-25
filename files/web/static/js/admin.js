@@ -289,7 +289,12 @@ $.AdminBSB.input = {
 
 		//On label click
 		$parentSelector.on('click', '.form-float .form-line .form-label', function () {
-			$(this).parent().find('input,textarea').focus();
+			var inputEl = $(this).parent().find('input,textarea');
+			inputEl.focus();
+			scrollIntoView(inputEl[0], {
+				scrollMode: 'if-needed',
+				behavior: 'smooth'
+			});
 		});
 
 		//Not blank form
