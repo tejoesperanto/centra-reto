@@ -82,6 +82,12 @@ textarea.cr-code {
 	}
 }
 
+@media screen and (max-width: 500px) {
+	td.dataTables_empty {
+		text-align: left !important;
+	}
+}
+
 .clickable {
 	cursor: pointer;
 }
