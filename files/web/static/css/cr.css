@@ -343,3 +343,10 @@ img.blur {
 .sidebar .legal .copyright a:hover {
 	text-decoration: underline;
 }
+
+.sidebar.touch-dragging {
+	-webkit-transition: none;
+	-moz-transition: none;
+	-o-transition: none;
+	transition: none;
+}

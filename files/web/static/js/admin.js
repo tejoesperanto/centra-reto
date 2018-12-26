@@ -44,7 +44,7 @@ $.AdminBSB.options = {
 
 /* Left Sidebar - Function =================================================================================================
 *  You can manage the left sidebar menu options
-*  
+*
 */
 $.AdminBSB.leftSideBar = {
 	activate: function () {
@@ -106,6 +106,197 @@ $.AdminBSB.leftSideBar = {
 		//Set Waves
 		Waves.attach('.menu .list a', ['waves-block']);
 		Waves.init();
+
+		// Touch-dragging to open and close the sidebar
+
+		// True if a touch-drag may turn into a sidebar drag
+		var mayDragSidebar = false;
+		// True if the sidebar is currently being dragged
+		var isDraggingSidebar = false;
+		// Sidebar dragging state
+		var lastTouchX, startTouchX, startTouchY, startTouchOffset, lastTouchTime;
+		var $sidebar = $('#leftsidebar');
+		// Sidebar animation spring
+		var sidebarSpring = {
+			force: 246,
+			damping: 31,
+			value: -300,
+			target: -300,
+			velocity: 0,
+			tolerance: 1 / 10,
+			// if true, the spring won’t update but still call its callback
+			locked: false,
+			running: false,
+			lastTime: 0,
+			// sometimes Javascript does weird things, and the animationLoop function
+			// is called multiple times a frame. To prevent this, the animationLoop
+			// function is given a lock ID which must equal this lock ID, else that
+			// thread will be considered invalid and stop.
+			lockID: null,
+		};
+
+		sidebarSpring.callback = function (value) {
+			// required to update the menu button
+			$body.toggleClass('overlay-open', value > -150);
+
+			if (value === -300 || value === 0) {
+				// probably an end state
+
+				$sidebar.removeAttr('style');
+				$overlay.removeAttr('style');
+
+				// if there’s no setTimeout here, the sidebar will bounce weirdly
+				setTimeout(function () {
+					if (!sidebarSpring.running) $sidebar.removeClass('touch-dragging');
+				}, 100);
+
+				if (value === -300) $overlay.hide();
+				else $overlay.show();
+			} else {
+				$overlay.css('opacity', 1 + value / 300);
+				$overlay.show();
+				$sidebar.css('margin-left', '0px');
+				if (value < 0) {
+					$sidebar.css('transform', 'translateX(' + value + 'px)');
+				} else {
+					value = Math.sqrt(value);
+					var scale = value / 300 + 1;
+					$sidebar.css('transform', 'translateX(' + (value / 2) + 'px) scaleX(' + scale + ')');
+				}
+				$sidebar.addClass('touch-dragging');
+			}
+		};
+
+		// Spring physics implementation
+		sidebarSpring.currentForce = function () {
+			return -this.force * (this.value - this.target) - this.damping * this.velocity;
+		};
+
+		sidebarSpring.update = function (elapsed) {
+			if (this.locked) return;
+			var timeLeft = Math.min(elapsed, 1);
+			while (timeLeft > 0) {
+				var dt = Math.min(1 / 60, timeLeft);
+				var force = this.currentForce();
+				this.value += this.velocity * dt;
+				this.velocity += force * dt;
+				timeLeft -= dt;
+			};
+		};
+
+		sidebarSpring.needsUpdate = function () {
+			return Math.abs(this.value - this.target) + Math.abs(this.velocity) > this.tolerance;
+		};
+
+		sidebarSpring.animationLoop = function (lockID) {
+			if (lockID !== this.lockID) return;
+			if (this.needsUpdate()) {
+				var self = this;
+				(window.requestAnimationFrame || function(a){setTimeout(a,17)})(function() {
+					self.animationLoop(lockID);
+				});
+				this.running = true;
+			} else {
+				this.value = this.target;
+				this.velocity = 0;
+				this.callback(this.value);
+				this.running = false;
+				return;
+			}
+			var elapsed = (Date.now() - this.lastTime) / 1000;
+			this.lastTime = Date.now();
+			this.update(elapsed);
+			this.callback(this.value);
+		};
+
+		sidebarSpring.run = function () {
+			if (this.running) return;
+			this.lockID = Math.random();
+			this.lastTime = Date.now();
+			this.animationLoop(this.lockID);
+		};
+
+		$(window).on('touchstart', function (e) {
+			isDraggingSidebar = false;
+
+			if (e.originalEvent.touches.length > 1 || window.innerWidth >= 1170) {
+				// exit if there are multiple touches or if the sidebar is visible anyway
+				mayDragSidebar = false;
+				return;
+			}
+
+			var overlayOpen = $body.hasClass('overlay-open');
+
+			// read the current sidebar state unless it’s already moving
+			if (!sidebarSpring.running) {
+				sidebarSpring.value = overlayOpen ? 0 : -300;
+			}
+
+			startTouchX = lastTouchX = e.originalEvent.touches[0].clientX;
+			startTouchOffset = startTouchX - sidebarSpring.value;
+			startTouchY = e.originalEvent.touches[0].clientY;
+			lastTouchTime = Date.now();
+
+			// the sidebar may be dragged if it’s open, or if the touch point is sufficiently
+			// close to the edge
+			mayDragSidebar = overlayOpen || startTouchX < 50;
+
+			sidebarSpring.locked = true;
+			sidebarSpring.velocity = 0;
+		});
+
+		window.addEventListener('touchmove', function (e) {
+			var touchX = e.touches[0].clientX;
+			var touchY = e.touches[0].clientY;
+
+			if (mayDragSidebar && !isDraggingSidebar) {
+				var overlayOpen = $body.hasClass('overlay-open');
+
+				// consider this touch drag a sidebar drag if the touch is moving in the
+				// correct direction and if it doesn’t move too much vertically
+
+				if ((overlayOpen ? (touchX < startTouchX) : (touchX > startTouchX))
+						&& Math.abs(touchY - startTouchY) < 5) {
+					isDraggingSidebar = true;
+				} else if (overlayOpen ? (touchX > startTouchX) : (touchX < startTouchX)) {
+					mayDragSidebar = false;
+				}
+			}
+
+			if (isDraggingSidebar) {
+				e.preventDefault();
+
+				// update spring position and velocity
+				var sidebarX = touchX - startTouchOffset;
+				sidebarSpring.value = sidebarX;
+				var deltaTime = (Date.now() - lastTouchTime) / 1000;
+				sidebarSpring.velocity = (touchX - lastTouchX) / deltaTime;
+				lastTouchTime = Date.now();
+				lastTouchX = touchX;
+
+				// the spring callback (indirectly called here) will update the actual
+				// DOM elements
+				sidebarSpring.run();
+			}
+		}, { passive: false });
+
+		$(window).on('touchend', function (e) {
+			if (isDraggingSidebar) {
+				e.preventDefault();
+				isDraggingSidebar = false;
+
+				sidebarSpring.locked = false;
+				sidebarSpring.run();
+
+				// guess where it would land and set the spring target accordingly
+				var projectedPosition = sidebarSpring.value + sidebarSpring.velocity;
+				if (projectedPosition < -150) {
+					sidebarSpring.target = -300;
+				} else {
+					sidebarSpring.target = 0;
+				}
+			}
+		});
 	},
 	setMenuHeight: function (isFirstTime) {
 		if (typeof $.fn.slimScroll != 'undefined') {
@@ -166,7 +357,7 @@ $.AdminBSB.leftSideBar = {
 
 /* Right Sidebar - Function ================================================================================================
 *  You can manage the right sidebar menu options
-*  
+*
 */
 $.AdminBSB.rightSideBar = {
 	activate: function () {
@@ -198,7 +389,7 @@ $.AdminBSB.rightSideBar = {
 
 /* Searchbar - Function ================================================================================================
 *  You can manage the search bar
-*  
+*
 */
 var $searchBar = $('.search-bar');
 $.AdminBSB.search = {
@@ -235,7 +426,7 @@ $.AdminBSB.search = {
 
 /* Navbar - Function =======================================================================================================
 *  You can manage the navbar
-*  
+*
 */
 $.AdminBSB.navbar = {
 	activate: function () {
@@ -265,7 +456,7 @@ $.AdminBSB.navbar = {
 
 /* Input - Function ========================================================================================================
 *  You can manage the inputs(also textareas) with name of class 'form-control'
-*  
+*
 */
 $.AdminBSB.input = {
 	activate: function ($parentSelector) {
@@ -309,7 +500,7 @@ $.AdminBSB.input = {
 
 /* Form - Select - Function ================================================================================================
 *  You can manage the 'select' of form elements
-*  
+*
 */
 $.AdminBSB.select = {
 	activate: function () {
@@ -320,7 +511,7 @@ $.AdminBSB.select = {
 
 /* DropdownMenu - Function =================================================================================================
 *  You can manage the dropdown menu
-*  
+*
 */
 
 $.AdminBSB.dropdownMenu = {
@@ -398,7 +589,7 @@ $.AdminBSB.dropdownMenu = {
 
 /* Browser - Function ======================================================================================================
 *  You can manage browser
-*  
+*
 */
 var edge = 'Microsoft Edge';
 var ie10 = 'Internet Explorer 10';
@@ -501,34 +692,34 @@ if (window.Dropzone) {
  * --------------
  * @param Function comparator:
  *   Exactly the same behaviour as [1,2,3].sort(comparator)
- *   
+ *
  * @param Function getSortable
  *   A function that should return the element that is
  *   to be sorted. The comparator will run on the
  *   current collection, but you may want the actual
  *   resulting sort to occur on a parent or another
  *   associated element.
- *   
+ *
  *   E.g. $('td').sortElements(comparator, function(){
- *      return this.parentNode; 
+ *      return this.parentNode;
  *   })
- *   
+ *
  *   The <td>'s parent (<tr>) will be sorted instead
  *   of the <td> itself.
  */
 jQuery.fn.sortElements = (function(){
- 
+
 	var sort = [].sort;
- 
+
 	return function(comparator, getSortable) {
- 
+
 		getSortable = getSortable || function(){return this;};
- 
+
 		var placements = this.map(function(){
- 
+
 			var sortElement = getSortable.call(this),
 				parentNode = sortElement.parentNode,
- 
+
 				// Since the element itself will change position, we have
 				// to have some way of storing its original position in
 				// the DOM. The easiest way is to have a 'flag' node:
@@ -536,30 +727,30 @@ jQuery.fn.sortElements = (function(){
 					document.createTextNode(''),
 					sortElement.nextSibling
 				);
- 
+
 			return function() {
- 
+
 				if (parentNode === this) {
 					throw new Error(
 						"You can't sort elements if any one is a descendant of another."
 					);
 				}
- 
+
 				// Insert before flag:
 				parentNode.insertBefore(this, nextSibling);
 				// Remove flag:
 				parentNode.removeChild(nextSibling);
- 
+
 			};
- 
+
 		});
- 
+
 		return sort.call(this, comparator).each(function(i){
 			placements[i].call(getSortable.call(this));
 		});
- 
+
 	};
- 
+
 })();
 
 function showError (error) {
@@ -644,7 +835,7 @@ function performAPIRequest (method, url, data, handleErrors) {
 	if (settings.method === undefined) { settings.method = 'post'; }
 	if (settings.data === undefined) { settings.data = {}; }
 	if (settings.handleErrors === undefined) { settings.handleErrors = true; }
-	
+
 	return _performAPIRequest(settings);
 }
 
@@ -822,7 +1013,7 @@ function setUpDataTable (options) {
 						if (typeof val === 'boolean') {
 							val = val ? 'Jes' : 'Ne';
 						}
-					
+
 						entry.push(val);
 					}
 
