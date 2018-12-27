@@ -225,6 +225,8 @@ $.AdminBSB.leftSideBar = {
 				return;
 			}
 
+			$sidebar.removeClass('no-animate');
+
 			var overlayOpen = $body.hasClass('overlay-open');
 
 			// read the current sidebar state unless it’s already moving
@@ -435,6 +437,7 @@ $.AdminBSB.navbar = {
 
 		//Open left sidebar panel
 		$('.bars').on('click', function () {
+			$('.sidebar').removeClass('no-animate');
 			$body.toggleClass('overlay-open');
 			if ($body.hasClass('overlay-open')) { $overlay.fadeIn(); } else { $overlay.fadeOut(); }
 		});
