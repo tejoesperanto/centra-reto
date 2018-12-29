@@ -44,7 +44,7 @@ $(function () {
                             swal({
                                 title: 'Bonvenon',
                                 icon: 'success',
-                                text: 'Vi sukcesis aliĝis al Centra Reto.',
+                                text: 'Vi sukcese aliĝis al Centra Reto.',
                                 button: 'Bone'
                             }).then(function () {
                                 window.location = '/';
