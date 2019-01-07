@@ -14,9 +14,9 @@ async function aktivulo (req, res, next) {
 	for (let group of aktivuloGroupsRaw.values()) {
 		if (!group.user.active) { continue; }
 		if (!group.group.public) { continue; }
-		aktivuloGroups.push(group);
+		aktivuloGroups.push(group.user.name);
 	}
-	aktivuloGroups.sort((a, b) => a.user.name.localeCompare(b.user.name, 'eo'));
+	aktivuloGroups.sort((a, b) => a.localeCompare(b, 'eo'));
 
 	const publicOnly = !req.user; // If the user is not signed in we'll only be sending public info
 	const pictureState = aktivulo.getPictureState();
