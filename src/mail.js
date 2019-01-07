@@ -72,7 +72,9 @@ export async function renderMail (template, templateData) {
 		DataTmpl: fs.readFile(path.join(templateDir, template, template + '.json'), 'utf8')
 	});
 
-	const view = mergeOptions(JSON.parse(templates.DataTmpl), templateData);
+	const view = mergeOptions({
+		preheader_spaces: '\u200c\u00a0'.repeat(200)
+	}, JSON.parse(templates.DataTmpl), templateData);
 
 	// Render mail
 	const mail = {};
