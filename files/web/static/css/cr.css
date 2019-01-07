@@ -350,3 +350,7 @@ img.blur {
 	-o-transition: none;
 	transition: none;
 }
+
+#cr-login:hover {
+	color: #fff;
+}
