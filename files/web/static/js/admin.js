@@ -690,6 +690,13 @@ if (window.Dropzone) {
 	};
 }
 
+if (jQuery.validator) {
+	jQuery.validator.addMethod("notEqualTo", function(value, element, param) {
+		var valueOther = $(param).val();
+	 	return value != valueOther;
+	}, "Tiuj ĉi kampoj ne rajtas esti egalaj");
+}
+
 /**
  * jQuery.fn.sortElements
  * --------------

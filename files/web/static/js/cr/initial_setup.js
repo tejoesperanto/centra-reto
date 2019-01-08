@@ -12,8 +12,16 @@ $(function () {
     		'pronouns_list[]': {
     			required: '#form-pronouns_list:checked',
     			minlength: 1
-    		}
+    		},
+            'pet_name': {
+                notEqualTo: '#form-nickname'
+            }
     	},
+        messages: {
+            'pet_name': {
+                notEqualTo: 'Nur indiku kromnomon se ĝi ne estas parto de via plena nomo'
+            }
+        },
         highlight: function (input) {
             $(input).parents('.form-line').addClass('error');
             if (input.type === 'radio') {

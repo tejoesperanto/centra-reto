@@ -29,6 +29,14 @@ $(function () {
     		'pronouns_list[]': {
     			required: '#details-pronouns_list:checked',
     			minlength: 1
+    		},
+            'pet_name': {
+                notEqualTo: '#details-nickname'
+            }
+    	},
+    	messages: {
+    		'pet_name': {
+    			notEqualTo: 'Nur indiku kromnomon se ĝi ne estas parto de via plena nomo'
     		}
     	},
         highlight: function (input) {
