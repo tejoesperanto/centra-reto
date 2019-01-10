@@ -444,8 +444,9 @@ class User {
 		const stmt = CR.db.users.prepare('update users_groups set `to` = ? where user_id = ? and group_id = ?');
 		stmt.run(timeNow, this.id, group.id);
 
-		groups.get(group.id).user.to = timeNow;
-		groups.get(group.id).user.active = false;
+		// Reobtain all the groups to ensure that parents are updates as needed
+		this.groups = undefined;
+		await this.getGroups();
 
 		return true;
 	}

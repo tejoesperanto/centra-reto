@@ -37,7 +37,16 @@ async function user_toggle_enabled (req, res, next) {
 		return;
 	}
 
-	user.toggleEnabled();
+	const isEnabled = user.toggleEnabled();
+
+	if (!isEnabled) {
+		// End all the user's active memberships
+		const groups = await user.getGroups();
+		for (let group of groups.values()) {
+			if (group.user.to !== null) { continue; }
+			user.endGroupMembership(group.group);
+		}
+	}
 
 	res.sendAPIResponse();
 }
