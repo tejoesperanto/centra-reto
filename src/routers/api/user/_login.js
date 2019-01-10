@@ -5,14 +5,11 @@ async function user_login (req, res, next) {
 	 * POST /login
 	 * Logs in
 	 *
-	 * Must not be logged in
-	 *
 	 * Parameters:
 	 * email          (string) The user's primary email
 	 * password       (string) The user's plain text password
 	 *
 	 * Throws:
-	 * ALREADY_LOGGED_IN
 	 * USER_NOT_FOUND The email/password combination was not found
 	 *
 	 * Returns:
@@ -21,11 +18,6 @@ async function user_login (req, res, next) {
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
 	 */
-
-	 if (req.user) {
-	 	res.sendAPIError('ALREADY_LOGGED_IN');
-	 	return;
-	 }
 	
 	const fields = [
 		'email',
@@ -41,6 +33,10 @@ async function user_login (req, res, next) {
 	if (typeof req.body.password !== 'string') {
 		res.sendAPIError('INVALID_ARGUMENT', ['password']);
 		return;
+	}
+
+	if (req.user) {
+		req.logout();
 	}
 
 	passport.authenticate('local', (err, user, info) => {
