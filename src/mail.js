@@ -12,6 +12,11 @@ import * as CRUtil from './util';
 export function init () {
 	CR.log.info("Pretigas SMTP-klienton")
 	CR.smtp = nodemailer.createTransport(CR.conf.servers.smtp);
+
+	if (CR.conf.debugMail) {
+		CR.log.warn('Sendado de retmesaĝoj en TEST-moduso');
+	}
+
 	CR.log.info("SMTP-kliento pretas")
 }
 
@@ -23,6 +28,11 @@ export function init () {
 export async function sendMail (options, throwErrors = false) {
 	if (!options.from) {
 		options.from = CR.conf.emailFrom;
+	}
+
+	if (CR.conf.debugMail) {
+		options.subject = `[POR ${options.to}] ` + options.subject;
+		options.to = CR.conf.debugMail;
 	}
 
 	if (options.subject) {
