@@ -281,9 +281,16 @@ async function amendView (req, view) {
 			icon: 'home',
 			href: '/',
 			active: req.originalUrl === '/'
+		},
+		{
+			name: 'Aktivuloj',
+			icon: 'people',
+			href: '/aktivuloj',
+			active: /^\/aktivuloj/.test(req.originalUrl)
 		}
 	];
 
+	// Cirkuleroj
 	const menuCirkuleroj = [];
 	if (req.user && await req.user.hasPermission('cirkuleroj.manage')) {
 		menuCirkuleroj.push({
@@ -305,15 +312,14 @@ async function amendView (req, view) {
 		children: menuCirkuleroj
 	});
 
+	// Administrado
 	const menuAdmin = [];
-
 	if (req.user && await req.user.hasPermission('users.view')) {
 		menuAdmin.push({
 			name: 'Uzantoj',
 			href: '/administrado/uzantoj'
 		});
 	}
-
 	if (menuAdmin.length > 0) {
 		view.menu.push({
 			name: 'Administrado',

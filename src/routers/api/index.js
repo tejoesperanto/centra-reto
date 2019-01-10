@@ -201,6 +201,7 @@ function pageGetCsrfToken (req, res, next) {
  * @param  {string}                 options.table          The table to select from, optionally with a join statement
  * @param  {string[]}               options.colsAllowed    The cols the user is allowed to do anything with
  * @param  {string[]}               [options.alwaysSelect] An array of cols that will always be selected regardless of whether the user chose to select them
+ * @param  {string}                 [options.alwaysWhere]  A where statement that should always be included. This statement is not escaped and should not be user provided.
  * @param  {string[]}               [options.customCols]   An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
  * @return {Object|null} `{ data, rowsTotal, rowsFiltered, select }`
  * 
@@ -231,6 +232,7 @@ export function performListQueryStatement ({
 	table,
 	colsAllowed,
 	alwaysSelect = [],
+	alwaysWhere = null,
 	customCols = []
 } = {}) {
 	const requiredFields = [
@@ -294,12 +296,19 @@ export function performListQueryStatement ({
 	}
 
 	if ((req.body.where  && req.body.where.length  > 0) ||
-		(req.body.search && req.body.search.length > 0)) {
+		(req.body.search && req.body.search.length > 0) ||
+		alwaysWhere.length > 0) {
 		stmt += ' where';
 	}
 
 	let first = true;
+	if (alwaysWhere.length > 0) {
+		first = false;
+		stmt += `(${alwaysWhere})`;
+	}
+
 	if (req.body.where && req.body.where.length > 0) {
+		if (!first) { stmt += ' and '; }
 		stmt += '(';
 		for (let whereData of req.body.where) {
 			if (typeof whereData !== 'object') {

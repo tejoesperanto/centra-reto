@@ -16,6 +16,7 @@ import apiEndGroupMemberships from './_end_group_memberships';
 import apiGetGroups from './_get_groups';
 import apiInitialSetup from './_initial_setup';
 import apiList from './_list';
+import apiListPublic from './_list_public';
 import apiLogin from './_login';
 import apiLogout from './_logout';
 import apiRemoveProfilePicture from './_remove_profile_picture';
@@ -85,6 +86,11 @@ export default function () {
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiList));
+
+	router.post('/list_public',
+		middleware.requireLogin,
+		middleware.requireInitialSetup,
+		wrap(apiListPublic));
 
 	router.post('/login',
 		CR.loginLimiter,
