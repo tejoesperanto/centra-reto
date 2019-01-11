@@ -9,12 +9,23 @@
 					Serĉilo aperos tie ĉi
 				</div>
 			</div>
+
+			<div class="card" id="private-info-alert" style="display: none;">
+				<div class="body">
+					<p>
+						Tiu ĉi paĝo enhavas privatajn informojn, kiuj nur videblas de aktivuloj en Centra Reto. Bonvolu respekti ĉies privatecon kaj ne diskonigi la informojn sen permeso.
+					</p>
+					<p>
+						Se nur aktivuloj en Centra Reto povas vidi vian ekranon, vi povas alklaki la ĉi-suban butonon por vidi la privatajn informojn.
+					</p>
+					<button type="submit" class="btn btn-primary waves-effect m-t-15" id="private-info-button">MONTRI PRIVATAJN INFORMOJN</button>
+				</div>
+			</div>
 		</div>
 	</div>
 
-	<div class="row" id="aktivuloj">
-		
-	</div>
+	<!-- TODO: Loader -->
+	<div class="row row-eq-height" id="aktivuloj"></div>
 
 	<div class="row">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -30,9 +41,17 @@
 </div>
 
 <div id="template-user" class="template col-lg-4 col-md-4 col-sm-6 col-xs-6">
-	<div class="card">
-		<div class="body">
-			
+	<div class="card profile-card">
+		<div class="body profile-body no-padding">
+			<a class="aktivulo-link">
+				<div class="cr image-area no-header">
+					<div class="user-image"></div>
+				</div>
+				<div class="cr content-area aktivulo-overview">
+					<h3 class="tmpl-user-name"></h3>
+					<div class="m-t-15 tmpl-user-groups cr-profile-groups"></div>
+				</div>
+			</a>
 		</div>
 	</div>
 </div>

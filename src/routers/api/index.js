@@ -232,7 +232,7 @@ export function performListQueryStatement ({
 	table,
 	colsAllowed,
 	alwaysSelect = [],
-	alwaysWhere = null,
+	alwaysWhere = [],
 	customCols = []
 } = {}) {
 	const requiredFields = [

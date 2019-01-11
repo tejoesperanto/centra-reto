@@ -245,7 +245,7 @@ a.collapsed>.panel-collapse-arrow:before {
 	padding: 20px;
 }
 
-#cr-profile-groups>span {
+.cr-profile-groups>span {
 	margin-bottom: 4px;
 	display: inline-block;
 }
@@ -353,4 +353,28 @@ img.blur {
 
 #cr-login:hover {
 	color: #fff;
+}
+
+.aktivulo-link,.aktivulo-link:hover,.aktivulo-link:focus {
+	text-decoration: none;
+	width: 100%;
+	height: 100%;
+	display: block;
+	color: unset;
+}
+
+.card .body.no-padding {
+	padding: 0;
+}
+
+.card .body.no-padding .aktivulo-link {
+	padding: 20px;
+}
+
+.profile-card .profile-body .image-area.no-header {
+	margin-top: 0;
+}
+
+.content-area.aktivulo-overview {
+	padding-bottom: 0 !important;
 }

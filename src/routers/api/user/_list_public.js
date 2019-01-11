@@ -13,12 +13,13 @@ async function list_public (req, res, next) {
 	 * See routers/api#performListQueryStatement
 	 *
 	 * Permitted cols:
-	 * id,full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email
+	 * id, full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, email
 	 * 
 	 * Returns:
 	 * rows_total    (number)   The amount of rows in the table in total
 	 * rows_filtered (number)   The amount of rows in the table after filtering
 	 * data          (Object[]) The rows
+	 *   id                   (number)      The user's id
 	 *   name                 (string)      The user's full name with the optional pet name in parenthesis at the end
 	 *   full_name_latin      (string)      The user's full name written in the latin alphabet in the native order
 	 *   full_name_native     (string|null) The user's full name written in the native writing system in the native order
@@ -27,6 +28,8 @@ async function list_public (req, res, next) {
 	 *   pet_name             (string|null) (kromnomo) The user's pet name (used as a nickname that's not part of the full name)
 	 *   email                (string)      The user's primary email address
 	 *   groups               (string[])    The user's public groups
+	 *   has_picture          (boolean)     Whether the user has a profile picture visible to the logged in user
+	 *   picture_private      (boolean)     Whether the user's profile picture is private
 	 * 
 	 * Throws:
 	 * See routers/api#performListQueryStatement
@@ -53,7 +56,9 @@ async function list_public (req, res, next) {
 		],
 		customCols: [
 			'name',
-			'groups'
+			'groups',
+			'has_picture',
+			'picture_private'
 		]
 	});
 
@@ -78,6 +83,17 @@ async function list_public (req, res, next) {
 					groups.push(group.user.name);
 				}
 				rowOutput[col] = groups;
+
+			} else if (col === 'has_picture') {
+				rowOutput[col] = user.hasPicture(!req.user);
+
+			} else if (col === 'picture_private') {
+				let picturePublic = false;
+				if (user.hasPicture(!req.user)) {
+					picturePublic = user.getPictureState() === 1;
+				}
+
+				rowOutput[col] = picturePublic;
 
 			} else if (dbData.select.indexOf(col) > -1) {
 				rowOutput[col] = val;
