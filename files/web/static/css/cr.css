@@ -378,3 +378,7 @@ img.blur {
 .content-area.aktivulo-overview {
 	padding-bottom: 0 !important;
 }
+
+.pagination.no-margin {
+	margin: 0;
+}
