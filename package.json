@@ -1,6 +1,6 @@
 {
   "name": "centra-reto",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Centra sistemo de TEJO por interna kunlaboro",
   "main": "dist/index.js",
   "scripts": {
