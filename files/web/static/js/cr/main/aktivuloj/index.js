@@ -1,7 +1,7 @@
 $(function () {
 	var searchParams = new URLSearchParams(window.location.search);
 
-	var rowsPerPage = 3;
+	var rowsPerPage = 12;
 	var currentPage = parseInt(searchParams.get('p'), 10) || 1;
 
 	var searchData = {
