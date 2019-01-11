@@ -119,7 +119,7 @@ $(function () {
 
 					var newSearchParams = new URLSearchParams(searchParams);
 					newSearchParams.set('p', pageId);
-					if (pageId < 1 || pageId > totalPages) {
+					if (pageId < 1 || pageId >= totalPages) {
 						li.classList.add('disabled');
 					} else if (pageId === currentPage) {
 						li.classList.add('active');
