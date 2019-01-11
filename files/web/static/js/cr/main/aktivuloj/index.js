@@ -36,7 +36,7 @@ $(function () {
 	performAPIRequest('post', '/api/user/list_public', searchData)
 		.then(function (res) {
 			if (!res.success) { return; }
-			var totalPages = Math.ceil(res.rows_filtered / rowsPerPage);
+			var totalPages = Math.ceil(res.rows_filtered / rowsPerPage) + 1;
 
 			var usersDiv = $('#aktivuloj');
 			usersDiv.innerHTML = '';
@@ -119,7 +119,7 @@ $(function () {
 
 					var newSearchParams = new URLSearchParams(searchParams);
 					newSearchParams.set('p', pageId);
-					if (pageId < 1) {
+					if (pageId < 1 || pageId > totalPages) {
 						li.classList.add('disabled');
 					} else if (pageId === currentPage) {
 						li.classList.add('active');
