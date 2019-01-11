@@ -36,8 +36,7 @@ $(function () {
 	performAPIRequest('post', '/api/user/list_public', searchData)
 		.then(function (res) {
 			if (!res.success) { return; }
-			console.log(res);
-			var totalPages = rowsPerPage % res.rows_filtered;
+			var totalPages = Math.ceil(res.rows_filtered / rowsPerPage);
 
 			var usersDiv = $('#aktivuloj');
 			usersDiv.innerHTML = '';
