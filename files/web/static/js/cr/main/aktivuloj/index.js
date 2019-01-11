@@ -36,16 +36,18 @@ $(function () {
 					var imgEl = null;
 					if (user.has_picture) {
 						imgEl = document.createElement('img');
-						imgEl.width = 128;
-						imgEl.height = 128;
 						imgEl.src = '/img/aktivulo/' + user.email + '/256.png';
 
 						if (user.picture_private) {
 							imgEl.classList.add('blur');
 						}
 					} else {
-						imgEl = document.createElement('span');
+						var html = jdenticon.toSvg(user.name, 128);
+						imgEl = $(html)[0];
+						imgEl.classList.add('cr-user-picture');
 					}
+					imgEl.setAttribute('width', 128);
+					imgEl.setAttribute('height', 128);
 					imgDiv.append(imgEl);
 					if (user.picture_private) {
 						hasPrivateInfo = true;

@@ -88,7 +88,6 @@ export default function () {
 		wrap(apiList));
 
 	router.post('/list_public',
-		middleware.requireLogin,
 		middleware.requireInitialSetup,
 		wrap(apiListPublic));
 

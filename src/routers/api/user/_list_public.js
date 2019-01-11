@@ -6,7 +6,7 @@ async function list_public (req, res, next) {
 	 * POST /list_public
 	 * Lists all users
 	 *
-	 * Login required
+	 * Login not required
 	 * Initial setup required
 	 *
 	 * Parameters:

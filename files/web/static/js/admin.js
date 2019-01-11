@@ -795,6 +795,7 @@ function showError (error) {
 	}
 
 	if (error.error === 'NOT_LOGGED_IN') {
+		console.error(error);
 		swal({
 			icon: 'warning',
 			title: 'Vi estis elsalutigita',
