@@ -6,7 +6,24 @@
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 			<div class="card">
 				<div class="body">
-					Serĉilo aperos tie ĉi
+					<form id="search-form">
+						<div class="row clearfix m-b--30">
+							<div class="col-sm-5">
+								<div class="form-group form-float m-t-15">
+									<div class="form-line">
+										<input id="aktivulo-search" class="form-control">
+										<label class="form-label" for="aktivulo-search">Nomo aŭ retpoŝtadreso</label>
+									</div>
+								</div>	
+							</div>
+							<div class="col-sm-2">
+								<button type="submit" class="btn btn-primary waves-effect m-t-15">
+									<i class="material-icons">search</i>
+									<span>Serĉi</span>
+								</button>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 
@@ -18,7 +35,7 @@
 					<p>
 						Se nur aktivuloj en Centra Reto povas vidi vian ekranon, vi povas alklaki la ĉi-suban butonon por vidi la privatajn informojn.
 					</p>
-					<button type="submit" class="btn btn-primary waves-effect m-t-15" id="private-info-button">MONTRI PRIVATAJN INFORMOJN</button>
+					<button class="btn btn-primary waves-effect m-t-15" id="private-info-button">MONTRI PRIVATAJN INFORMOJN</button>
 				</div>
 			</div>
 		</div>
@@ -52,6 +69,13 @@
 					<div class="m-t-15 tmpl-user-groups cr-profile-groups"></div>
 				</div>
 			</a>
+		</div>
+	</div>
+</div>
+<div id="template-no-users" class="template col-lg-12 col-md-12 col-sm-12 col-xs-12">
+	<div class="card">
+		<div class="body">
+			<p>Centra Reto trovis neniujn rezultojn laŭ viaj serĉkriterioj.</p>
 		</div>
 	</div>
 </div>
