@@ -1116,6 +1116,20 @@ function handleMailEls (selector) {
 		this.textContent = mail;
 		delete this.dataset.mail;
 	});
+
+	$(selector).find('[data-rot13-href]').each(function () {
+		var obf = this.dataset.rot13Href;
+		var val = rot13(obf);
+		this.href = val;
+		delete this.dataset.rot13Href;
+	});
+
+	$(selector).find('[data-rot13-src]').each(function () {
+		var obf = this.dataset.rot13Src;
+		var val = rot13(obf);
+		this.src = val;
+		delete this.dataset.rot13Src;
+	});
 }
 handleMailEls(document.body);
 

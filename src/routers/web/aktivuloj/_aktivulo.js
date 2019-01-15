@@ -1,4 +1,5 @@
 import User from '../../../api/user';
+import * as CRUtil from '../../../util';
 
 async function aktivulo (req, res, next) {
 	const aktivulo = User.getUserByEmail(req.params.email);
@@ -53,6 +54,7 @@ async function aktivulo (req, res, next) {
 			'/js/cr/main/aktivuloj/aktivulo.js'
 		],
 		page: {
+			urlObfuscated: CRUtil.rot13(req.originalUrl),
 			aktivulo: aktivuloObj
 		},
 		pageDataObj: {
