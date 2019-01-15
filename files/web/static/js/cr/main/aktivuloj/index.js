@@ -39,7 +39,7 @@ $(function () {
 			var totalPages = Math.ceil(res.rows_filtered / rowsPerPage) + 1;
 
 			var usersDiv = $('#aktivuloj');
-			usersDiv.innerHTML = '';
+			usersDiv.html('');
 
 			// Show results
 			if (res.data.length === 0) {
