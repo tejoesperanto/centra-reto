@@ -912,7 +912,7 @@ function _performAPIRequest (settings) {
 			}
 		}
 
-		if (settings.files && Object.values(settings.files).length > 0) {
+		if (settings.files && Object.keys(settings.files).length > 0) {
 			var formData = new FormData();
 			formData.append('json', JSON.stringify(settings.data));
 
