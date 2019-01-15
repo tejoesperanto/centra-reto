@@ -86,6 +86,12 @@ export async function init () {
 		usernameField: 'email',
 		passwordField: 'password'
 	}, async (email, password, cb) => {
+		// Ensure the necessary fields are present
+		if (!email || !password) {
+			cb(null, false);
+			return;
+		}
+
 		// Attempt to find the user
 		const user = User.getUserByEmail(email);
 		if (!user || !user.enabled) {
