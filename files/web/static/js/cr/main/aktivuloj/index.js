@@ -29,6 +29,10 @@ $(function () {
 			{
 				col: 'email',
 				val: searchVal
+			},
+			{
+				col: 'pet_name',
+				val: searchVal
 			}
 		];
 	}

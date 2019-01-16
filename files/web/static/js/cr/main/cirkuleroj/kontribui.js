@@ -28,6 +28,9 @@ $(function () {
 		$.AdminBSB.input.activate(template);
 		var input = template.find('input');
 		input.on('keydown', function (e) {
+			template.parents('form[data-saved]')[0].dataset.saved = false;
+			checkUnsavedChanges();
+
 			if (e.which === 13) { // Newline
 				insertCirkFaro(parent, $(this)).focus();
 				e.preventDefault(); // No submission
@@ -42,9 +45,6 @@ $(function () {
 					focusEl.find('input').focus();
 				}
 			}
-
-			template.parents('form[data-saved]')[0].dataset.saved = false;
-			checkUnsavedChanges();
 		});
 
 		if (after) {
