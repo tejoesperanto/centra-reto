@@ -15,11 +15,17 @@ $(function () {
     		},
             'pet_name': {
                 notEqualTo: '#form-nickname'
+            },
+            'full_name_native': {
+                notEqualTo: '#form-full_name_latin'
             }
     	},
         messages: {
             'pet_name': {
                 notEqualTo: 'Nur indiku kromnomon se ĝi ne estas parto de via plena nomo'
+            },
+            'full_name_native': {
+                notEqualTo: 'Nur indiku nomon per via propra skribsistemo se ĝi ne estas skribita per latinaj literoj'
             }
         },
         highlight: function (input) {
