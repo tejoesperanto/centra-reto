@@ -53,7 +53,7 @@ $(function () {
 					// Clean up the form
 					var form = $('#create-cirkulero-form');
 					form[0].reset();
-					$('#create-cirkulero-form-deadline').data("DateTimePicker").date(moment());
+					$('#create-cirkulero-form-deadline').data("DateTimePicker").date(defaultDate);
 					// Reactive the inputs
 					form.find('input,textarea').blur();
 				})
