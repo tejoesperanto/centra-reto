@@ -321,10 +321,17 @@ $(function () {
 
 						var form = modalTemplate.find('form');
 						var input = modalTemplate.find('input');
+
+						var dateNow = moment();
+						var deadlineDate = moment.unix(rowData.deadline);
+						if (deadlineDate < dateNow) {
+							deadlineDate = dateNow;
+						}
+
 						input.datetimepicker({
 							locale: 'eo',
-							minDate: moment(),
-							defaultDate: moment.unix(rowData.deadline).format('YYYY-MM-DD HH:mm')
+							minDate: dateNow,
+							defaultDate: deadlineDate
 						});
 						input.on('input', function () {
 							var valid = form[0].checkValidity();
