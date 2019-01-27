@@ -23,9 +23,9 @@ async function publish (req, res, next) {
 	 *   contribs (Object[]) The modified cirkulero contributions
 	 *     user_id           (number)
 	 *     group_id          (number)
-	 *     faris             (string[])    Max length: 500 chars
-	 *     faras             (string[])    Max length: 500 chars
-	 *     faros             (string[])    Max length: 500 chars
+	 *     faris             (string[])    Max length: 2000 chars
+	 *     faras             (string[])    Max length: 2000 chars
+	 *     faros             (string[])    Max length: 2000 chars
 	 *     comment           (string|null) Max length: 1000 chars
 	 *     user_role_comment (string|null) Max length: 1000 chars
 	 *
@@ -131,7 +131,7 @@ async function publish (req, res, next) {
 		for (let arr of [ contrib.faris, contrib.faras, contrib.faros ]) {
 			for (let n in arr) {
 				arr[n] = removeUnsafeCharsOneLine(arr[n]);
-				if (typeof arr[n] !== 'string' || arr[n].length > 500) {
+				if (typeof arr[n] !== 'string' || arr[n].length > 2000) {
 					res.sendAPIError('INVALID_CONTRIB', [i]);
 					return;
 				}

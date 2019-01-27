@@ -17,11 +17,11 @@ async function contribute (req, res, next) {
 	 *   [user_role_comment] (string)   An optional comment on the user's role
 	 *                                  Max length: 1000 chars
 	 *   faris               (string[]) What the user did during the month
-	 *                                  Max per string length: 500 chars
+	 *                                  Max per string length: 2000 chars
 	 *   faras               (string[]) What the user is currently doing
-	 *                                  Max per string length: 500 chars
+	 *                                  Max per string length: 2000 chars
 	 *   faros               (string[]) What the user will be doing
-	 *                                  Max per string length: 500 chars
+	 *                                  Max per string length: 2000 chars
 	 *   [comment]           (string)   A comment on the user's contribution
 	 *                                  Max length: 1000 chars
 	 *
@@ -76,7 +76,7 @@ async function contribute (req, res, next) {
 	}
 	const faris = [];
 	for (let faro of req.body.faris) {
-		if (typeof faro !== 'string' || faro.length > 500) {
+		if (typeof faro !== 'string' || faro.length > 2000) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faris']);
 			return;
 		}
@@ -89,7 +89,7 @@ async function contribute (req, res, next) {
 	}
 	const faras = [];
 	for (let faro of req.body.faras) {
-		if (typeof faro !== 'string' || faro.length > 500) {
+		if (typeof faro !== 'string' || faro.length > 2000) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faras']);
 			return;
 		}
@@ -102,7 +102,7 @@ async function contribute (req, res, next) {
 	}
 	const faros = [];
 	for (let faro of req.body.faros) {
-		if (typeof faro !== 'string' || faro.length > 500) {
+		if (typeof faro !== 'string' || faro.length > 2000) {
 			res.sendAPIError('INVALID_ARGUMENT', ['faros']);
 			return;
 		}
