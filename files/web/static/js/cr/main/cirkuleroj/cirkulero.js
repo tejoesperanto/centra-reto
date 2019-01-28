@@ -225,7 +225,7 @@ $(function () {
 					template[0].dataset.groupId = contrib.user.group_id;
 					contribsEl.append(template);
 
-					var prefix = 'contrib-' + contribIter;
+					var prefix = 'contrib-' + contribIter + '-' + i;
 					template.find('.panel-heading')[0].id = prefix;
 					template.find('.collapsed')
 						.attr('href', '#' + prefix + '-collapse')
