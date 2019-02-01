@@ -104,8 +104,10 @@ async function get_contributions (req, res, next) {
 				if (contributorList[groupInfo.id] && contributorList[groupInfo.id].indexOf(userInfo.user) > -1) {
 					continue; // The user contributed and shouldn't be included as a non-contributor
 				}
+				const user = User.getUserById(userInfo.user);
+				if (!user) { continue; }
 				allowedContributors.push({
-					user: User.getUserById(userInfo.user),
+					user: user,
 					group: groupInfo.id,
 					groupName: groupInfo.name
 				});
