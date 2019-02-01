@@ -65,6 +65,8 @@ async function get_contributions (req, res, next) {
 	for (let contrib of contribsRaw) {
 		const user = User.getUserById(contrib.user_id);
 
+		if (!user) { continue; }
+
 		if (!contributorList[contrib.group_id]) { contributorList[contrib.group_id] = []; }
 		contributorList[contrib.group_id].push(contrib.user_id);
 
