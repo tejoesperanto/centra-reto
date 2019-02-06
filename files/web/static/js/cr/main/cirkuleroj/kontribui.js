@@ -112,12 +112,8 @@ $(function () {
 			var comment = self.find('[name=comment]').val();
 			if (comment) { apiData.comment = comment; }
 
-			performAPIRequest('post', '/api/cirkuleroj/contribute', apiData)
+			performAPIRequest('post', '/api/cirkuleroj/contribute', apiData, false)
 				.then(function (res) {
-					swal.stopLoading();
-					button.removeAttr('disabled', false);
-					if (!res.success) { return; }
-
 					if (self.hasClass('contrib-new')) {
 						self.removeClass('contrib-new');
 						self[0].dataset.id = apiData.group_id;
@@ -131,6 +127,22 @@ $(function () {
 						title: 'Sendis kontribuon',
 						text: 'Via kontribuo al cirkulero n-ro ' + pageData.cirkulero.id + ' estis sukcese sendita.\nVi povas sendi pliajn kontribuojn se vi havas plurajn rolojn.'
 					});
+				})
+				.catch(function (err) {
+					if (err.error === 'INVALID_CIRKULERO') {
+						swal({
+							title: 'Ne plu eblas kontribui',
+							text: 'Dum vi plenumis la cirkuleron, ĜenSek jam fermis la eblon kontribui al la cirkulero.',
+							icon: 'warning',
+							button: 'Bone'
+						});
+					} else {
+						showError(err);
+					}
+				})
+				.finally(function () {
+					swal.stopLoading();
+					button.removeAttr('disabled', false);
 				});
 		});
 	};
