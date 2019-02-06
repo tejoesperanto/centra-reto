@@ -41,6 +41,8 @@ $(function () {
 				}
 			}
 
+			cirkuleroInfo.actualContributions = actualContributions.length;
+
 			// STATISTICS OVERVIEW
 			// General
 			$('.data-contribs-total').text(actualContributions.length);
@@ -354,7 +356,7 @@ $(function () {
 			// PUBLISH
 			if (pageData.editor) {
 				var msgCirkulero = 'Cirkulero n-ro ' + pageData.cirkulero.id + ' de ' + pageData.cirkulero.name;
-				var msgStatistics = 'Al tiu ĉi cirkulero venis ' + cirkuleroInfo.contributions.length + ' kontribuoj.';
+				var msgStatistics = 'Al tiu ĉi cirkulero venis ' + cirkuleroInfo.actualContributions + ' kontribuoj.';
 
 				var publishMessage = pageData.publishMessage;
 				publishMessage = publishMessage.replace(/{{cirkulero}}/g, msgCirkulero);
