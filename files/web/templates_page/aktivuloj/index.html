@@ -29,6 +29,15 @@
 									</div>
 								</div>	
 							</div>
+							<div class="col-sm-3">
+								<div class="form-group cr-aktivulo-group-search">
+									<select id="aktivulo-group-search" class="selectpicker" multiple data-live-search="true" title="- Elekti rolojn -" data-selected-text-format="count>1">
+										{{#page.groups}}
+											<option value="{{id}}">{{name}}</option>
+										{{/page.groups}}
+									</select>
+								</div>
+							</div>
 							<div class="col-sm-2">
 								<button type="submit" class="btn btn-primary waves-effect m-t-15">
 									<i class="material-icons">search</i>

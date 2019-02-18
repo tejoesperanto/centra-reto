@@ -42,7 +42,7 @@ async function user_list (req, res, next) {
 	if (!await req.requirePermissions('users.view')) { return; }
 
 	const table = 'users left join users_details on users_details.user_id = users.id';
-	const dbData = CRApi.performListQueryStatement({
+	const dbData = await CRApi.performListQueryStatement({
 		req: req,
 		res: res,
 		db: CR.db.users,

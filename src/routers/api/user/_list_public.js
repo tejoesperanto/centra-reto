@@ -1,5 +1,8 @@
+import moment from 'moment-timezone';
+
 import * as CRApi from '..';
 import User from '../../../api/user';
+import Group from '../../../api/group';
 
 async function list_public (req, res, next) {
 	/**
@@ -36,7 +39,7 @@ async function list_public (req, res, next) {
 	 */
 
 	const table = 'users inner join users_details on users_details.user_id = users.id';
-	const dbData = CRApi.performListQueryStatement({
+	const dbData = await CRApi.performListQueryStatement({
 		req: req,
 		res: res,
 		db: CR.db.users,
@@ -59,7 +62,42 @@ async function list_public (req, res, next) {
 			'groups',
 			'has_picture',
 			'picture_private'
-		]
+		],
+		customWhereCols: {
+			groups: async function (groups, type, res) {
+				const allGroups = await Group.getAllGroups();
+				const searchableGroups = [];
+				const childGroupPromises = [];
+				for (let group of allGroups.values()) {
+					if (!group.searchable) { continue; }
+					childGroupPromises.push(group.getAllChildGroups());
+					searchableGroups.push(group.id);
+				}
+				await Promise.all(childGroupPromises);
+
+				const searchGroups = [];
+				for (let groupId of groups) {
+					if (typeof groupId !== 'number' ||
+						searchableGroups.indexOf(groupId) === -1) {
+						res.sendAPIError('INVALID_WHERE_COLUMN', ['groups']);
+						return false;
+					}
+
+					const group = allGroups.get(groupId);
+
+					searchGroups.push(group.id);
+					if (group.children) {
+						searchGroups.push(...group.children.map(x => x.id));
+					}
+				}
+
+				if (!searchGroups.length) {
+					return null;
+				}
+
+				return `exists(select 1 from users_groups where user_id = id and group_id in (${searchGroups.join(',')}) and (\`to\` is null or \`to\` > ${moment().unix()}))`;
+			}
+		}
 	});
 
 	if (!dbData) { return; }

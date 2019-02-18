@@ -382,3 +382,11 @@ img.blur {
 .pagination.no-margin {
 	margin: 0;
 }
+
+.cr-aktivulo-group-search {
+	margin-top: 19px;
+}
+
+.bs-searchbox>input {
+	margin-left: 38px !important;
+}

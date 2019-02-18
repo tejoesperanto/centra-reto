@@ -12,6 +12,7 @@ $(function () {
 			'picture_private',
 			'groups'
 		],
+		where: [],
 		limit: rowsPerPage,
 		offset: (currentPage - 1) * rowsPerPage,
 		order: [{
@@ -19,6 +20,7 @@ $(function () {
 			type: 'asc'
 		}]
 	};
+
 	if (searchParams.has('s')) {
 		var searchVal = '%' + searchParams.get('s') + '%';
 		searchData.search = [
@@ -35,6 +37,18 @@ $(function () {
 				val: searchVal
 			}
 		];
+	}
+	if (searchParams.has('g')) {
+		var groups = searchParams.get('g')
+			.split('.')
+			.map(function (x) {
+				return parseInt(x, 10)
+			});
+		searchData.where.push({
+			col: 'groups',
+			type: '=',
+			val: groups
+		});
 	}
 
 	performAPIRequest('post', '/api/user/list_public', searchData)
@@ -150,8 +164,17 @@ $(function () {
 			searchParams.delete('s');
 		}
 
+		var groups = $('#aktivulo-group-search').val();
+		if (groups) {
+			searchParams.set('g', groups.join('.'));
+		} else {
+			searchParams.delete('g');
+		}
+
 		window.location.search = '?' + searchParams;
 	});
 
 	$('#aktivulo-search').val(searchParams.get('s'));
+	var existingGroupsChosen = searchParams.get('g') || '';
+	$('#aktivulo-group-search').val(existingGroupsChosen.split('.'))
 });

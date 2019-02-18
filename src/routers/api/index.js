@@ -198,11 +198,12 @@ function pageGetCsrfToken (req, res, next) {
  * @param  {Express.Request}        options.req
  * @param  {Express.Response}       options.res
  * @param  {BetterSqlite3.Database} options.db
- * @param  {string}                 options.table          The table to select from, optionally with a join statement
- * @param  {string[]}               options.colsAllowed    The cols the user is allowed to do anything with
- * @param  {string[]}               [options.alwaysSelect] An array of cols that will always be selected regardless of whether the user chose to select them
- * @param  {string}                 [options.alwaysWhere]  A where statement that should always be included. This statement is not escaped and should not be user provided.
- * @param  {string[]}               [options.customCols]   An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
+ * @param  {string}                 options.table             The table to select from, optionally with a join statement
+ * @param  {string[]}               options.colsAllowed       The cols the user is allowed to do anything with
+ * @param  {string[]}               [options.alwaysSelect]    An array of cols that will always be selected regardless of whether the user chose to select them
+ * @param  {string}                 [options.alwaysWhere]     A where statement that should always be included. This statement is not escaped and should not be user provided.
+ * @param  {string[]}               [options.customCols]      An array of cols that don't exist in table but are allowed in `select` that are to be silently ignored
+ * @param  {Object}                 [options.customWhereCols] A mapping of `{ col: Function }` of handlers for custom where columns. The function may return either null or a string containing a where statement to prepend. The function must have the signature `(value, type, res)`. Error handling should be sent directly to `res` and false should be returned.
  * @return {Object|null} `{ data, rowsTotal, rowsFiltered, select }`
  * 
  * `req.body` parameters:
@@ -225,7 +226,7 @@ function pageGetCsrfToken (req, res, next) {
  * INVALID_SEARCH_COLUMN  [column]
  * INVALID_ORDER_COLUMN   [column]
  */
-export function performListQueryStatement ({
+export async function performListQueryStatement ({
 	req,
 	res,
 	db,
@@ -233,7 +234,8 @@ export function performListQueryStatement ({
 	colsAllowed,
 	alwaysSelect = [],
 	alwaysWhere = [],
-	customCols = []
+	customCols = [],
+	customWhereCols = {}
 } = {}) {
 	const requiredFields = [
 		'select',
@@ -309,35 +311,52 @@ export function performListQueryStatement ({
 
 	if (req.body.where && req.body.where.length > 0) {
 		if (!first) { stmt += ' and '; }
-		stmt += '(';
+		stmt += '(1';
 		for (let whereData of req.body.where) {
+			stmt += ' and ';
+
 			if (typeof whereData !== 'object') {
 				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
 				return null;
 			}
-			const i = colsAllowed.indexOf(whereData.col);
+
 			if (!('col' in whereData) ||
-				i === -1 ||
 				!('val' in whereData) ||
-				!('type' in whereData) ||
-				allowedWhereTypes.indexOf(whereData.type) === -1) {
+				!('type' in whereData)) {
 				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
 				return null;
 			}
 
-			if (typeof whereData.val === 'boolean') {
-				whereData.val = +whereData.val; // cast to number
-			}
-			if (allowedWhereValues.indexOf(typeof whereData.val) === -1) {
-				res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
-				return null;
+			if (whereData.col in customWhereCols) {
+				const stmtBit = await customWhereCols[whereData.col](whereData.val, whereData.type, res);
+				if (stmtBit === false) {
+					return null;
+				}
+				if (stmtBit == null) {
+					stmt += '1';
+				} else {
+					stmt += stmtBit;
+				}
+
+			} else {
+				const i = colsAllowed.indexOf(whereData.col);
+				if (i === -1 || allowedWhereTypes.indexOf(whereData.type) === -1) {
+					res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
+					return null;
+				}
+
+				if (typeof whereData.val === 'boolean') {
+					whereData.val = +whereData.val; // cast to number
+				}
+				if (allowedWhereValues.indexOf(typeof whereData.val) === -1) {
+					res.sendAPIError('INVALID_WHERE_COLUMN', [whereData]);
+					return null;
+				}
+
+				stmt += ` ${colsAllowedEsc[i]} ${whereData.type} ?`;
+				inputData.push(whereData.val);
 			}
 			
-			if (!first) {
-				stmt += ' and';
-			}
-			stmt += ` ${colsAllowedEsc[i]} ${whereData.type} ?`;
-			inputData.push(whereData.val);
 			first = false;
 		}
 		stmt += ')';
