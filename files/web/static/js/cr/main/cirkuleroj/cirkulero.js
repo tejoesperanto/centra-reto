@@ -27,9 +27,6 @@ $(function () {
 			var getContribTitle = function (contrib) {
 				var title = contrib.user.long_name || contrib.user.email;
 				title += ' – ' + contrib.user.role;
-				if (contrib.contrib.role_comment) {
-					title += ' – ' + contrib.contrib.role_comment;
-				}
 				return title;
 			};
 
@@ -246,6 +243,9 @@ $(function () {
 					var commentEl = template.find('.cirkulero-contrib-comment textarea');
 					commentEl.val(contrib.contrib.comment || '');
 
+					var userRoleCommentEl = template.find('.cirkulero-contrib-user_role_comment textarea');
+					userRoleCommentEl.val(contrib.contrib.role_comment || '');
+
 					// Editing
 					var editButton = template.find('.cirkulero-contrib-edit-button');
 					if (!pageData.editor) {
@@ -298,6 +298,7 @@ $(function () {
 							window.setTimeout(function () {
 								$.AdminBSB.input.activate(template);
 								autosize(template.find('.cirkulero-contrib-comment textarea'));
+								autosize(template.find('.cirkulero-contrib-user_role_comment textarea'));
 							}, 0);
 
 							swal({
@@ -331,15 +332,20 @@ $(function () {
 								var roleComment = template.find('.cirkulero-contrib-user_role_comment input').val().trim();
 								if (!roleComment || roleComment.length < 1) { roleComment = null;}
 								contrib.contrib.role_comment = roleComment;
-								var roleCommentPanel = panel.find('.cirkulero-contrib-title');
-								roleCommentPanel.text(getContribTitle(contrib));
+								var roleCommentPanel = panel.find('.cirkulero-contrib-user_role_comment textarea');
+								console.log(roleCommentPanel);
+								roleCommentPanel.val(roleComment);
 
 								window.setTimeout(function () {
 									autosize.update(commentElPanel);
+									autosize.update(roleCommentPanel);
 									// Necessary to update the label
 									commentElPanel.removeAttr('disabled');
+									roleCommentPanel.removeAttr('disabled');
 									commentElPanel.trigger('focus').trigger('blur');
+									roleCommentPanel.trigger('focus').trigger('blur');
 									commentElPanel.attr('disabled', true);
+									roleCommentPanel.attr('disabled', true);
 								}, 0);
 							});
 						});
