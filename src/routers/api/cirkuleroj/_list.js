@@ -35,7 +35,7 @@ async function list (req, res, next) {
 	
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
-	const dbData = CRApi.performListQueryStatement({
+	const dbData = await CRApi.performListQueryStatement({
 		req: req,
 		res: res,
 		db: CR.db.cirkuleroj,
