@@ -76,6 +76,13 @@
 			<div class="card card-about-me">
 				<div class="header">
 					<h2>Pri {{page.aktivulo.shortName}}</h2>
+					<ul class="header-dropdown">
+						{{#if page.aktivulo.isSelf}}
+						<li title="Ĝisdatigi informojn">
+							<i class="material-icons clickable" id="edit-info-basic">edit</i>
+						</li>
+						{{/if}}
+					</ul>
 				</div>
 				<div class="body">
 					<ul class="cr-fact-list">

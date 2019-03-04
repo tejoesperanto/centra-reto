@@ -4,6 +4,10 @@ $(function () {
 		$('#user-image>img').removeClass('blur');
 	});
 
+	$('#edit-info-basic').click(function () {
+		window.location.href = '/agordoj';
+	});
+
 	$('#edit-profile-picture,#user-image.clickable').click(function () {
 		var template = cloneTemplate('#template-edit-profile-picture');
 
