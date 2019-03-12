@@ -291,27 +291,35 @@ async function amendView (req, view) {
 	];
 
 	// Cirkuleroj
-	const menuCirkuleroj = [];
 	if (req.user && await req.user.hasPermission('cirkuleroj.manage')) {
-		menuCirkuleroj.push({
-			name: 'Venontaj cirkuleroj',
-			href: '/cirkuleroj/venontaj'
-		}, {
-			name: 'Agordoj',
-			href: '/cirkuleroj/agordoj'
+		view.menu.push({
+			name: 'Cirkuleroj',
+			icon: 'assignment',
+			active: /^\/cirkuleroj/.test(req.originalUrl),
+			children: [
+				{
+					name: 'Venontaj cirkuleroj',
+					href: '/cirkuleroj/venontaj'
+				},
+				{
+					name: 'Agordoj',
+					href: '/cirkuleroj/agordoj'
+				},
+				{
+					name: 'Arkivo',
+					href: '/cirkuleroj/arkivo'
+				}
+			]
+		});
+	} else {
+		view.menu.push({
+			name: 'Cirkuleroj',
+			icon: 'assignment',
+			href: '/cirkuleroj/arkivo',
+			active: /^\/cirkuleroj/.test(req.originalUrl)
 		});
 	}
-	menuCirkuleroj.push({
-		name: 'Arkivo',
-		href: '/cirkuleroj/arkivo'
-	});
-	view.menu.push({
-		name: 'Cirkuleroj',
-		icon: 'assignment',
-		active: /^\/cirkuleroj/.test(req.originalUrl),
-		children: menuCirkuleroj
-	});
-
+	
 	// Administrado
 	const menuAdmin = [];
 	if (req.user && await req.user.hasPermission('users.view')) {
