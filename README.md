@@ -11,7 +11,7 @@ Funkcioj nunaj, planitaj kaj eblaj:
 - ✍ Superrigardo pri aktivuloj, organoj kaj ties kontaktinformoj
 - 💤 Voĉdonsistemo por komitato kaj estraro
 - 💤 Arkivo de gravaj dokumentoj kaj komitataj decidoj
-- 💤 Superrigardo pri eksteraj iloj
+- ✍ Superrigardo pri eksteraj iloj
 
 La tuta projekto estas libere uzebla sub la MIT-permesilo. Kontribuoj bonvenas!
 
