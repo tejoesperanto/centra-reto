@@ -55,23 +55,8 @@ async function resource_list (req, res, next) {
 
     if (!dbData) { return; }
 
-    const output = dbData.data.map(row => {
-        const rowOutput = {};
-        for (let col of dbData.select) {
-            const val = row[col];
-
-            if (col === 'name') {
-                rowOutput[col] = val;
-
-            } else if (dbData.select.indexOf(col) > -1) {
-                rowOutput[col] = val;
-            }
-        }
-        return rowOutput;
-    });
-
     res.sendAPIResponse({
-        data: output,
+        data: dbData.data,
         rows_total: dbData.rowsTotal,
         rows_filtered: dbData.rowsFiltered
     });
