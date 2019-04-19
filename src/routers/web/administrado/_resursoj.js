@@ -1,10 +1,10 @@
-async function administrado_rekursoj (req, res, next) {
+async function administrado_resursoj (req, res, next) {
     if (!await req.requirePermissions('resource.view')) { return; }
 
     const data = {
-        title: 'Administrado de rekursoj',
+        title: 'Administrado de resursoj',
         scripts: [
-            '/js/cr/main/administrado/rekursoj.js',
+            '/js/cr/main/administrado/resursoj.js',
             '/plugins/jquery-datatable/datatables.min.js',
             '/js/jquery.dataTables.eo.js'
         ],
@@ -16,7 +16,7 @@ async function administrado_rekursoj (req, res, next) {
         ],
         pageDataObj: {}
     };
-    await res.sendRegularPage('administrado/rekursoj', data);
+    await res.sendRegularPage('administrado/resursoj', data);
 }
 
-export default administrado_rekursoj;
+export default administrado_resursoj;

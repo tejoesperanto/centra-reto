@@ -42,7 +42,7 @@ export function init () {
 	router.use('/administrado', routerAdministrado());
 	router.use('/aktivuloj', routerAktivuloj());
 	router.use('/cirkuleroj', routerCirkuleroj());
-	router.use('/rekursoj', routerResource());
+	router.use('/resursoj', routerResource());
 
 	// Pages
 	router.get('/',
@@ -322,20 +322,20 @@ async function amendView (req, view) {
 		});
 	}
 
-	// Rekursoj
+	// Resursoj
 	view.menu.push({
-		name: 'Eksteraj rekursoj',
+		name: 'Eksteraj resursoj',
 		icon: 'http',
-		href: '/rekursoj',
-		active: /^\/rekursoj/.test(req.originalUrl)
+		href: '/resursoj',
+		active: /^\/resursoj/.test(req.originalUrl)
 	});
 	
 	// Administrado
 	const menuAdmin = [];
 	if (req.user && await req.user.hasPermission('resource.manage')) {
 		menuAdmin.push({
-			name: 'Rekursoj',
-			href: '/administrado/rekursoj'
+			name: 'Resursoj',
+			href: '/administrado/resursoj'
 		});
 	}
 	if (req.user && await req.user.hasPermission('users.view')) {

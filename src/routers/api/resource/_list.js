@@ -36,7 +36,7 @@ async function resource_list (req, res, next) {
     const dbData = await CRApi.performListQueryStatement({
         req: req,
         res: res,
-        db: CR.db.rekursoj,
+        db: CR.db.resources,
         table: table,
         colsAllowed: [
             'id',

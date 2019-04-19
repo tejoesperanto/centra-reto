@@ -3,7 +3,7 @@ $(function () {
     var tableData = setUpDataTable({
         el: '#resources-table',
         method: 'post'  ,
-        url: '/api/rekursoj/list',
+        url: '/api/resursoj/list',
         select: [ 'id', 'name', 'description', 'url' ],
         defaultOrder: [ 0, 'asc' ],
     });
@@ -23,7 +23,7 @@ $(function () {
             rows.on('click', function () { // The listener is automatically removed upon the next draw
                 var row = table.row(this);
                 var rowData = tableData.getRowData(row, 'id');
-                var modalTitle = 'Rekurso ' + rowData.url;
+                var modalTitle = 'Resurso ' + rowData.url;
 
                 swal({
                     title: modalTitle,
@@ -48,8 +48,8 @@ $(function () {
                 } else {
                     div.find('.resource-modal-delete-resource').on('click', function () {
                         swal({
-                            title: 'Forigo de rekurso',
-                            text: 'Ĉu vi certas, ke vi volas forigi la rekurson kun la ligilo ' + rowData.url + '?',
+                            title: 'Forigo de resurso',
+                            text: 'Ĉu vi certas, ke vi volas forigi la resurson kun la ligilo ' + rowData.url + '?',
                             buttons: [
                                 'Nuligi',
                                 {
@@ -61,7 +61,7 @@ $(function () {
                         }).then(function (e) {
                             if (!e) { return; }
 
-                            performAPIRequest('post', '/api/rekursoj/delete', { resource_id: rowData.id })
+                            performAPIRequest('post', '/api/resursoj/delete', { resource_id: rowData.id })
                                 .then(function (res) {
                                     table.draw();
                                     swal.stopLoading();
@@ -123,7 +123,7 @@ $(function () {
                                 url: input.val()
                             };
 
-                            performAPIRequest('post', '/api/rekursoj/update_url', apiData, false)
+                            performAPIRequest('post', '/api/resursoj/update_url', apiData, false)
                                 .then(function (res) {
                                     table.draw();
                                     swal.close();
@@ -179,7 +179,7 @@ $(function () {
                             name: input.val()
                         };
 
-                        performAPIRequest('post', '/api/rekursoj/update_name', apiData, false)
+                        performAPIRequest('post', '/api/resursoj/update_name', apiData, false)
                             .then(function (res) {
                                 table.draw();
                                 swal.close();
@@ -226,7 +226,7 @@ $(function () {
                             description: input.val()
                         };
 
-                        performAPIRequest('post', '/api/rekursoj/update_description', apiData, false)
+                        performAPIRequest('post', '/api/resursoj/update_description', apiData, false)
                             .then(function (res) {
                                 table.draw();
                                 swal.close();
@@ -254,8 +254,8 @@ $(function () {
             var submitButton = $('#create-resource-form-button');
 
             swal({
-                title: 'Kreado de ekstera rekurso',
-                text: `Ĉu vi certas, ke vi volas krei rekurson '${data.name}' kun la ligilo '${data.url}'`,
+                title: 'Kreado de ekstera resurso',
+                text: `Ĉu vi certas, ke vi volas krei resurson '${data.name}' kun la ligilo '${data.url}'`,
                 buttons: [
                     'Nuligi',
                     {
@@ -268,7 +268,7 @@ $(function () {
 
                 submitButton.attr('disabled', true);
 
-                performAPIRequest('post', '/api/rekursoj/create', data, false)
+                performAPIRequest('post', '/api/resursoj/create', data, false)
                     .then(function (res) {
                         swal.stopLoading();
                         swal.close();

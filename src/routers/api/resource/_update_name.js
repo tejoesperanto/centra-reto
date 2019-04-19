@@ -40,7 +40,7 @@ async function update_name (req, res, next) {
     }
     const name = removeUnsafeChars(req.body.name);
 
-    const stmt = CR.db.rekursoj.prepare('update resource set name = ? where id = ?');
+    const stmt = CR.db.resources.prepare('update resource set name = ? where id = ?');
     stmt.run(name, req.body.resource_id);
 
     res.sendAPIResponse();

@@ -29,7 +29,7 @@ async function delete_resource (req, res, next) {
 		return;
 	}
 
-	const stmt = CR.db.rekursoj.prepare('delete from resource where id = ?');
+	const stmt = CR.db.resources.prepare('delete from resource where id = ?');
 	const info = stmt.run(req.body.resource_id);
 
 	if (info.changes === 0) {

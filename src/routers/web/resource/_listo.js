@@ -3,7 +3,7 @@ async function listo (req, res, next) {
 		resource: {}
 	};
 
-	let stmt = CR.db.rekursoj.prepare('select id, name, description, url from resource');
+	let stmt = CR.db.resources.prepare('select id, name, description, url from resource');
 	let rows = stmt.all();
 	for (let row of rows) {
 		pageDataObj.resource[row.id] = {
@@ -15,13 +15,13 @@ async function listo (req, res, next) {
 	}
 
 	const data = {
-		title: 'Eksteraj rekursoj',
+		title: 'Eksteraj resursoj',
 		scripts: [
-			'/js/cr/main/rekursoj/listo.js'
+			'/js/cr/main/resursoj/listo.js'
 		],
 		pageDataObj: pageDataObj
 	};
-	await res.sendRegularPage('rekursoj/listo', data);
+	await res.sendRegularPage('resursoj/listo', data);
 }
 
 export default listo;

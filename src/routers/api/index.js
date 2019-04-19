@@ -21,7 +21,7 @@ export function init () {
 
 	// Routing
 	router.use('/cirkuleroj', routerCirkuleroj());
-	router.use('/rekursoj', routerResource());
+	router.use('/resursoj', routerResource());
 	router.use('/user', routerUser());
 
 	// Pages

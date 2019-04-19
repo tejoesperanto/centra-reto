@@ -42,14 +42,14 @@ async function update_url (req, res, next) {
     const url = removeUnsafeChars(req.body.url).toLowerCase();
 
     // Check if the url is taken
-    let stmt = CR.db.rekursoj.prepare('select 1 from resource where url = ?');
+    let stmt = CR.db.resources.prepare('select 1 from resource where url = ?');
     const exists = !!stmt.get(req.body.url.toLowerCase());
     if (exists) {
         res.sendAPIError('URL_TAKEN');
         return;
     }
 
-    stmt = CR.db.rekursoj.prepare('update resource set url = ? where id = ?');
+    stmt = CR.db.resources.prepare('update resource set url = ? where id = ?');
     stmt.run(url, req.body.resource_id);
 
     res.sendAPIResponse();

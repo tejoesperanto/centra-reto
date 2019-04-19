@@ -4,7 +4,7 @@ import { middleware } from '..';
 import { wrap } from '../..';
 
 import pageUzantoj from './_uzantoj';
-import pageRekursoj from './_rekursoj';
+import pageResursoj from './_resursoj';
 
 /**
  * Sets up the router
@@ -14,9 +14,9 @@ export default function () {
 	const router = express.Router();
 	router.use(middleware.requireInitialSetup);
 
-    router.get('/rekursoj',
+    router.get('/resursoj',
         middleware.requireLogin,
-        wrap(pageRekursoj));
+        wrap(pageResursoj));
 
 	router.get('/uzantoj',
 		middleware.requireLogin,

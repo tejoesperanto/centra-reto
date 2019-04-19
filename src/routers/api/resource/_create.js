@@ -50,7 +50,7 @@ async function create (req, res, next) {
 	}
 
 	// Check if the url is taken
-	let stmt = CR.db.rekursoj.prepare('select 1 from resource where url = ?');
+	let stmt = CR.db.resources.prepare('select 1 from resource where url = ?');
 	const exists = !!stmt.get(req.body.url.toLowerCase());
 	if (exists) {
 		res.sendAPIError('URL_TAKEN');
@@ -59,7 +59,7 @@ async function create (req, res, next) {
 	// End data validation
 
 	// Insert the resource
-	stmt = CR.db.rekursoj.prepare('insert into resource (name, description, url) values (@name, @description, @url)');
+	stmt = CR.db.resources.prepare('insert into resource (name, description, url) values (@name, @description, @url)');
 	stmt.run({
 		name: removeUnsafeCharsOneLine(req.body.name),
 		description: removeUnsafeCharsOneLine(req.body.description),

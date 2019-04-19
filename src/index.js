@@ -17,7 +17,7 @@ import * as CRTimer from './timer';
 	const DBs = [
 		'users',
 		'cirkuleroj',
-		'rekursoj'
+		'resources'
 	];
 
 	global.CR = {
