@@ -5,7 +5,7 @@ $(function () {
         method: 'post'  ,
         url: '/api/resursoj/list',
         select: [ 'id', 'name', 'description', 'url' ],
-        defaultOrder: [ 0, 'asc' ],
+        defaultOrder: [ 1, 'asc' ],
     });
     let table = tableData.table;
 

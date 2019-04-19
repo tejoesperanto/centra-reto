@@ -1,15 +1,9 @@
 $(function () {
 	var resourceTable = $('#resources-list>tbody');
-	var resourceIds = Object.keys(pageData.resource); // Sort descending
-	resourceIds.sort(function (a, b) {
-		return a - b;
+	var resources = pageData.resource.sort(function (a, b) { // Sort ascending
+		return a.name < b.name ? -1 : 1;
 	});
-	for (var i in resourceIds) {
-		var id = resourceIds[i];
-		var row = pageData.resource[id];
-
-		var idCol = document.createElement('td');
-		idCol.textContent = id;
+	for (var row of resources) {
 		var nameCol = document.createElement('td');
 		nameCol.textContent = row.name;
 		var descriptionCol = document.createElement('td');
@@ -22,7 +16,6 @@ $(function () {
 		anchor.target = '_blank';
 
 		var tr = document.createElement('tr');
-		tr.appendChild(idCol);
 		tr.appendChild(nameCol);
 		tr.appendChild(descriptionCol);
 		tr.appendChild(urlCol);

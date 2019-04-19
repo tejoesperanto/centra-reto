@@ -1,17 +1,17 @@
 async function listo (req, res, next) {
 	const pageDataObj = {
-		resource: {}
+		resource: []
 	};
 
 	let stmt = CR.db.resources.prepare('select id, name, description, url from resource');
 	let rows = stmt.all();
 	for (let row of rows) {
-		pageDataObj.resource[row.id] = {
+		pageDataObj.resource.push({
 			id: row.id,
 			name: row.name,
 			description: row.description,
 			url: row.url
-		};
+		});
 	}
 
 	const data = {
