@@ -62,7 +62,7 @@ async function create (req, res, next) {
 	stmt = CR.db.resources.prepare('insert into resource (name, description, url) values (@name, @description, @url)');
 	stmt.run({
 		name: removeUnsafeCharsOneLine(req.body.name),
-		description: removeUnsafeCharsOneLine(req.body.description),
+		description: removeUnsafeChars(req.body.description),
 		url: removeUnsafeCharsOneLine(req.body.url.toLowerCase())
 	});
 

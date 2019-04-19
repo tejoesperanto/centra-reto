@@ -6,7 +6,15 @@ $(function () {
         url: '/api/resursoj/list',
         select: [ 'id', 'name', 'description', 'url' ],
         defaultOrder: [ 1, 'asc' ],
+        dataFormatter: function (val, col) {
+            if (col.name === "description") {
+                return val.replace(/(?:\r\n|\r|\n)/g, '<br>');
+            } else {
+                return val;
+            }
+        }
     });
+
     let table = tableData.table;
 
     $('#resources-table-reload').click(function () {

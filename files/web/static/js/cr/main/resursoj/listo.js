@@ -8,6 +8,7 @@ $(function () {
 		nameCol.textContent = row.name;
 		var descriptionCol = document.createElement('td');
 		descriptionCol.textContent = row.description;
+		descriptionCol.style.whiteSpace = "pre";
 		var urlCol = document.createElement('td');
 		var anchor = document.createElement('a');
 		urlCol.appendChild(anchor);
