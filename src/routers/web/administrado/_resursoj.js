@@ -6,7 +6,8 @@ async function administrado_resursoj (req, res, next) {
         scripts: [
             '/js/cr/main/administrado/resursoj.js',
             '/plugins/jquery-datatable/datatables.min.js',
-            '/js/jquery.dataTables.eo.js'
+            '/js/jquery.dataTables.eo.js',
+            '/plugins/autosize/autosize.min.js'
         ],
         stylesheets: [
             '/plugins/jquery-datatable/datatables.min.css'

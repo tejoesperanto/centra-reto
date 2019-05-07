@@ -1,4 +1,12 @@
 $(function () {
+
+    // Allow resize of description
+    var autosizeEl = $('#create-resource-form-description');
+    autosize(autosizeEl);
+    window.setTimeout(function () {
+        autosize.update(autosizeEl);
+    }, 0); // Run when the thread is idle
+
     // Existing resources
     var tableData = setUpDataTable({
         el: '#resources-table',
@@ -44,6 +52,13 @@ $(function () {
                 resourceName.val(rowData.name);
                 var resourceDescription = div.find('.change-description-modal-input');
                 resourceDescription.val(rowData.description);
+
+                // Allow resize of description
+                var autosizeEls = div.find('.autosize');
+                autosize(autosizeEls);
+                window.setTimeout(function () {
+                    autosize.update(autosizeEls);
+                }, 0); // Run when the thread is idle
 
                 swal({
                     title: modalTitle,
