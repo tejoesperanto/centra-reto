@@ -1,4 +1,4 @@
-import { removeUnsafeCharsOneLine } from '../../../util';
+import { removeUnsafeCharsOneLine, removeUnsafeChars } from '../../../util';
 
 async function create (req, res, next) {
 	/**
