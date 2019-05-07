@@ -395,3 +395,8 @@ img.blur {
 textarea.resizable-card{
 	padding-left: 12px !important;
 }
+
+/* Hide display of first table column */
+.table-hide-first tr td:nth-child(1), .table-hide-first th:nth-child(1) {
+    display: none;
+}
