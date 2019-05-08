@@ -1,5 +1,6 @@
 import Handlebars from 'handlebars';
 import fs from 'pn/fs';
+import isUrl from 'is-url';
 
 /**
  * Compiles and renders a handlebar template, much like the old Mustache api
@@ -101,3 +102,12 @@ export function rot13 (str) {
 			);
 	});
 }
+
+
+/**
+ * Checks if input string corresponds with valid URL
+ * @param {string} str
+ */
+export function stringIsAValidUrl (str) {
+	return isUrl(str);
+};

@@ -1,4 +1,4 @@
-import { removeUnsafeCharsOneLine, removeUnsafeChars } from '../../../util';
+import { removeUnsafeCharsOneLine, removeUnsafeChars, stringIsAValidUrl } from '../../../util';
 
 async function create (req, res, next) {
 	/**
@@ -21,6 +21,7 @@ async function create (req, res, next) {
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
+	 * URL_INVALID
 	 * URL_TAKEN
 	 */
 
@@ -49,13 +50,25 @@ async function create (req, res, next) {
 		return;
 	}
 
+	// Check if the url is valid
+	let processedUrl = removeUnsafeCharsOneLine(req.body.url.toLowerCase());
+
+	if (!stringIsAValidUrl(processedUrl)){
+		processedUrl = `http://${processedUrl}`
+	}
+	if (!stringIsAValidUrl(processedUrl)){
+		res.sendAPIError('URL_INVALID');
+		return;
+	}
+
 	// Check if the url is taken
 	let stmt = CR.db.resources.prepare('select 1 from resource where url = ?');
-	const exists = !!stmt.get(req.body.url.toLowerCase());
+	const exists = !!stmt.get(processedUrl);
 	if (exists) {
 		res.sendAPIError('URL_TAKEN');
 		return;
 	}
+
 	// End data validation
 
 	// Insert the resource
@@ -63,7 +76,7 @@ async function create (req, res, next) {
 	stmt.run({
 		name: removeUnsafeCharsOneLine(req.body.name),
 		description: removeUnsafeChars(req.body.description),
-		url: removeUnsafeCharsOneLine(req.body.url.toLowerCase())
+		url: processedUrl
 	});
 
 	res.sendAPIResponse();

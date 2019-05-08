@@ -1,4 +1,4 @@
-import { removeUnsafeChars } from '../../../util';
+import { removeUnsafeCharsOneLine, stringIsAValidUrl } from '../../../util';
 
 async function update_url (req, res, next) {
     /**
@@ -19,6 +19,7 @@ async function update_url (req, res, next) {
      * Throws:
      * INVALID_ARGUMENT    [argument]
      * RESOURCE_NOT_FOUND
+     * URL_INVALID
      * URL_TAKEN
      */
     
@@ -39,18 +40,26 @@ async function update_url (req, res, next) {
         res.sendAPIError('INVALID_ARGUMENT', ['url']);
         return;
     }
-    const url = removeUnsafeChars(req.body.url).toLowerCase();
+    let processedUrl = removeUnsafeCharsOneLine(req.body.url.toLowerCase());
+
+    if (!stringIsAValidUrl(processedUrl)){
+        processedUrl = `http://${processedUrl}`
+    }
+    if (!stringIsAValidUrl(processedUrl)){
+        res.sendAPIError('URL_INVALID');
+        return;
+    }
 
     // Check if the url is taken
     let stmt = CR.db.resources.prepare('select 1 from resource where url = ?');
-    const exists = !!stmt.get(req.body.url.toLowerCase());
+    const exists = !!stmt.get(processedUrl);
     if (exists) {
         res.sendAPIError('URL_TAKEN');
         return;
     }
 
     stmt = CR.db.resources.prepare('update resource set url = ? where id = ?');
-    stmt.run(url, req.body.resource_id);
+    stmt.run(processedUrl, req.body.resource_id);
 
     res.sendAPIResponse();
 }

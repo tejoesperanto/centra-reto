@@ -158,6 +158,12 @@ $(function () {
                                             icon: 'error',
                                             button: 'Bone'
                                         });
+                                    } else if (err.error === 'URL_INVALID') {
+                                        swal({
+                                            title: 'Ligilo ne validas',
+                                            icon: 'error',
+                                            button: 'Bone'
+                                        });
                                     } else {
                                         showError(err);
                                     }
@@ -312,6 +318,12 @@ $(function () {
                         if (err.error === 'URL_TAKEN') {
                             swal({
                                 title: 'Ligilo jam uzata',
+                                icon: 'error',
+                                button: 'Bone'
+                            });
+                        } else if (err.error === 'URL_INVALID') {
+                            swal({
+                                title: 'Ligilo ne validas',
                                 icon: 'error',
                                 button: 'Bone'
                             });
