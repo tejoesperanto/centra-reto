@@ -302,6 +302,11 @@ $(function () {
                         form[0].reset();
                         // Reactive the inputs
                         form.find('input').blur();
+
+                        // Resize description field
+                        window.setTimeout(function () {
+                            autosize.update(autosizeEl);
+                        }, 0); // Run when the thread is idle
                     })
                     .catch(function (err) {
                         if (err.error === 'URL_TAKEN') {
