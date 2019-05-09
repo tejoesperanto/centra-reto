@@ -18,6 +18,7 @@ async function update_name (req, res, next) {
      *
      * Throws:
      * INVALID_ARGUMENT    [argument]
+     * NAME_TAKEN
      * RESOURCE_NOT_FOUND
      */
     
@@ -40,7 +41,15 @@ async function update_name (req, res, next) {
     }
     const name = removeUnsafeChars(req.body.name);
 
-    const stmt = CR.db.resources.prepare('update resource set name = ? where id = ?');
+    // Check if the name is taken
+    let stmt = CR.db.resources.prepare('select 1 from resource where name = ?');
+    const exists = !!stmt.get(name);
+    if (exists) {
+        res.sendAPIError('NAME_TAKEN');
+        return;
+    }
+
+    stmt = CR.db.resources.prepare('update resource set name = ? where id = ?');
     stmt.run(name, req.body.resource_id);
 
     res.sendAPIResponse();

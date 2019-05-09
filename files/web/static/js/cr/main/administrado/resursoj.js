@@ -191,7 +191,7 @@ $(function () {
                     });
 
                     swal({
-                        title: 'Ŝanĝo de priskribo',
+                        title: 'Ŝanĝo de nomo',
                         text: `Ĉu vi certas, ke vi volas ŝanĝi la nomon de '${rowData.name}' al '${input.val()}'`,
                         buttons: [
                             'Nuligi',
@@ -214,7 +214,15 @@ $(function () {
                                 swal.close();
                             })
                             .catch(function (err) {
-                                showError(err);
+                                if (err.error === 'NAME_TAKEN') {
+                                    swal({
+                                        title: 'Nomo jam uzata',
+                                        icon: 'error',
+                                        button: 'Bone'
+                                    });
+                                } else {
+                                    showError(err);
+                                }
                             })
                             .finally(function () {
                                 swal.stopLoading();
@@ -261,7 +269,15 @@ $(function () {
                                 swal.close();
                             })
                             .catch(function (err) {
-                                showError(err);
+                                if (err.error === 'DESCRIPTION_TAKEN') {
+                                    swal({
+                                        title: 'Priskribo jam uzata',
+                                        icon: 'error',
+                                        button: 'Bone'
+                                    });
+                                } else {
+                                    showError(err);
+                                }
                             })
                             .finally(function () {
                                 swal.stopLoading();
@@ -324,6 +340,18 @@ $(function () {
                         } else if (err.error === 'URL_INVALID') {
                             swal({
                                 title: 'Ligilo ne validas',
+                                icon: 'error',
+                                button: 'Bone'
+                            });
+                        } else if (err.error === 'NAME_TAKEN') {
+                            swal({
+                                title: 'Nomo jam uzata',
+                                icon: 'error',
+                                button: 'Bone'
+                            });
+                        } else if (err.error === 'DESCRIPTION_TAKEN') {
+                            swal({
+                                title: 'Priskribo jam uzata',
                                 icon: 'error',
                                 button: 'Bone'
                             });

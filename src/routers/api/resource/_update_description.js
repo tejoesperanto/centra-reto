@@ -18,6 +18,7 @@ async function update_description (req, res, next) {
      *
      * Throws:
      * INVALID_ARGUMENT    [argument]
+     * DESCRIPTION_TAKEN
      * RESOURCE_NOT_FOUND
      */
     
@@ -40,7 +41,15 @@ async function update_description (req, res, next) {
     }
     const description = removeUnsafeChars(req.body.description);
 
-    const stmt = CR.db.resources.prepare('update resource set description = ? where id = ?');
+    // Check if the description is taken
+    let stmt = CR.db.resources.prepare('select 1 from resource where description = ?');
+    const exists = !!stmt.get(description);
+    if (exists) {
+        res.sendAPIError('DESCRIPTION_TAKEN');
+        return;
+    }
+
+    stmt = CR.db.resources.prepare('update resource set description = ? where id = ?');
     stmt.run(description, req.body.resource_id);
 
     res.sendAPIResponse();

@@ -21,6 +21,8 @@ async function create (req, res, next) {
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
+	 * DESCRIPTION_TAKEN
+	 * NAME_TAKEN
 	 * URL_INVALID
 	 * URL_TAKEN
 	 */
@@ -52,6 +54,8 @@ async function create (req, res, next) {
 
 	// Check if the url is valid
 	let processedUrl = removeUnsafeCharsOneLine(req.body.url.toLowerCase());
+	let processedDescription = removeUnsafeChars(req.body.description);
+	let processedName = removeUnsafeCharsOneLine(req.body.name);
 
 	if (!stringIsAValidUrl(processedUrl)){
 		processedUrl = `http://${processedUrl}`
@@ -63,9 +67,25 @@ async function create (req, res, next) {
 
 	// Check if the url is taken
 	let stmt = CR.db.resources.prepare('select 1 from resource where url = ?');
-	const exists = !!stmt.get(processedUrl);
+	let exists = !!stmt.get(processedUrl);
 	if (exists) {
 		res.sendAPIError('URL_TAKEN');
+		return;
+	}
+
+	// Check if the description is taken
+	stmt = CR.db.resources.prepare('select 1 from resource where description = ?');
+	exists = !!stmt.get(processedDescription);
+	if (exists) {
+		res.sendAPIError('DESCRIPTION_TAKEN');
+		return;
+	}
+
+	// Check if the name is taken
+	stmt = CR.db.resources.prepare('select 1 from resource where name = ?');
+	exists = !!stmt.get(processedName);
+	if (exists) {
+		res.sendAPIError('NAME_TAKEN');
 		return;
 	}
 
@@ -74,8 +94,8 @@ async function create (req, res, next) {
 	// Insert the resource
 	stmt = CR.db.resources.prepare('insert into resource (name, description, url) values (@name, @description, @url)');
 	stmt.run({
-		name: removeUnsafeCharsOneLine(req.body.name),
-		description: removeUnsafeChars(req.body.description),
+		name: removeUnsafeCharsOneLine(processedName),
+		description: removeUnsafeChars(processedDescription),
 		url: processedUrl
 	});
 
