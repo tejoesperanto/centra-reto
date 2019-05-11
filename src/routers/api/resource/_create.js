@@ -21,7 +21,6 @@ async function create (req, res, next) {
 	 *
 	 * Throws:
 	 * INVALID_ARGUMENT [argument]
-	 * DESCRIPTION_TAKEN
 	 * NAME_TAKEN
 	 * URL_INVALID
 	 * URL_TAKEN
@@ -70,14 +69,6 @@ async function create (req, res, next) {
 	let exists = !!stmt.get(processedUrl);
 	if (exists) {
 		res.sendAPIError('URL_TAKEN');
-		return;
-	}
-
-	// Check if the description is taken
-	stmt = CR.db.resources.prepare('select 1 from resource where description = ?');
-	exists = !!stmt.get(processedDescription);
-	if (exists) {
-		res.sendAPIError('DESCRIPTION_TAKEN');
 		return;
 	}
 

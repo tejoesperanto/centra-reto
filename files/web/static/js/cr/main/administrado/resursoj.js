@@ -269,15 +269,7 @@ $(function () {
                                 swal.close();
                             })
                             .catch(function (err) {
-                                if (err.error === 'DESCRIPTION_TAKEN') {
-                                    swal({
-                                        title: 'Priskribo jam uzata',
-                                        icon: 'error',
-                                        button: 'Bone'
-                                    });
-                                } else {
-                                    showError(err);
-                                }
+                                showError(err);
                             })
                             .finally(function () {
                                 swal.stopLoading();
@@ -346,12 +338,6 @@ $(function () {
                         } else if (err.error === 'NAME_TAKEN') {
                             swal({
                                 title: 'Nomo jam uzata',
-                                icon: 'error',
-                                button: 'Bone'
-                            });
-                        } else if (err.error === 'DESCRIPTION_TAKEN') {
-                            swal({
-                                title: 'Priskribo jam uzata',
                                 icon: 'error',
                                 button: 'Bone'
                             });
