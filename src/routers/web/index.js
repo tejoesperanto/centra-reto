@@ -13,6 +13,7 @@ const safeInlineJSONStringify = CRUtil.safeInlineJSONStringify;
 import routerAdministrado from './administrado';
 import routerAktivuloj from './aktivuloj';
 import routerCirkuleroj from './cirkuleroj';
+import routerResource from './resource';
 
 import pageIndex from './_index';
 import pageAgordoj from './_agordoj';
@@ -41,6 +42,7 @@ export function init () {
 	router.use('/administrado', routerAdministrado());
 	router.use('/aktivuloj', routerAktivuloj());
 	router.use('/cirkuleroj', routerCirkuleroj());
+	router.use('/resursoj', routerResource());
 
 	// Pages
 	router.get('/',
@@ -319,9 +321,23 @@ async function amendView (req, view) {
 			active: /^\/cirkuleroj/.test(req.originalUrl)
 		});
 	}
+
+	// Resursoj
+	view.menu.push({
+		name: 'Eksteraj resursoj',
+		icon: 'http',
+		href: '/resursoj',
+		active: /^\/resursoj/.test(req.originalUrl)
+	});
 	
 	// Administrado
 	const menuAdmin = [];
+	if (req.user && await req.user.hasPermission('resource.manage')) {
+		menuAdmin.push({
+			name: 'Resursoj',
+			href: '/administrado/resursoj'
+		});
+	}
 	if (req.user && await req.user.hasPermission('users.view')) {
 		menuAdmin.push({
 			name: 'Uzantoj',

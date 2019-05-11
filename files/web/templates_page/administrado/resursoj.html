@@ -1,0 +1,146 @@
+<div class="container-fluid">
+    <div class="block-header">
+        <ol class="breadcrumb breadcrumb-bg-green">
+            <li>
+                <a href="/">
+                    <i class="material-icons">home</i>
+                    Hejmo
+                </a>
+            </li>
+            <li>
+                <a href="/administrado/resursoj">
+                    <i class="material-icons">build</i>
+                    Administrado de eksteraj resursoj
+                </a>
+            </li>
+        </ol>
+    </div>
+    <div class="row clearfix">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            {{#if permissions.resource.create}}
+            <div class="card">
+                <div class="header">
+                    <h2>Krei novan resurson</h2>
+                </div>
+                <div class="body">
+                    <form id="create-resource-form" autocomplete="off">
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="text" id="create-resource-form-name" name="name" class="form-control" maxlength="50" required></input>
+                                <label class="form-label" for="create-resource-form-name">Nomo</label>
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <textarea type="text" id="create-resource-form-description" name="description" rows="1"
+                                          class="form-control no-resize autosize" maxlength="100" required></textarea>
+                                <label class="form-label" for="create-resource-form-description">Priskribo</label>
+                            </div>
+                        </div>
+                        <div class="form-group form-float">
+                            <div class="form-line">
+                                <input type="text" id="create-resource-form-url" name="url" class="form-control" maxlength="100" required></input>
+                                <label class="form-label" for="create-resource-form-url">Ligilo</label>
+                            </div>
+                        </div>
+                        <button type="submit" id="create-resource-form-button" class="btn btn-primary m-t-15 waves-effect">
+                            <i class="material-icons">add_box</i>
+                            <span>Krei</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {{/if}}
+            <div class="card">
+                <div class="header">
+                    <h2>Eksteraj resursoj en Centra Reto</h2>
+                    <ul class="header-dropdown">
+                        <li>
+                            <i class="material-icons clickable" id="resources-table-reload">loop</i>
+                        </li>
+                    </ul>
+                </div>
+                <div class="body">
+                    <div class="table-responsive datatable">
+                        <table class="table table-bordered table-striped table-hover table-hide-first" id="resources-table">
+                            <thead>
+                                <tr>
+                                    <th data-name="id"              data-searchable="false">#</th>
+                                    <th data-name="name"            data-searchable="true">Nomo</th>
+                                    <th data-name="description"     data-searchable="true">Priskribo</th>
+                                    <th data-name="url"             data-searchable="true">Ligilo</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="template" id="template-resource-modal">
+    <div class="row">
+        <div class="form-group input change-name-modal-form">
+            <div class="form-line">
+                <label>Nomo:</label>
+                <input class="change-name-modal-input" maxlength="50" required></input>
+                <button class="resource-modal-change-name btn btn-primary waves-effect">
+                    <i class="material-icons">update</i>
+                    Ŝanĝi nomon
+                </button> 
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group input change-description-modal-form form-float">
+            <div class="form-line">
+                <label>Priskribo:</label>
+                <textarea rows="1" class="change-description-modal-input form-control no-resize autosize resizable-card" maxlength="100" required></textarea>
+                <button class="resource-modal-change-description btn btn-primary waves-effect">
+                    <i class="material-icons">update</i>
+                    Ŝanĝi priskribon
+                </button>  
+            </div>
+        </div>
+    </div>
+    <div class="row resource-modal-delete-resource-row m-t-15">
+        <div class="col">
+            <button class="resource-modal-delete-resource btn btn-danger waves-effect">
+                <i class="material-icons">delete_forever</i>
+                Forigi
+            </button>
+        </div>
+    </div>
+    <div class="row m-t-15">
+        <div class="col">
+            <button class="resource-modal-change-url btn btn-primary waves-effect">
+                <i class="material-icons">http</i>
+                Ŝanĝi ligilon
+            </button>
+        </div>
+    </div>
+</div>
+<div class="template" id="template-change-url-modal">
+    <form class="change-url-modal-form align-left">
+        <div class="form-group form-float m-t-15">
+            <div class="form-line">
+                <input type="text" class="form-control change-url-modal-input" maxlength="100" required></input>
+                <label class="form-label">Ligilo</label>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="template" id="template-loader">
+    <div class="row">
+        <div class="preloader pl-size-xl">
+            <div class="spinner-layer pl-light-blue">
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

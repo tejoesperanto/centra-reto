@@ -16,7 +16,8 @@ import * as CRTimer from './timer';
 (async () => {
 	const DBs = [
 		'users',
-		'cirkuleroj'
+		'cirkuleroj',
+		'resources'
 	];
 
 	global.CR = {

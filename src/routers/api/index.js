@@ -3,6 +3,7 @@ import express from 'express';
 import { wrap } from '..';
 
 import routerCirkuleroj from './cirkuleroj';
+import routerResource from './resource';
 import routerUser from './user';
 
 /**
@@ -20,6 +21,7 @@ export function init () {
 
 	// Routing
 	router.use('/cirkuleroj', routerCirkuleroj());
+	router.use('/resursoj', routerResource());
 	router.use('/user', routerUser());
 
 	// Pages
