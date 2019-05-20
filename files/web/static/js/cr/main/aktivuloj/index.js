@@ -157,9 +157,11 @@ $(function () {
 	$('#search-form').submit(function (e) {
 		e.preventDefault();
 
+		searchParams.delete('p');
+
 		var search = $('#aktivulo-search').val()
 		if (search.length > 0) {
-			searchParams.set('s', search);	
+			searchParams.set('s', search);
 		} else {
 			searchParams.delete('s');
 		}
