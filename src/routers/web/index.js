@@ -14,6 +14,7 @@ import routerAdministrado from './administrado';
 import routerAktivuloj from './aktivuloj';
 import routerCirkuleroj from './cirkuleroj';
 import routerResource from './resource';
+import routerVochdonado from './vochdonado';
 
 import pageIndex from './_index';
 import pageAgordoj from './_agordoj';
@@ -43,6 +44,7 @@ export function init () {
 	router.use('/aktivuloj', routerAktivuloj());
 	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/resursoj', routerResource());
+	router.use('/vochdonado', routerVochdonado());
 
 	// Pages
 	router.get('/',
@@ -321,6 +323,14 @@ async function amendView (req, view) {
 			active: /^\/cirkuleroj/.test(req.originalUrl)
 		});
 	}
+
+	// Voĉdonado
+	view.menu.push({
+		name: 'Voĉdonado',
+		icon: 'how_to_vote',
+		href: '/vochdonado',
+		active: /^\/vochdonado/.test(req.originalUrl)
+	});
 
 	// Resursoj
 	view.menu.push({
