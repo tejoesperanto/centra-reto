@@ -3,7 +3,7 @@ import express from 'express';
 import { middleware } from '..';
 import { wrap } from '../..';
 
-import pageIndex from './_index';
+import pageEksterreta from './_eksterreta';
 
 /**
  * Sets up the router
@@ -13,8 +13,8 @@ export default function () {
 	const router = express.Router();
 	router.use(middleware.requireInitialSetup);
 
-	router.get('/',
-		wrap(pageIndex));
+	router.get('/eksterreta',
+		wrap(pageEksterreta));
 
 
 	return router;
