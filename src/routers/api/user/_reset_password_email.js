@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function reset_password_email (req, res, next) {
+async function reset_password_email (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /reset_password_email
 	 * Sends a password reset mail to a given user unless the rate limit has been reached. If the email is not found it still counts as a success.
@@ -15,10 +15,10 @@ async function reset_password_email (req, res, next) {
 	 * LOGGED_IN
 	 */
 
-	 if (req.user) {
-	 	res.sendAPIError('LOGGED_IN');
-	 	return;
-	 }
+	if (req.user) {
+		res.sendAPIError('LOGGED_IN');
+		return;
+	}
 
 	const fields = [
 		'email'

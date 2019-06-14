@@ -1,7 +1,5 @@
 import express from 'express';
 
-import { wrap } from '..';
-
 import routerCirkuleroj from './cirkuleroj';
 import routerResource from './resource';
 import routerUser from './user';
@@ -160,7 +158,7 @@ export const middleware = {
  * @param {express.Response} res
  * @param {Function}         next
  */
-function handleError404 (req, res, next) {
+function handleError404 (req, res, next) { // eslint-disable-line no-unused-vars
 	if (res.headersSent) { return; }
 	res.status(404);
 	res.sendAPIError('HTTP', [404]);
@@ -173,14 +171,14 @@ function handleError404 (req, res, next) {
  * @param {express.Response} res
  * @param {Function}         next
  */
-function handleError500 (err, req, res, next) {
+function handleError500 (err, req, res, next) { // eslint-disable-line no-unused-vars
 	CR.log.error(`Okazis eraro ĉe ${req.method} ${req.originalUrl}\n${err.stack}`);
 	if (res.headersSent) { return; }
 	res.status(500);
 	res.sendAPIError('HTTP', [500]);
 }
 
-function pageGetCsrfToken (req, res, next) {
+function pageGetCsrfToken (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * GET /get_csrf_token
 	 * Obtains a CSRF token

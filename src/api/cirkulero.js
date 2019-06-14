@@ -89,7 +89,7 @@ export async function getGroups (withChildren = false) {
 			}
 			return group;
 		}));
-	};
+	}
 
 	return groups;
 }
@@ -180,7 +180,7 @@ export async function checkReminders () {
 		};
 
 		// List reminders
-		stmt = CR.db.cirkuleroj.prepare('select reminder_id from reminders_lists_sent where cirkulero_id = ?')
+		stmt = CR.db.cirkuleroj.prepare('select reminder_id from reminders_lists_sent where cirkulero_id = ?');
 		const sentListReminders = new Set(stmt.all(cirk.id).map(x => x.reminder_id));
 
 		for (let i = 0; i < listReminders.length; i++) {
@@ -309,7 +309,7 @@ export async function checkDeadlines () {
 				cirk_name: cirkulero.name,
 				name: user.getBriefName(),
 				contribs: contribs,
-				venontaj_link: url.resolve(CR.conf.addressPrefix, `cirkuleroj/venontaj`),
+				venontaj_link: url.resolve(CR.conf.addressPrefix, 'cirkuleroj/venontaj'),
 				pretigi_link: url.resolve(CR.conf.addressPrefix, `cirkuleroj/${cirkulero.id}/pretigi`)
 			}, {
 				to: user.email,

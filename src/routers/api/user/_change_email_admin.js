@@ -1,7 +1,7 @@
 import { removeUnsafeCharsOneLine } from '../../../util';
 import User from '../../../api/user';
 
-async function change_email_admin (req, res, next) {
+async function change_email_admin (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /change_email_admin
 	 * Changes a user's primary email address

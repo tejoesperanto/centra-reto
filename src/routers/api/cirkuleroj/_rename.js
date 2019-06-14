@@ -1,6 +1,6 @@
 import { removeUnsafeCharsOneLine } from '../../../util';
 
-async function rename (req, res, next) {
+async function rename (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /rename
 	 * Renames a cirkulero

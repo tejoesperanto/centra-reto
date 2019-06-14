@@ -46,7 +46,7 @@ class User {
 		const activationKey = await User.createActivationKey();
 		const activationKeyTime = moment().unix();
 
-		const stmt = CR.db.users.prepare("insert into users (email, activation_key, activation_key_time) values (?, ?, ?)");
+		const stmt = CR.db.users.prepare('insert into users (email, activation_key, activation_key_time) values (?, ?, ?)');
 		const info = stmt.run(email, activationKey, activationKeyTime);
 
 		const user = new User(info.lastInsertRowid, email, true, null);
@@ -75,7 +75,7 @@ class User {
 	 * @return {Boolean} Whether the primary email address is taken
 	 */
 	static isEmailTaken (email) {
-		return CR.db.users.prepare("select 1 from users where email = ?").get(email) != undefined;
+		return CR.db.users.prepare('select 1 from users where email = ?').get(email) != undefined;
 	}
 
 	/**
@@ -122,7 +122,7 @@ class User {
 	 * @param  {string} password The user's password, already hashed
 	 */
 	activate (password) {
-		const stmt = CR.db.users.prepare("update users set password = ?, activation_key = NULL, activation_key_time = NULL where id = ?");
+		const stmt = CR.db.users.prepare('update users set password = ?, activation_key = NULL, activation_key_time = NULL where id = ?');
 		stmt.run(password, this.id);
 		this.activationKey = null;
 		this.activationKeyTime = null;
@@ -135,7 +135,7 @@ class User {
 	 * @return {User}      The user instance
 	 */
 	static getUserById (id) {
-		const data = CR.db.users.prepare("select email, enabled, password, activation_key, activation_key_time from users where id = ?")
+		const data = CR.db.users.prepare('select email, enabled, password, activation_key, activation_key_time from users where id = ?')
 			.get(id);
 
 		if (!data) {
@@ -154,7 +154,7 @@ class User {
 	 * @return {User|null}    The user instance
 	 */
 	static getUserByEmail (email) {
-		const data = CR.db.users.prepare("select id, enabled, password, activation_key, activation_key_time from users where email = ?")
+		const data = CR.db.users.prepare('select id, enabled, password, activation_key, activation_key_time from users where email = ?')
 			.get(email);
 
 		if (!data) {
@@ -181,7 +181,7 @@ class User {
 	 * @return {Boolean} Whether the user has completed initial setup
 	 */
 	hasCompletedInitialSetup () {
-		const stmt = CR.db.users.prepare("select 1 from users_details where user_id = ?");
+		const stmt = CR.db.users.prepare('select 1 from users_details where user_id = ?');
 		const row = stmt.get(this.id);
 		return !!row;
 	}
@@ -224,7 +224,7 @@ class User {
 			return this.details;
 		}
 
-		const stmt = CR.db.users.prepare("select full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, pronouns from users_details where user_id = ?");
+		const stmt = CR.db.users.prepare('select full_name_latin, full_name_native, full_name_latin_sort, nickname, pet_name, pronouns from users_details where user_id = ?');
 		const row = stmt.get(this.id);
 
 		if (row) {
@@ -264,7 +264,7 @@ class User {
 	static formatLongName (fullNameLatin, petName = null) {
 		let name = fullNameLatin;
 		if (petName) {
-			name += ` (${petName})`
+			name += ` (${petName})`;
 		}
 		return name;
 	}
@@ -433,7 +433,7 @@ class User {
 	 */
 	async endGroupMembership (group) {
 		if (typeof group === 'number') {
-			group = await Group.getGroupById(groupId);
+			group = await Group.getGroupById(group);
 		}
 
 		const groups = await this.getGroups();
@@ -465,7 +465,7 @@ class User {
 		}
 
 		if (typeof group === 'number') {
-			group = await Group.getGroupById(groupId);
+			group = await Group.getGroupById(group);
 		}
 
 		if (args === null) { args = []; }
@@ -533,7 +533,7 @@ class User {
 		}
 
 		// Obtain individual permissions
-		stmt = CR.db.users.prepare("select permission from users_permissions where user_id = ?");
+		stmt = CR.db.users.prepare('select permission from users_permissions where user_id = ?');
 		rows = stmt.all(this.id);
 		for (let row of rows) {
 			rawPermissions.push(row.permission);
@@ -556,7 +556,7 @@ class User {
 			}
 		}
 
-		return this.permissions
+		return this.permissions;
 	}
 
 	/**
@@ -591,7 +591,7 @@ class User {
 			if (count >= CR.conf.passwordResetMax) { return null; }
 		}
 
-		const keyBytes = await crypto.randomBytes(CR.conf.activationKeySize)
+		const keyBytes = await crypto.randomBytes(CR.conf.activationKeySize);
 		const key = keyBytes.toString('hex');
 
 		const stmt = CR.db.users.prepare('insert into users_password_reset (user_id, `key`, `time`) values (?, ?, ?)');

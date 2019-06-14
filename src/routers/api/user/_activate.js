@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function user_activate (req, res, next) {
+async function user_activate (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /activate
 	 * Activates an account
@@ -43,7 +43,7 @@ async function user_activate (req, res, next) {
 	}
 
 	// Validate the account activation key and obtain the user id
-	let stmt = CR.db.users.prepare("select id from users where email = ? and activation_key = ? and enabled = 1");
+	let stmt = CR.db.users.prepare('select id from users where email = ? and activation_key = ? and enabled = 1');
 	let row = stmt.get(req.body.email, req.body.activation_key);
 	if (!row) {
 		res.sendAPIError('INVALID_ACTIVATION_KEY');

@@ -1,4 +1,4 @@
-async function delete_resource (req, res, next) {
+async function delete_resource (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /delete
 	 * Deletes a resource

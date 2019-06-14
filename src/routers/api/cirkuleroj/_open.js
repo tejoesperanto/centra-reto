@@ -1,4 +1,4 @@
-async function open (req, res, next) {
+async function open (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /open
 	 * Opens a cirkulero for contributions

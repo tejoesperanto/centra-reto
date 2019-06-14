@@ -1,6 +1,6 @@
 import Group from '../../../api/group';
 
-async function update_groups (req, res, next) {
+async function update_groups (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /update_groups
 	 * Updates groups for the general cirkulero settings

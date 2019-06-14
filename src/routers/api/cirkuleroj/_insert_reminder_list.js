@@ -1,6 +1,6 @@
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
-async function insert_reminder_list (req, res, next) {
+async function insert_reminder_list (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /insert_reminder_list
 	 * Inserts a list reminder

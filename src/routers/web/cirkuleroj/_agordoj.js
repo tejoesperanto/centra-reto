@@ -1,6 +1,6 @@
 import Group from '../../../api/group';
 
-async function arkivo (req, res, next) {
+async function arkivo (req, res, next) { // eslint-disable-line no-unused-vars
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const allGroups = await Group.getAllGroups();
@@ -21,10 +21,10 @@ async function arkivo (req, res, next) {
 	let publishEmail;
 	for (let setting of settings) {
 		switch (setting.key) {
-			case 'publish_message':
+		case 'publish_message':
 			publishMessage = setting.value;
 			break;
-			case 'publish_email':
+		case 'publish_email':
 			publishEmail = setting.value;
 		}
 	}

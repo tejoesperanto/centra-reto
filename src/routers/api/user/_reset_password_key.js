@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function reset_password_key (req, res, next) {
+async function reset_password_key (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /reset_password_key
 	 * Resets a user's password using a password reset key.
@@ -18,10 +18,10 @@ async function reset_password_key (req, res, next) {
 	 * INVALID_RESET_KEY            The combination of email and reset key was not found
 	 */
 
-	 if (req.user) {
-	 	res.sendAPIError('LOGGED_IN');
-	 	return;
-	 }
+	if (req.user) {
+		res.sendAPIError('LOGGED_IN');
+		return;
+	}
 
 	const fields = [
 		'email',

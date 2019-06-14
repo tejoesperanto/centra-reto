@@ -1,4 +1,4 @@
-async function index (req, res, next) {
+async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const data = {
 		title: 'TEJO-Voĉo'
 	};

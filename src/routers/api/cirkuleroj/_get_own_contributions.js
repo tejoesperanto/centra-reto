@@ -1,6 +1,6 @@
 import * as CRCirkulero from '../../../api/cirkulero';
 
-async function get_own_contributions (req, res, next) {
+async function get_own_contributions (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /get_own_contributions
 	 * Gets all the user's contributions to a given cirkulero

@@ -1,6 +1,6 @@
 import Group from '../../../api/group';
 
-async function index (req, res, next) {
+async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const allGroups = await Group.getAllGroups();
 	const searchableGroups = [];
 	for (let group of allGroups.values()) {

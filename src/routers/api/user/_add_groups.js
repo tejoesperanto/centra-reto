@@ -3,7 +3,7 @@ import moment from 'moment-timezone';
 import User from '../../../api/user';
 import Group from '../../../api/group';
 
-async function add_groups (req, res, next) {
+async function add_groups (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /add_groups
 	 * Adds a user to a number of groups
@@ -29,7 +29,7 @@ async function add_groups (req, res, next) {
 	 * INVALID_ARGUMENT [argument]
 	 */
 
-	 if (!await req.requirePermissions('users.modify')) { return; }
+	if (!await req.requirePermissions('users.modify')) { return; }
 
 	const fields = [
 		'user_id',

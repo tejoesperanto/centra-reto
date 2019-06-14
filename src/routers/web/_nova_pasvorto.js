@@ -1,9 +1,9 @@
 import User from '../../api/user';
 
-async function nova_pasvorto (req, res, next) {
+async function nova_pasvorto (req, res, next) { // eslint-disable-line no-unused-vars
 	if (req.user) {
 		res.redirect(303, '/');
-		return
+		return;
 	}
 
 	if (req.params.email && req.params.resetKey) {

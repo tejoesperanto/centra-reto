@@ -1,4 +1,4 @@
-async function get_reminders_list (req, res, next) {
+async function get_reminders_list (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /get_reminders_list
 	 * Gets all reminders for lists
@@ -20,7 +20,7 @@ async function get_reminders_list (req, res, next) {
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const stmt = CR.db.cirkuleroj.prepare('select id, list_email, delta_time, message from reminders_lists order by delta_time desc');
-	const rows = stmt.all()
+	const rows = stmt.all();
 
 	res.sendAPIResponse({
 		reminders: rows

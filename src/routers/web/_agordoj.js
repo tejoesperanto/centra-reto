@@ -1,4 +1,4 @@
-async function agordoj (req, res, next) {
+async function agordoj (req, res, next) { // eslint-disable-line no-unused-vars
 	const data = {
 		title: 'Agordoj',
 		scripts: [

@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import Handlebars from 'handlebars';
 import fs from 'pn/fs';
 import path from 'path';
 import mergeOptions from 'merge-options';
@@ -10,14 +9,14 @@ import * as CRUtil from './util';
  * Sets up the mail system
  */
 export function init () {
-	CR.log.info("Pretigas SMTP-klienton")
+	CR.log.info('Pretigas SMTP-klienton');
 	CR.smtp = nodemailer.createTransport(CR.conf.servers.smtp);
 
 	if (CR.conf.debugMail) {
 		CR.log.warn('Sendado de retmesaĝoj en TEST-moduso');
 	}
 
-	CR.log.info("SMTP-kliento pretas")
+	CR.log.info('SMTP-kliento pretas');
 }
 
 /**

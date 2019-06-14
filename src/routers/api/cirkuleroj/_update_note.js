@@ -1,6 +1,6 @@
 import { removeUnsafeChars } from '../../../util';
 
-async function update_note (req, res, next) {
+async function update_note (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /update_note
 	 * Updates a cirkulero's note
