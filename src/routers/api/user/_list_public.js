@@ -4,7 +4,7 @@ import * as CRApi from '..';
 import User from '../../../api/user';
 import Group from '../../../api/group';
 
-async function list_public (req, res, next) {
+async function list_public (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /list_public
 	 * Lists all users

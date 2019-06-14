@@ -1,9 +1,7 @@
-import moment from 'moment-timezone';
-
 import User from '../../../api/user';
 import Group from '../../../api/group';
 
-async function end_group_memberships (req, res, next) {
+async function end_group_memberships (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /end_group_memberships
 	 * Sets the to column for a number of group memberships partaining to a user to the current unix time.
@@ -25,7 +23,7 @@ async function end_group_memberships (req, res, next) {
 	 * INVALID_ARGUMENT
 	 */
 
-	 if (!await req.requirePermissions('users.modify')) { return; }
+	if (!await req.requirePermissions('users.modify')) { return; }
 
 	const fields = [
 		'user_id',

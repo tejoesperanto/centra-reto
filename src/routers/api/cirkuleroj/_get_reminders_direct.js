@@ -1,4 +1,4 @@
-async function get_reminders_direct (req, res, next) {
+async function get_reminders_direct (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /get_reminders_direct
 	 * Gets all direct reminders
@@ -19,7 +19,7 @@ async function get_reminders_direct (req, res, next) {
 	if (!await req.requirePermissions('cirkuleroj.manage')) { return; }
 
 	const stmt = CR.db.cirkuleroj.prepare('select id, delta_time, message from reminders_direct order by delta_time desc');
-	const rows = stmt.all()
+	const rows = stmt.all();
 
 	res.sendAPIResponse({
 		reminders: rows

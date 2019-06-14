@@ -14,12 +14,12 @@ export function init () {
 	// Forward signals from reader to process
 	const forwardSignals = [ 'SIGINT', 'SIGHUP', 'SIGTERM' ];
 	for (let signal of forwardSignals) {
-		CR.reader.on(signal, (...args) => { handleSignal(signal, ...args) });
+		CR.reader.on(signal, (...args) => { handleSignal(signal, ...args); });
 	}
 
 	// Ignore ^D
 	CR.reader.on('close', () => {
-		if (activePrompt) { process.stdout.write('\n') }
+		if (activePrompt) { process.stdout.write('\n'); }
 		CR.reader = readline.createInterface(process.stdin, process.stdout);
 		init();
 	});
@@ -72,7 +72,7 @@ async function parseCmd (cmdRaw) {
 	// Ensure that the command exists
 	if (!(cmdBits[0] in cmds)) {
 		// Command doesn't exist
-		logCmd('error', cmdBits[0], "komando ne trovita")
+		logCmd('error', cmdBits[0], 'komando ne trovita');
 		return;
 	}
 
@@ -97,8 +97,8 @@ async function parseCmd (cmdRaw) {
  * @return {string} The raw command string
  */
 function readCmd () {
-	return new Promise((resolve, reject) => {
-		CR.reader.question('> ', cmdRaw => { resolve(cmdRaw) });
+	return new Promise(resolve => {
+		CR.reader.question('> ', cmdRaw => { resolve(cmdRaw); });
 	});
 }
 
@@ -151,12 +151,12 @@ export function prompt (q) {
  * @return {boolean} Whether the user answered yes
  */
 export async function promptYesNo (q, continueText = true) {
-	if (continueText) { q += '\nĈu vi volas daŭrigi?' }
+	if (continueText) { q += '\nĈu vi volas daŭrigi?'; }
 	q += ' [J/n] ';
 	const response = await prompt(q);
 	if (response === null) { return false; }
 	const validResponses = [ 'j', 'y', '' ];
-	const isValid = validResponses.indexOf(response.trim().toLowerCase()) > -1
+	const isValid = validResponses.indexOf(response.trim().toLowerCase()) > -1;
 	return isValid;
 }
 

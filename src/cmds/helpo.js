@@ -1,6 +1,6 @@
 import * as cmds from '.';
 
-export const helpBrief = "Montras tiun ĉi ekranon. Uzu `helpo [komando]` por ricevi detalan helpon pri komando.";
+export const helpBrief = 'Montras tiun ĉi ekranon. Uzu `helpo [komando]` por ricevi detalan helpon pri komando.';
 
 export async function cmd (bits, log) {
 	if (bits.length === 0 || (bits.length === 1 && bits[0] == 'helpo')) {

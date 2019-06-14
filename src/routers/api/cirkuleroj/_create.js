@@ -2,7 +2,7 @@ import moment from 'moment';
 
 import { removeUnsafeCharsOneLine } from '../../../util';
 
-async function create (req, res, next) {
+async function create (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /create
 	 * Creates a new cirkulero

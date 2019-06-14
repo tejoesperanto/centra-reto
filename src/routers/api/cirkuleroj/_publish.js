@@ -3,7 +3,7 @@ import * as CRCirkulero from '../../../api/cirkulero';
 import Group from '../../../api/group';
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
-async function publish (req, res, next) {
+async function publish (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /publish
 	 * Publishes a cirkulero

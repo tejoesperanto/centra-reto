@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function get_groups (req, res, next) {
+async function get_groups (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /add_groups
 	 * Adds a user to a number of groups
@@ -35,7 +35,7 @@ async function get_groups (req, res, next) {
 	 * INVALID_ARGUMENT [argument]
 	 */
 
-	 if (!await req.requirePermissions('users.view')) { return; }
+	if (!await req.requirePermissions('users.view')) { return; }
 
 	const fields = [
 		'user_id'
@@ -43,7 +43,7 @@ async function get_groups (req, res, next) {
 	if (!req.handleRequiredFields(fields)) { return; }
 
 	if (!Number.isSafeInteger(req.body.user_id)) {
-		res.sendAPIError('INVALID_ARGUMENT', [user_id]);
+		res.sendAPIError('INVALID_ARGUMENT', [req.body.user_id]);
 		return;
 	}
 

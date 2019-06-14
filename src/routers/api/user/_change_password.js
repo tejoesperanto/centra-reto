@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 
 import User from '../../../api/user';
 
-async function change_password (req, res, next) {
+async function change_password (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /change_password
 	 * Changes the user's password

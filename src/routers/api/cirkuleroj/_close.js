@@ -1,4 +1,4 @@
-async function close (req, res, next) {
+async function close (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /close
 	 * Closes a cirkulero for contributions

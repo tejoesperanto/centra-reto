@@ -1,6 +1,6 @@
 import * as cirkulero from '../../../api/cirkulero';
 
-async function venontaj (req, res, next) {
+async function venontaj (req, res, next) { // eslint-disable-line no-unused-vars
 	const groupsRaw = await cirkulero.getGroups(true);
 	const groups = {};
 	for (let purpose in groupsRaw) {
@@ -10,7 +10,7 @@ async function venontaj (req, res, next) {
 				id: group.id,
 				name: group.nameBase,
 				children: children.map(x => x.id)
-			}
+			};
 		}));
 	}
 

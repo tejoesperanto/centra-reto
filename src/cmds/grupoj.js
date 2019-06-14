@@ -1,6 +1,5 @@
 import Table from 'tty-table';
 
-import * as CRCmd from '../cmd';
 import Group from '../api/group';
 
 export const helpBrief = 'Listigas ĉiujn grupojn.';

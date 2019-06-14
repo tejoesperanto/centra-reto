@@ -6,7 +6,6 @@ import bodyParser from 'body-parser';
 import session from 'cookie-session';
 import passport from 'passport';
 import flash from 'connect-flash';
-import util from 'util';
 import path from 'path';
 import bcrypt from 'bcrypt';
 import passportLocal from 'passport-local';
@@ -19,7 +18,7 @@ import User from './api/user';
  * Sets up the http server
  */
 export async function init () {
-	CR.log.info("Pretigas HTTP-servilon");
+	CR.log.info('Pretigas HTTP-servilon');
 	CR.app = express();
 	if (CR.conf.trustLocalProxy) {
 		// Use the real IP of loopbacks. For users behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
@@ -30,14 +29,14 @@ export async function init () {
 	if (CR.argv.helmet) {
 		CR.app.use(helmet());
 	} else {
-		CR.log.warn("Helmet malŝaltita");
+		CR.log.warn('Helmet malŝaltita');
 	}
 
 	let limiterMax = 0;
 	if (CR.argv.limiter) {
 		limiterMax = CR.conf.loginLimit.max;
 	} else {
-		CR.log.warn("Ensalutlimigo malŝaltita");
+		CR.log.warn('Ensalutlimigo malŝaltita');
 	}
 	CR.loginLimiter = new RateLimit({
 		windowMs: CR.conf.loginLimit.time * 1000,
@@ -54,7 +53,7 @@ export async function init () {
 	CR.app.use(bodyParser.json());
 
 	if (!CR.conf.sessionSecret) {
-		CR.log.error("Neniu session secret difinita en agordoj");
+		CR.log.error('Neniu session secret difinita en agordoj');
 		process.exit(1);
 	}
 	CR.app.use(session({
@@ -121,6 +120,6 @@ export async function init () {
 	});
 
 	CR.app.listen(CR.conf.servers.http.port, () => {
-		CR.log.info("HTTP-servilo pretas je :%s", CR.conf.servers.http.port);
+		CR.log.info('HTTP-servilo pretas je :%s', CR.conf.servers.http.port);
 	});
 }

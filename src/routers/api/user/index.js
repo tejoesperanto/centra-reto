@@ -56,7 +56,7 @@ export default function () {
 	router.post('/change_password',
 		middleware.requireLogin,
 		middleware.requireInitialSetup,
-		wrap(apiChangePassword))
+		wrap(apiChangePassword));
 
 	router.post('/create',
 		middleware.requireLogin,
@@ -112,7 +112,7 @@ export default function () {
 		wrap(apiResetPasswordEmail));
 
 	router.post('/reset_password_key',
-		wrap(apiResetPasswordKey))
+		wrap(apiResetPasswordKey));
 
 	router.post('/set_profile_picture',
 		middleware.requireLogin,

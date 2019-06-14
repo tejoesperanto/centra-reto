@@ -1,6 +1,6 @@
 import passport from 'passport';
 
-async function user_login (req, res, next) {
+async function user_login (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /login
 	 * Logs in
@@ -39,7 +39,7 @@ async function user_login (req, res, next) {
 		req.logout();
 	}
 
-	passport.authenticate('local', (err, user, info) => {
+	passport.authenticate('local', (err, user, info) => { // eslint-disable-line no-unused-vars
 		if (err) { return next(err); }
 		if (!user) {
 			res.sendAPIError('USER_NOT_FOUND');

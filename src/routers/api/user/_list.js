@@ -1,7 +1,7 @@
 import * as CRApi from '..';
 import User from '../../../api/user';
 
-async function user_list (req, res, next) {
+async function user_list (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /list
 	 * Lists all users

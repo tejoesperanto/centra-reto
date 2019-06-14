@@ -1,6 +1,6 @@
 import * as CRApi from '..';
 
-async function list (req, res, next) {
+async function list (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /list
 	 * Lists all cirkuleroj

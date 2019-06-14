@@ -1,4 +1,4 @@
-async function remove_profile_picture (req, res, next) {
+async function remove_profile_picture (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /remove_profile_picture
 	 * Removes the user's profile picture

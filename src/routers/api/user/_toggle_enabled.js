@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function user_toggle_enabled (req, res, next) {
+async function user_toggle_enabled (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /toggle_enabled
 	 * Toggles the enabled state of a user

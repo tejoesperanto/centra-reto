@@ -1,7 +1,7 @@
 import * as CRCirkulero from '../../../api/cirkulero';
 import Group from '../../../api/group';
 
-async function get_groups (req, res, next) {
+async function get_groups (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /get_groups
 	 * Gets all groups for the general cirkulero settings

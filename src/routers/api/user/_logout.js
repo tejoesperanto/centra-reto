@@ -1,4 +1,4 @@
-async function user_logout (req, res, next) {
+async function user_logout (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /logout
 	 * Logs out

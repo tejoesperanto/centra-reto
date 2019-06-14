@@ -1,7 +1,7 @@
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 import * as cirkulero from '../../../api/cirkulero';
 
-async function contribute (req, res, next) {
+async function contribute (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /contribute
 	 * Inserts a new cirkulero contribution or updates an existing
@@ -141,7 +141,6 @@ async function contribute (req, res, next) {
 		res.sendAPIError('INVALID_ARGUMENT', ['group_id']);
 		return;
 	}
-	const group = groups[groupIndex];
 
 	// Submit the contribution
 	stmt = CR.db.cirkuleroj.prepare('insert or replace into cirkuleroj_contributions (cirkulero_id, user_id, group_id, user_role_comment, faris, faras, faros, comment) values (@cirkulero_id, @user_id, @group_id, @user_role_comment, @faris, @faras, @faros, @comment)');
