@@ -1,7 +1,7 @@
 import * as CRMail from '../../../mail';
 import User from '../../../api/user';
 
-async function resend_activation_mail (req, res, next) {
+async function resend_activation_mail (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /resend_activation_mail
 	 * Resends the activation email to a user and renews the validity of the activation key

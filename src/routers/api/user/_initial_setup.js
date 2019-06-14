@@ -1,6 +1,6 @@
 import { removeUnsafeCharsOneLine } from '../../../util';
 
-async function user_initial_setup (req, res, next) {
+async function user_initial_setup (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /initial_setup
 	 * Performs the initial profile setup procedure or optionally updates the existing values

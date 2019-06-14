@@ -3,7 +3,7 @@ import * as Canvas from 'canvas';
 
 import User from '../../../api/user';
 
-async function set_profile_picture (req, res, next) {
+async function set_profile_picture (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /set_profile_picture
 	 * Changes the user's profile picture

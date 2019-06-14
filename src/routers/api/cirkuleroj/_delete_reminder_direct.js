@@ -1,4 +1,4 @@
-async function delete_reminder_direct (req, res, next) {
+async function delete_reminder_direct (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /delete_reminder_direct
 	 * Deletes a direct reminder

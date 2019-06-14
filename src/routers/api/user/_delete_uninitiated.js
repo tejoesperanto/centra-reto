@@ -1,6 +1,6 @@
 import User from '../../../api/user';
 
-async function delete_uninitiated (req, res, next) {
+async function delete_uninitiated (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /delete_uninitiated
 	 * Deletes a user that has not yet completed the initial setup
@@ -43,7 +43,7 @@ async function delete_uninitiated (req, res, next) {
 		return;
 	}
 
-	CR.db.users.prepare("delete from users where id = ?").run(user.id);
+	CR.db.users.prepare('delete from users where id = ?').run(user.id);
 	req.user = null;
 
 	res.sendAPIResponse();

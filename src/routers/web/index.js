@@ -1,6 +1,4 @@
 import express from 'express';
-import Handlebars from 'handlebars';
-import fs from 'pn/fs';
 import path from 'path';
 import moment from 'moment-timezone';
 
@@ -107,7 +105,7 @@ function middlewareRequirePermissions (req, res, next) {
 	req.requirePermissions = async function requirePermissions (...perms) {
 		for (let perm of perms) {
 			if (!await req.user.hasPermission(perm)) {
-				res.redirect(303, '/')
+				res.redirect(303, '/');
 				return false;
 			}
 		}
@@ -194,7 +192,7 @@ export async function renderRegularPage (page, data) {
  * @param {express.Response} res
  * @param {Function}         next
  */
-export async function handleError404 (req, res, next) {
+export async function handleError404 (req, res, next) { // eslint-disable-line no-unused-vars
 	res.status(404);
 	await res.sendErrorPage(404, 'Paĝo ne trovita');
 }
@@ -206,7 +204,7 @@ export async function handleError404 (req, res, next) {
  * @param {express.Response} res
  * @param {Function}         next
  */
-export async function handleError500 (err, req, res, next) {
+export async function handleError500 (err, req, res, next) { // eslint-disable-line no-unused-vars
 	// As csurf is initiated by http.js itself requests made to the API are sent here as well. For this reason they need to be handled in their own way
 	if (err.code === 'EBADCSRFTOKEN') {
 		CRApi.handleBadCSRF(req, res);
@@ -252,7 +250,7 @@ async function amendView (req, view) {
 
 		if (!view.permissionsCheck) { view.permissionsCheck = []; }
 		const permissions = {};
-		view.permissions = {}
+		view.permissions = {};
 		for (let perm of view.permissionsCheck) {
 			const hasPerm = await req.user.hasPermission(perm);
 			permissions[perm] = hasPerm;

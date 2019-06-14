@@ -1,4 +1,4 @@
-async function reminders_disable (req, res, next) {
+async function reminders_disable (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /reminders_disable
 	 * Disables reminders for a cirkulero

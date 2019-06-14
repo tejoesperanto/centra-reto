@@ -68,7 +68,7 @@ import * as CRTimer from './timer';
 		transports: [ new winston.transports.Stream({ stream: logStream }) ]
 	});
 	
-	CR.log.info("Centra Reto versio %s", CR.version)
+	CR.log.info('Centra Reto versio %s', CR.version);
 
 	// Read args
 	CR.argv = yargsParser.detailed(
@@ -89,12 +89,12 @@ import * as CRTimer from './timer';
 
 	// Data files, config
 	if (CR.argv._.length < 1) {
-		CR.log.error("Mankas argumento <dosierujo>");
+		CR.log.error('Mankas argumento <dosierujo>');
 		process.exit(1);
 	}
 
 	if (CR.argv._.length > 1) {
-		CR.log.error("Tro da argumentoj");
+		CR.log.error('Tro da argumentoj');
 		process.exit(1);
 	}
 
@@ -118,7 +118,7 @@ import * as CRTimer from './timer';
 		}
 
 	};
-	CR.log.info("Kreas datumdosierojn");
+	CR.log.info('Kreas datumdosierojn');
 	await handleDataDir('');
 
 	// Apply user config on top of default config
@@ -127,10 +127,10 @@ import * as CRTimer from './timer';
 	CR.conf = mergeOptions(configDefault, configUser);
 
 	// Load databases
-	CR.log.info("Ŝarĝas SQLite-datumbazojn");
+	CR.log.info('Ŝarĝas SQLite-datumbazojn');
 	for (let dbName of DBs) {
-		CR.log.info("... Ŝarĝas %s.db", dbName)
-		CR.db[dbName] = new SQLDatabase(path.join(CR.dataDir, "db", dbName + ".db"));
+		CR.log.info('... Ŝarĝas %s.db', dbName);
+		CR.db[dbName] = new SQLDatabase(path.join(CR.dataDir, 'db', dbName + '.db'));
 	}
 
 	// Create smtp server
@@ -175,6 +175,6 @@ import * as CRTimer from './timer';
 
 	const shutDownTriggers = [ 'exit', 'SIGINT', 'SIGHUP', 'SIGTERM' ];
 	for (let trigger of shutDownTriggers) {
-		process.on(trigger, () => { performCleanup(trigger) });
+		process.on(trigger, () => { performCleanup(trigger); });
 	}
 })();

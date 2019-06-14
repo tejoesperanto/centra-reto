@@ -49,7 +49,7 @@ export default class Group {
 		}
 
 		// If the user is already in the group we'll replace the entry
-		const stmt = CR.db.users.prepare("insert or replace into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)");
+		const stmt = CR.db.users.prepare('insert or replace into users_groups (user_id, group_id, args, `from`, `to`) values (?, ?, ?, ?, ?)');
 		stmt.run(user.id, this.id, argsStr, timeFrom, timeTo);
 		return true;
 	}
@@ -129,7 +129,7 @@ export default class Group {
 		if (this.children) { return this.children; }
 		const groups = [];
 
-		const stmt = CR.db.users.prepare(`select id from groups where parent = ?`);
+		const stmt = CR.db.users.prepare('select id from groups where parent = ?');
 		const rows = stmt.all(this.id);
 
 		if (rows.length === 0) { return []; }

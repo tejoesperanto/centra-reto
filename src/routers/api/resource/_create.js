@@ -1,6 +1,6 @@
 import { removeUnsafeCharsOneLine, removeUnsafeChars, stringIsAValidUrl } from '../../../util';
 
-async function create (req, res, next) {
+async function create (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /create
 	 * Creates a new resource
@@ -57,7 +57,7 @@ async function create (req, res, next) {
 	let processedName = removeUnsafeCharsOneLine(req.body.name);
 
 	if (!stringIsAValidUrl(processedUrl)){
-		processedUrl = `http://${processedUrl}`
+		processedUrl = `http://${processedUrl}`;
 	}
 	if (!stringIsAValidUrl(processedUrl)){
 		res.sendAPIError('URL_INVALID');

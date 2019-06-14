@@ -32,7 +32,7 @@ export function init () {
 		fn: User.cleanUpActivationKeys,
 		immediate: true
 	});
-};
+}
 
 /**
  * Adds a new timer
@@ -67,7 +67,7 @@ export function getAllTimers () {
  */
 export function removeAllTimers () {
 	for (let timer of timers) {
-		clearInterval(timer)
+		clearInterval(timer);
 	}
 	timers = [];
 }

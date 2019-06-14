@@ -1,4 +1,4 @@
-async function index (req, res, next) {
+async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	if (!req.user || req.user.hasCompletedInitialSetup()) {
 		// For visitors not logged in and those who have completed the initial setup
 		const data = {

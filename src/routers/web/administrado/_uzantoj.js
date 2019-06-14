@@ -1,6 +1,6 @@
 import Group from '../../../api/group';
 
-async function administrado_uzantoj (req, res, next) {
+async function administrado_uzantoj (req, res, next) { // eslint-disable-line no-unused-vars
 	if (!await req.requirePermissions('users.view')) { return; }
 
 	const allGroups = await Group.getAllGroups();

@@ -1,10 +1,10 @@
 import url from 'url';
 
-import { removeUnsafeChars, promiseAllObject, escapeHTML } from '../../../util';
+import { removeUnsafeChars, escapeHTML } from '../../../util';
 import * as CRCirkulero from '../../../api/cirkulero';
 import * as CRMail from '../../../mail';
 
-async function send_reminder_direct (req, res, next) {
+async function send_reminder_direct (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /send_reminder_direct
 	 * Sends a direct reminder to everyone allowed to contribute to the given cirkulero who's not yet done so

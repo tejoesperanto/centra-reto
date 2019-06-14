@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-async function reminders_enable (req, res, next) {
+async function reminders_enable (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /reminders_enable
 	 * Enables reminders for a cirkulero

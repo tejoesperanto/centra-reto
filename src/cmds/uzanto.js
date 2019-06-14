@@ -64,7 +64,7 @@ export async function cmd (bits, log) {
 			log('info', `Kreis konton. Iru al ${activationURL} por aktivigi la konton.`);
 
 			// Offer to send an email with the link
-			const sendEmail = await CRCmd.promptYesNoClose(`Ĉu vi volas sendi invitretmesaĝon kun la aktivigligilo?`, false);
+			const sendEmail = await CRCmd.promptYesNoClose('Ĉu vi volas sendi invitretmesaĝon kun la aktivigligilo?', false);
 			if (!sendEmail) {
 				return;
 			}
@@ -182,7 +182,7 @@ export async function cmd (bits, log) {
 						return;
 					}
 
-					log('info', "Aldonis %s al grupo n-ro %s. Uzu la komandon `uzanto grupoj %s` por vidi ĉiujn grupojn de la uzanto.", user.email, group.id, user.email);
+					log('info', 'Aldonis %s al grupo n-ro %s. Uzu la komandon `uzanto grupoj %s` por vidi ĉiujn grupojn de la uzanto.', user.email, group.id, user.email);
 
 				} else {
 					log('SYNTAX');
@@ -219,7 +219,7 @@ export async function cmd (bits, log) {
 	};
 
 	if (!(bits[0] in commands)) {
-		log('error', 'nekonata komando `%s`', bits[0])
+		log('error', 'nekonata komando `%s`', bits[0]);
 		return;
 	}
 

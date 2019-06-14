@@ -1,6 +1,6 @@
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 
-async function set_publish_message (req, res, next) {
+async function set_publish_message (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /set_publish_message
 	 * Sets the default cirkulero publish message and email address
@@ -40,8 +40,8 @@ async function set_publish_message (req, res, next) {
 	const email = removeUnsafeCharsOneLine(req.body.email);
 
 	const stmt = CR.db.cirkuleroj.prepare('update settings set value = ? where key = ?');
-	stmt.run(message, "publish_message");
-	stmt.run(email, "publish_email");
+	stmt.run(message, 'publish_message');
+	stmt.run(email, 'publish_email');
 
 	res.sendAPIResponse();
 }

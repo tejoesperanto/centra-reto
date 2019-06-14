@@ -1,4 +1,4 @@
-async function listo (req, res, next) {
+async function listo (req, res, next) { // eslint-disable-line no-unused-vars
 	const pageDataObj = {
 		resource: []
 	};

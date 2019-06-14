@@ -14,9 +14,9 @@ export default function () {
 	const router = express.Router();
 	router.use(middleware.requireInitialSetup);
 
-    router.get('/resursoj',
-        middleware.requireLogin,
-        wrap(pageResursoj));
+	router.get('/resursoj',
+		middleware.requireLogin,
+		wrap(pageResursoj));
 
 	router.get('/uzantoj',
 		middleware.requireLogin,

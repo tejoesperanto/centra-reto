@@ -2,7 +2,7 @@ import * as CRMail from '../../../mail';
 import User from '../../../api/user';
 import { removeUnsafeCharsOneLine } from '../../../util';
 
-async function user_create (req, res, next) {
+async function user_create (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /create
 	 * Creates a new user

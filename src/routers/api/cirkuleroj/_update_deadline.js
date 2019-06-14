@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-async function update_deadline (req, res, next) {
+async function update_deadline (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /update_deadline
 	 * Updates a cirkulero's deadline

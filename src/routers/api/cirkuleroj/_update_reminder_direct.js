@@ -1,6 +1,6 @@
 import { removeUnsafeChars } from '../../../util';
 
-async function update_reminder_direct (req, res, next) {
+async function update_reminder_direct (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /update_reminder_direct
 	 * Updates a direct reminder
