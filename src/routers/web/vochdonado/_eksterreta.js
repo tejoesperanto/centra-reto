@@ -1,9 +1,9 @@
 async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const data = {
-		title: 'Voĉdonado'
+		title: 'TEJO-Voĉo'
 	};
 
-	await res.sendRegularPage('vochdonado/index', data);
+	await res.sendRegularPage('vochdonado/eksterreta', data);
 }
 
 export default index;

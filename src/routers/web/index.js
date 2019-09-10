@@ -326,8 +326,13 @@ async function amendView (req, view) {
 	view.menu.push({
 		name: 'Voĉdonado',
 		icon: 'how_to_vote',
-		href: '/vochdonado',
-		active: /^\/vochdonado/.test(req.originalUrl)
+		active: /^\/vochdonado/.test(req.originalUrl),
+		children: [
+			{
+				name: 'Eksterreta voĉdonado',
+				href: '/vochdonado/eksterreta'
+			}
+		]
 	});
 
 	// Resursoj
