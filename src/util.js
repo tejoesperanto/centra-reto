@@ -1,5 +1,10 @@
 import Handlebars from 'handlebars';
 import fs from 'pn/fs';
+import moment from 'moment-timezone';
+
+Handlebars.registerHelper('dateTimeSimple', function (timestamp) {
+	return moment.unix(timestamp).format(CR.timeFormats.dateTimeSimple);
+});
 
 /**
  * Compiles and renders a handlebar template, much like the old Mustache api

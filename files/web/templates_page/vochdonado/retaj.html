@@ -25,6 +25,7 @@
 			<div class="card">
 				<div class="header">
 					<h2>Retaj voĉdonoj</h2>
+					<small>Ĉiuj horoj estas laŭ UTC</small>
 					<ul class="header-dropdown">
 						<li>
 							<i class="material-icons clickable" id="votes-list-add" title="Krei voĉdonon">add</i>
@@ -36,10 +37,19 @@
 						<thead>
 							<th>Komenchoro</th>
 							<th>Limhoro</th>
-							<th>Nomo</th>
+							<th>Titolo</th>
 							<th>Stato</th>
 						</thead>
-						<tbody></tbody>
+						<tbody>
+							{{#page.votes}}
+							<tr>
+								<td>{{dateTimeSimple ./timeFrom}}</td>
+								<td>{{dateTimeSimple ./timeTo}}</td>
+								<td>{{./name}}</td>
+								<td>{{./state}}</td>
+							</tr>
+							{{/page.votes}}
+						</tbody>
 					</table>
 				</div>
 			</div>

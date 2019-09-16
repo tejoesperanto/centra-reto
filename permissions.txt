@@ -8,3 +8,5 @@ users
 	delete: Permits the user to remove uninitiated users
 cirkuleroj
 	manage: Permits the user to manage everything related to cirkuleroj, but not to contribute
+votes
+	manage: Permits the user to manage everything related to votes, but not to contribute
