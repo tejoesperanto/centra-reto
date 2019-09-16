@@ -22,22 +22,45 @@
 	</div>
 	<div class="row clearfix">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			{{#if permissions.votes.manage}}
+			<div class="card">
+				<div class="header">
+					<h2>Krei novan voĉdonon</h2>
+				</div>
+				<div class="body">
+					<form id="create-vote-form" autocomplete="off">
+						<div class="form-group form-float">
+							<div class="form-line">
+								<input type="text" id="create-vote-form-name" name="name" class="form-control" required maxlength="100">
+								<label class="form-label" for="create-vote-form-name">Titolo</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<textarea id="create-vote-form-description" name="description" rows="1"
+									class="form-control no-resize autosize" maxlength="2000" required></textarea>
+								<label class="form-label" for="create-vote-form-description">Priskribo</label>
+							</div>
+						</div>
+
+						<button type="submit" id="create-vote-form-submit" class="btn btn-primary m-t-15 waves-effect">
+							<i class="material-icons">add</i>
+							<span>Krei</span>
+						</button>
+					</form>
+				</div>
+			</div>
+			{{/if}}
 			<div class="card">
 				<div class="header">
 					<h2>Retaj voĉdonoj</h2>
 					<small>Ĉiuj horoj estas laŭ UTC</small>
-					<ul class="header-dropdown">
-						<li>
-							<i class="material-icons clickable" id="votes-list-add" title="Krei voĉdonon">add</i>
-						</li>
-					</ul>
 				</div>
 				<div class="body">
 					<table id="votes-list" class="table table-striped">
 						<thead>
-							{{#if permissions.votes.manage}}
 							<th></th>
-							{{/if}}
 							<th>Komenchoro</th>
 							<th>Limhoro</th>
 							<th>Titolo</th>
@@ -46,9 +69,7 @@
 						<tbody>
 							{{#each page.votes}}
 							<tr>
-								{{#if ../permissions.votes.manage}}
-								<td><i class="material-icons clickable" title="Redakti">edit</i></td>
-								{{/if}}
+								<td><i class="material-icons clickable" title="Pri la voĉdono">info</i></td>
 								<td>{{dateTimeSimple ./timeFrom}}</td>
 								<td>{{dateTimeSimple ./timeTo}}</td>
 								<td>{{./name}}</td>

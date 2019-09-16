@@ -7,6 +7,7 @@ async function index (req, res, next) { // eslint-disable-line no-unused-vars
 		title: 'Reta voĉdonado',
 		scripts: [
 			'/js/cr/main/vochdonado/retaj.js',
+			'/plugins/autosize/autosize.min.js'
 		],
 		page: {
 			votes: votes

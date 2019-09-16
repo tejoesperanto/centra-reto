@@ -85,7 +85,7 @@ $(function () {
 			firstInput.focus();
 			$('.swal-button--confirm').attr('disabled', true);
 		}, 0); // Run when the thread becomes idle
-	}
+	};
 
 	// Existing users
 	var tableData = setUpDataTable({
@@ -164,16 +164,16 @@ $(function () {
 
 						var showUserModal = function (focusTTInput) {
 							swal({
-						        title: modalTitle,
-						        content: div[0],
-						        button: 'Fermi'
-						    });
+								title: modalTitle,
+								content: div[0],
+								button: 'Fermi'
+							});
 
-						    if (focusTTInput) {
-						    	window.setTimeout(function () {
-						    		div.find('.tt-input').focus();
-						    	}, 0);
-						    }
+							if (focusTTInput) {
+								window.setTimeout(function () {
+									div.find('.tt-input').focus();
+								}, 0);
+							}
 						};
 
 						// Assigning new groups to a user
@@ -411,17 +411,17 @@ $(function () {
 									};
 
 									performAPIRequest('post', '/api/user/change_email_admin', apiData, false)
-										.then(function (res) {
+										.then(function () {
 											table.draw();
 											swal.close();
 										})
 										.catch(function (err) {
 											if (err.error === 'EMAIL_TAKEN') {
 												swal({
-											        title: 'Retpoŝtadreso jam uzata',
-											        icon: 'error',
-											        button: 'Bone'
-											    });
+													title: 'Retpoŝtadreso jam uzata',
+													icon: 'error',
+													button: 'Bone'
+												});
 											} else {
 												showError(err);
 											}
@@ -533,17 +533,17 @@ $(function () {
 					}).catch(function (err) {
 						if (err.error === 'EMAIL_TAKEN') {
 							swal({
-						        title: 'Retpoŝtadreso jam uzata',
-						        icon: 'error',
-						        button: 'Bone'
-						    });
+								title: 'Retpoŝtadreso jam uzata',
+								icon: 'error',
+								button: 'Bone'
+							});
 							createUserFinally(true);
 						} else {
 							showError(err);
 							createUserFinally();
 						}
 					});
-			})
+			});
 		});
 	}
 });

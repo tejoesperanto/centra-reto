@@ -38,6 +38,7 @@ module.exports = {
 			'files': ['files/web/static/js/**/**'],
 			'env': {
 				'node': false,
+				'es6': false,
 				'browser': true,
 				'jquery': true
 			},
