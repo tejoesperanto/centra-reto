@@ -323,16 +323,26 @@ async function amendView (req, view) {
 	}
 
 	// Voĉdonado
+
+	const votingMenuItemChildren = [];
+
+	if (req.user) {
+		votingMenuItemChildren.push({
+			name: 'Retaj voĉdonoj',
+			href: '/vochdonado/retaj'
+		});
+	}
+
+	votingMenuItemChildren.push({
+		name: 'Eksterreta voĉdonado',
+		href: '/vochdonado/eksterreta'
+	});
+
 	view.menu.push({
 		name: 'Voĉdonado',
 		icon: 'how_to_vote',
 		active: /^\/vochdonado/.test(req.originalUrl),
-		children: [
-			{
-				name: 'Eksterreta voĉdonado',
-				href: '/vochdonado/eksterreta'
-			}
-		]
+		children: votingMenuItemChildren
 	});
 
 	// Resursoj

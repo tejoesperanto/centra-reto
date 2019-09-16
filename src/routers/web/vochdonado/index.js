@@ -4,6 +4,7 @@ import { middleware } from '..';
 import { wrap } from '../..';
 
 import pageEksterreta from './_eksterreta';
+import pageRetaj from './_retaj';
 
 /**
  * Sets up the router
@@ -15,6 +16,10 @@ export default function () {
 
 	router.get('/eksterreta',
 		wrap(pageEksterreta));
+
+	router.get('/retaj',
+		middleware.requireLogin,
+		wrap(pageRetaj));
 
 
 	return router;
