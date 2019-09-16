@@ -19,7 +19,7 @@ export async function getUserVotes (user) {
 				select 1 from votes_groups where vote_id = id and group_id in (${groupsParams})
 			) as can_vote,
 			exists(
-				select 1 from votes_ballots where vote = id and user_id = :userId
+				select 1 from votes_ballots where vote_id = id and user_id = :userId
 			) as has_voted
 		from votes
 		where

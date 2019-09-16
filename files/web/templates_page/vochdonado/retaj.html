@@ -65,6 +65,9 @@
 							{{/each}}
 						</tbody>
 					</table>
+					{{#unless page.votes.length}}
+					<p>Estas neniu aktiva baloto en kiu vi rajtas voĉdoni.</p>
+					{{/unless}}
 				</div>
 			</div>
 		</div>
