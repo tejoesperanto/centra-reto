@@ -10,7 +10,10 @@ async function index (req, res, next) { // eslint-disable-line no-unused-vars
 		],
 		page: {
 			votes: votes
-		}
+		},
+		permissionsCheck: [
+			'votes.manage'
+		],
 	};
 
 	await res.sendRegularPage('vochdonado/retaj', data);

@@ -35,20 +35,34 @@
 				<div class="body">
 					<table id="votes-list" class="table table-striped">
 						<thead>
+							{{#if permissions.votes.manage}}
+							<th></th>
+							{{/if}}
 							<th>Komenchoro</th>
 							<th>Limhoro</th>
 							<th>Titolo</th>
 							<th>Stato</th>
 						</thead>
 						<tbody>
-							{{#page.votes}}
+							{{#each page.votes}}
 							<tr>
+								{{#if ../permissions.votes.manage}}
+								<td><i class="material-icons clickable" title="Redakti">edit</i></td>
+								{{/if}}
 								<td>{{dateTimeSimple ./timeFrom}}</td>
 								<td>{{dateTimeSimple ./timeTo}}</td>
 								<td>{{./name}}</td>
-								<td>{{./state}}</td>
+								<td>
+									{{#if ./can_vote}}{{#unless ./has_voted}}
+									<a href="/vochdonado/retaj/{{id}}">
+									{{/unless}}{{/if}}
+									{{./state}}
+									{{#if ./can_vote}}{{#unless ./has_voted}}
+									</a>
+									{{/unless}}{{/if}}
+								</td>
 							</tr>
-							{{/page.votes}}
+							{{/each}}
 						</tbody>
 					</table>
 				</div>
