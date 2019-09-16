@@ -17,7 +17,7 @@ $(function () {
 		var apiData = {
 			id: parseInt($('#create-cirkulero-form-id').val(), 10),
 			name: $('#create-cirkulero-form-name').val(),
-			deadline: $('#create-cirkulero-form-deadline').data("DateTimePicker").date().unix(),
+			deadline: $('#create-cirkulero-form-deadline').data('DateTimePicker').date().unix(),
 			reminders: $('#create-cirkulero-form-reminders').prop('checked'),
 			open: $('#create-cirkulero-form-open').prop('checked'),
 			note: $('#create-cirkulero-form-note').val() || null
@@ -45,7 +45,7 @@ $(function () {
 			submitButton.attr('disabled', true);
 
 			performAPIRequest('post', '/api/cirkuleroj/create', apiData, false)
-				.then(function (res) {
+				.then(function () {
 					swal.stopLoading();
 					swal.close();
 					tableData.table.draw();
@@ -53,17 +53,17 @@ $(function () {
 					// Clean up the form
 					var form = $('#create-cirkulero-form');
 					form[0].reset();
-					$('#create-cirkulero-form-deadline').data("DateTimePicker").date(defaultDate);
+					$('#create-cirkulero-form-deadline').data('DateTimePicker').date(defaultDate);
 					// Reactive the inputs
 					form.find('input,textarea').blur();
 				})
 				.catch(function (err) {
 					if (err.error === 'ID_TAKEN') {
 						swal({
-					        title: 'Cirkulernumero jam uzata',
-					        icon: 'error',
-					        button: 'Bone'
-					    });
+							title: 'Cirkulernumero jam uzata',
+							icon: 'error',
+							button: 'Bone'
+						});
 					} else {
 						showError(err);
 					}
@@ -85,17 +85,17 @@ $(function () {
 			searching: false
 		},
 		globalWhere: [{
-            col: 'published',
-            type: '=',
-            val: 0
-        }],
-        dataFormatter: function (val, col) {
-        	if (col.name === 'deadline') {
-        		val = moment.unix(val).format('LLL');
-        	}
+			col: 'published',
+			type: '=',
+			val: 0
+		}],
+		dataFormatter: function (val, col) {
+			if (col.name === 'deadline') {
+				val = moment.unix(val).format('LLL');
+			}
 
-        	return val;
-        }
+			return val;
+		}
 	});
 	var table = tableData.table;
 	var loaderTemplate = cloneTemplate('#template-loader');

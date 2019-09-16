@@ -33,5 +33,16 @@ module.exports = {
 			'always'
 		],
 		'no-control-regex': 'off'
+	},
+	'overrides': {
+			'files': ['files/web/static/js/**/**'],
+			'env': {
+				'node': false,
+				'browser': true,
+				'jquery': true
+			},
+			'rules': {
+				'no-undef': 'off'
+			}
 	}
 };
