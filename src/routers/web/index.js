@@ -270,7 +270,6 @@ async function amendView (req, view) {
 				path = path[bit];
 			}
 		}
-		console.log(view.permissions);
 		view.permissionsJSON = JSON.stringify(permissions);
 	} else {
 		view.user = false;
