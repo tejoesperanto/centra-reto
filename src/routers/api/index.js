@@ -3,6 +3,7 @@ import express from 'express';
 import routerCirkuleroj from './cirkuleroj';
 import routerResource from './resource';
 import routerUser from './user';
+import routerVotes from './votes';
 
 /**
  * Sets up the router
@@ -21,6 +22,7 @@ export function init () {
 	router.use('/cirkuleroj', routerCirkuleroj());
 	router.use('/resursoj', routerResource());
 	router.use('/user', routerUser());
+	router.use('/votes', routerVotes());
 
 	// Pages
 	router.get('/get_csrf_token', pageGetCsrfToken);

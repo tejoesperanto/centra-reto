@@ -45,23 +45,29 @@ $(function () {
 
 	$('#create-vote-form-type').change(function () {
 		var type = $(this).val();
+
 		if (type === 'jns') {
-			$('#create-vote-form-numWinners,#create-vote-form-opts')
+			$('#create-vote-form-opts')
 				.prop('disabled', true)
 				.prop('required', false);
 			$('#create-vote-form-quorum,#create-vote-form-majority')
 				.prop('disabled', false)
 				.prop('required', true);
 		} else {
-			$('#create-vote-form-numWinners,#create-vote-form-opts')
+			$('#create-vote-form-opts')
 				.prop('disabled', false)
 				.prop('required', true);
 			$('#create-vote-form-quorum,#create-vote-form-majority')
 				.prop('disabled', true)
 				.prop('required', false);
 		}
+
+		$('#create-vote-form-numWinners')
+			.prop('disabled', type !== 'utv')
+			.prop('required', type === 'utv');
 	});
 
+	var submitButton = $('#create-vote-form-submit');
 	$('#create-vote-form').submit(function (e) {
 		e.preventDefault();
 
@@ -114,6 +120,29 @@ $(function () {
 				});
 		}
 
-		console.log(apiData);
+		swal({
+			title: 'Ĉu vi certas, ke vi volas krei novan voĉdonon?',
+			buttons: [
+				'Nuligi',
+				{
+					text: 'Krei',
+					closeModal: false
+				}
+			]
+		}).then(function (modalE) {
+			if (!modalE) { return; }
+
+			submitButton.attr('disabled', true);
+
+			performAPIRequest('post', '/api/votes/create', apiData)
+				.then(function (res) {
+					submitButton.attr('disabled', false);
+					if (!res.success) { return; }
+					
+					swal.stopLoading();
+					swal.close();
+					location.reload();
+				});
+		});
 	});
 });
