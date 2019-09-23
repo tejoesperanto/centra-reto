@@ -44,6 +44,73 @@
 							</div>
 						</div>
 
+						<div class="form-group">
+							<div class="form-line tagsinput-group">
+								<label for="create-vote-form-groups">Voĉdonrajtantoj:</label>
+								<select multiple class="form-control" id="create-vote-form-groups"></select>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<select id="create-vote-form-type" name="type" class="form-control" required>
+									<option value="jns">Jes/Ne/Sindeteno</option>
+									<option value="pr">Paroranga Metodo</option>
+									<option value="utv">Unuopa Transdonebla Voĉo</option>
+								</select>
+								<label class="form-label" for="create-vote-form-name">Voĉdonsistemo</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<input type="text" id="create-vote-form-timeTo" name="timeTo" class="form-control" required>
+								<label class="form-label" for="create-vote-form-timeTo">Limhoro (UTC)</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<select id="create-vote-form-quorum" name="quorum" class="form-control" required>
+									<option value="0">Neniu necesa</option>
+									<option value="1/2">½ (duono)</option>
+									<option value="2/3">⅔ (du-trionoj)</option>
+								</select>
+								<label class="form-label" for="create-vote-form-quorum">Kvorumo</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<select id="create-vote-form-majority" name="majority" class="form-control" required>
+									<option value="0">Neniu necesa (plimulto)</option>
+									<option value="plej">Pli ol duono (plejmulto)</option>
+									<option value="2/3">Du-trionoj</option>
+								</select>
+								<label class="form-label" for="create-vote-form-majority">Plejmulto</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<input type="number" id="create-vote-form-numWinners" name="numWinners" class="form-control" required min="1" step="1" value="1" disabled>
+								<label class="form-label" for="create-vote-form-numWinners">Elektotaj kandidatoj (nur por PR kaj UTV)</label>
+							</div>
+						</div>
+
+						<div class="form-group form-float">
+							<div class="form-line">
+								<textarea id="create-vote-form-opts" name="opts" rows="1"
+									class="form-control no-resize autosize" disabled></textarea>
+								<label class="form-label" for="create-vote-form-opts">Kandidatoj (nur por PR kaj UTV, po unu linio)</label>
+							</div>
+						</div>
+
+						<div>
+							<input type="checkbox" id="create-vote-form-secret" name="secret" class="filled-in">
+							<label for="create-vote-form-secret">Sekreta voĉdono</label>
+						</div>
+
 						<button type="submit" id="create-vote-form-submit" class="btn btn-primary m-t-15 waves-effect">
 							<i class="material-icons">add</i>
 							<span>Krei</span>

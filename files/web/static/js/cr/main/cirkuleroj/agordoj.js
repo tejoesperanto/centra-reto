@@ -15,14 +15,14 @@ $(function () {
 
 	var groupsInput = $('.manage-cirkuleroj-form-groups');
 	groupsInput.tagsinput({
-			itemValue: 'id',
-			itemText: 'name',
-			typeaheadjs: {
-				name: 'groups',
-				displayKey: 'name',
-				source: groupsSearch.ttAdapter()
-			}
-		});
+		itemValue: 'id',
+		itemText: 'name',
+		typeaheadjs: {
+			name: 'groups',
+			displayKey: 'name',
+			source: groupsSearch.ttAdapter()
+		}
+	});
 	// Disable submitting by pressing enter in tags input field
 	var ttInput = groupsInput.parent().find('.tt-input');
 	ttInput.keypress(function (e) {

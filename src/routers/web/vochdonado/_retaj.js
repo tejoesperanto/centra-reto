@@ -1,16 +1,40 @@
 import * as CRVote from '../../../api/vote';
+import Group from '../../../api/group';
 
 async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const votes = await CRVote.getUserVotes(req.user);
+
+	const allGroups = await Group.getAllGroups();
+	const groups = [];
+	for (let group of allGroups.values()) {
+		let name = group.nameBase;
+		if (!group.membersAllowed) { name += ' (ĉiuj)'; }
+
+		groups.push({
+			id: group.id,
+			name: name
+		});
+	}
 
 	const data = {
 		title: 'Reta voĉdonado',
 		scripts: [
 			'/js/cr/main/vochdonado/retaj.js',
+			'/plugins/typeahead/typeahead.js',
+			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.min.js',
+			'/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js',
 			'/plugins/autosize/autosize.min.js'
 		],
+		stylesheets: [
+			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput.css',
+			'/plugins/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css',
+			'/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css'
+		],
 		page: {
-			votes: votes
+			votes
+		},
+		pageDataObj: {
+			groups
 		},
 		permissionsCheck: [
 			'votes.manage'
