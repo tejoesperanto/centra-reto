@@ -7,7 +7,7 @@ module.exports = {
 	'globals': {
 		'Atomics': 'readonly',
 		'SharedArrayBuffer': 'readonly',
-		'CR': 'readwrite'
+		'CR': 'writable'
 	},
 	'parserOptions': {
 		'ecmaVersion': 2018,
@@ -34,7 +34,8 @@ module.exports = {
 		],
 		'no-control-regex': 'off'
 	},
-	'overrides': {
+	'overrides': [
+		{
 			'files': ['files/web/static/js/**/**'],
 			'env': {
 				'node': false,
@@ -45,5 +46,6 @@ module.exports = {
 			'rules': {
 				'no-undef': 'off'
 			}
-	}
+		}
+	]
 };
