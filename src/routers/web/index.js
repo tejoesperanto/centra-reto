@@ -328,7 +328,7 @@ async function amendView (req, view) {
 
 	if (req.user) {
 		votingMenuItemChildren.push({
-			name: 'Retaj voĉdonoj',
+			name: 'Reta voĉdonado',
 			href: '/vochdonado/retaj'
 		});
 	}
