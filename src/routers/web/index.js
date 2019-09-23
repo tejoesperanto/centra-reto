@@ -257,7 +257,7 @@ async function amendView (req, view) {
 
 			let path = view.permissions;
 			const permsBits = perm.split('.');
-			for (let i in permsBits) {
+			for (let i = 0; i < permsBits.length; i++) {
 				const bit = permsBits[i];
 				const isLast = i + 1 === permsBits.length;
 				if (!(bit in path)) {
@@ -270,6 +270,7 @@ async function amendView (req, view) {
 				path = path[bit];
 			}
 		}
+		console.log(view.permissions);
 		view.permissionsJSON = JSON.stringify(permissions);
 	} else {
 		view.user = false;
