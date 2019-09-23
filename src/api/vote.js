@@ -9,7 +9,6 @@ export async function getUserVotes (user) {
 	const time = moment().unix();
 	const canSeeAll = await user.hasPermission('votes.manage');
 	const groups = [...(await user.getGroups()).values()];
-	if (!groups.length) { groups.push(null); } // prevents empty list for where in
 
 	const groupsParams = '?,'.repeat(groups.length).slice(0, -1);
 	return await CR.db.votes.prepare(`
