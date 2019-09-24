@@ -50,9 +50,25 @@ export async function getUserVotes (user) {
 		}
 		vote.opts = (await csvParse(vote.opts))[0];
 
-		const groupIds = await CR.db.votes.prepare('SELECT group_id from votes_groups where vote_id = ?').all(vote.id);
+		const groupIds = CR.db.votes.prepare('SELECT group_id from votes_groups where vote_id = ?').all(vote.id);
 		const groups = await Promise.all(groupIds.map(x => Group.getGroupById(x.group_id)));
 		vote.groups = groups.map(x => x.nameBase);
+
+		const usersAllowedToVoteWithDupesDeep = await Promise.all(groups.map(x => x.getAllUsers(true)));
+		const usersAllowedToVoteWithDupes = [].concat(...usersAllowedToVoteWithDupesDeep);
+		const usersAllowedToVote = [];
+		const usersAllowedToVoteIds = [];
+		for (let user of usersAllowedToVoteWithDupes) {
+			if (usersAllowedToVoteIds.includes(user.id)) { continue; }
+			usersAllowedToVote.push(user);
+			usersAllowedToVoteIds.push(user.id);
+		}
+
+		vote.numAllowedToVote = usersAllowedToVote.length;
+
+		const userIdsVoted = await CR.db.votes.prepare('SELECT user_id FROM votes_ballots WHERE vote_id = ?').all(vote.id);
+		vote.numBallotsCast = userIdsVoted.length;
+		vote.usersNotVoted = usersAllowedToVote.filter(u => !userIdsVoted.includes(u.id));
 
 		return vote;
 	}));

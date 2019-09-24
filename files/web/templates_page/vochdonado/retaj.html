@@ -236,6 +236,18 @@
 				</tr>
 			{{/case}}
 		{{/switch}}
+		<tr>
+			<td><b>Voĉdonintoj</b></td>
+			<td>
+				{{./numBallotsCast}} el {{./numAllowedToVote}} rajtantoj<br>
+				{{#if ./usersNotVotedNames}}
+					<i>Ne voĉdonis:</i><br>
+					{{#each ./usersNotVotedNames}}
+						{{this}}{{#unless @last}}, {{/unless}}
+					{{/each}}
+				{{/if}}
+			</td>
+		</tr>
 	</table>
 </div>
 {{/each}}
