@@ -1,4 +1,7 @@
 import moment from 'moment-timezone';
+import { promisify } from 'util';
+import _csvStringify from 'csv-stringify';
+const csvStringify = promisify(_csvStringify);
 
 import { removeUnsafeChars, removeUnsafeCharsOneLine } from '../../../util';
 import Group from '../../../api/group';
@@ -152,8 +155,8 @@ async function vote_create (req, res, next) { // eslint-disable-line no-unused-v
 		(name, description, type, timeFrom, timeTo, quorum, majority, majorityMustBeGreater, numWinners, opts, secret)
 		VALUES (@name, @description, @type, @timeFrom, @timeTo, @quorum, @majority, @majorityMustBeGreater, @numWinners, @opts, @secret)`);
 	const info = stmt.run({
-		name: req.body.name,
-		description: req.body.description,
+		name: removeUnsafeCharsOneLine(req.body.name),
+		description: removeUnsafeChars(req.body.description),
 		type: req.body.type,
 		timeFrom: moment().unix(),
 		timeTo: req.body.timeTo,
@@ -161,7 +164,7 @@ async function vote_create (req, res, next) { // eslint-disable-line no-unused-v
 		majority: req.body.majority,
 		majorityMustBeGreater: +req.body.majorityMustBeGreater,
 		numWinners: req.body.numWinners,
-		opts: req.body.opts.join(','),
+		opts: (await csvStringify([req.body.opts.map(removeUnsafeCharsOneLine)])).trim(),
 		secret: +req.body.secret
 	});
 

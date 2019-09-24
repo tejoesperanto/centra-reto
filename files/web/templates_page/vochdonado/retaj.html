@@ -135,8 +135,8 @@
 						</thead>
 						<tbody>
 							{{#each page.votes}}
-							<tr>
-								<td><i class="material-icons clickable" title="Pri la voĉdono">info</i></td>
+							<tr data-id="{{./id}}">
+								<td><i class="material-icons clickable about-vote" title="Pri la voĉdono">info</i></td>
 								<td>{{dateTimeSimple ./timeFrom}}</td>
 								<td>{{dateTimeSimple ./timeTo}}</td>
 								<td>{{./name}}</td>
@@ -161,3 +161,81 @@
 		</div>
 	</div>
 </div>
+
+{{#each page.votes}}
+<div class="template about-vote-modal" id="about-vote-modal-{{./id}}">
+	<table class="align-left">
+		<tr>
+			<td><b>Nomo</b></td>
+			<td>{{./name}}</td>
+		</tr>
+		<tr>
+			<td><b>Tipo</b></td>
+			<td>
+				{{#switch ./type}}
+					{{#case 'jns'}}Jes/Ne/Sindeteno{{/case}}
+					{{#case 'pr'}}Paroranga Metodo{{/case}}
+					{{#case 'utv'}}Unuopa Transdonebla Voĉo{{/case}}
+				{{/switch}}
+			</td>
+		</tr>
+		<tr>
+			<td><b>Priskribo</b></td>
+			<td><pre>{{./description}}</pre></td>
+		</tr>
+		<tr>
+			<td><b>Sekreta</b></td>
+			<td>{{#if ./secret}}Jes{{else}}Ne{{/if}}</td>
+		</tr>
+		<tr>
+			<td><b>Voĉdonrajtantoj</b></td>
+			<td>
+				{{#each ./groups}}
+					{{./this}}{{#unless @last}}, {{/unless}}
+				{{/each}}
+			</td>
+		</tr>
+		<tr>
+			<td><b>Komenchoro</b></td>
+			<td>{{dateTimeSimple ./timeFrom}}</td>
+		</tr>
+		<tr>
+			<td><b>Limhoro</b></td>
+			<td>{{dateTimeSimple ./timeTo}}</td>
+		</tr>
+		{{#switch ./type}}
+			{{#case 'jns'}}
+				<tr>
+					<td><b>Kvorumo</b></td>
+					<td>≥ {{numberFormat ./quorum decimalLength="3" decimalSep=","}}</td>
+				</tr>
+				<tr>
+					<td><b>Plejmulto</b></td>
+					<td>
+						{{#if ./majorityMustBeGreater}}≥{{else}}>{{/if}}
+						{{numberFormat ./majority decimalLength="3" decimalSep=","}}
+					</td>
+				</tr>
+			{{/case}}
+			{{#case 'utv'}}
+				<tr>
+					<td><b>Elektotaj kandidatoj</b></td>
+					<td>{{./numWinners}}</td>
+				</tr>
+			{{/case}}
+			{{#case 'pr' 'utv'}}
+				<tr>
+					<td><b>Kandidatoj</b></td>
+					<td>
+						<ul>
+						{{#each ./opts}}
+							<li>{{this}}</li>
+						{{/each}}
+						</ul>
+					</td>
+				</tr>
+			{{/case}}
+		{{/switch}}
+	</table>
+</div>
+{{/each}}

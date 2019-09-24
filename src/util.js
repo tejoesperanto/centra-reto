@@ -6,6 +6,65 @@ Handlebars.registerHelper('dateTimeSimple', function (timestamp) {
 	return moment.unix(timestamp).format(CR.timeFormats.dateTimeSimple);
 });
 
+Handlebars.registerHelper('breaklines', function(text) {
+	text = Handlebars.Utils.escapeExpression(text);
+	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+	return new Handlebars.SafeString(text);
+});
+
+Handlebars.registerHelper('switch', function(value, options) {
+	this._switch_value_ = value;
+	var html = options.fn(this); // Process the body of the switch block
+	delete this._switch_value_;
+	return html;
+});
+Handlebars.registerHelper('case', function() {
+	// Convert "arguments" to a real array - stackoverflow.com/a/4775938
+	var args = Array.prototype.slice.call(arguments);
+
+	var options    = args.pop();
+	var caseValues = args;
+
+	if (caseValues.indexOf(this._switch_value_) === -1) {
+		return '';
+	} else {
+		return options.fn(this);
+	}
+});
+/**
+ * A Handlebars helper to format numbers
+ * https://gist.github.com/DennyLoko/61882bc72176ca74a0f2
+ * 
+ * This helper has these three optional parameters:
+ *  @var decimalLength int The length of the decimals
+ *  @var thousandsSep char The thousands separator
+ *  @var decimalSep char The decimals separator
+ * 
+ * Based on:
+ *  - mu is too short: http://stackoverflow.com/a/14493552/369867
+ *  - VisioN: http://stackoverflow.com/a/14428340/369867
+ * 
+ * Demo: http://jsfiddle.net/DennyLoko/6sR87/
+ */
+Handlebars.registerHelper('numberFormat', function (value, options) {
+	// Helper parameters
+	var dl = options.hash['decimalLength'] || 2;
+	var ts = options.hash['thousandsSep'] || ',';
+	var ds = options.hash['decimalSep'] || '.';
+
+	// Parse to float
+	value = parseFloat(value);
+
+	// The regex
+	var re = '\\d(?=(\\d{3})+' + (dl > 0 ? '\\D' : '$') + ')';
+
+	// Formats the number with the decimals
+	var num = value.toFixed(Math.max(0, ~~dl));
+
+	// Returns the formatted number
+	return (ds ? num.replace('.', ds) : num).replace(new RegExp(re, 'g'), '$&' + ts);
+});
+
 /**
  * Compiles and renders a handlebar template, much like the old Mustache api
  * @param  {string} tmpl   The template string

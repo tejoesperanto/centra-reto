@@ -145,4 +145,14 @@ $(function () {
 				});
 		});
 	});
+
+	$('.about-vote').click(function () {
+		var id = $(this).parents('tr').data('id');
+		var modalTemplate = cloneTemplate('#about-vote-modal-' + id);
+		
+		swal({
+			title: 'Pri voĉdono',
+			content: modalTemplate[0]
+		});
+	});
 });
