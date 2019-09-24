@@ -4,6 +4,8 @@ import * as CRApi from '..';
 import { wrap } from '../..';
 
 import apiCreate from './_create';
+import apiExtend from './_extend';
+import apiDelete from './_delete';
 
 /**
  * Sets up the router
@@ -14,10 +16,17 @@ export default function () {
 
 	const middleware = CRApi.middleware;
 
+	router.use(middleware.requireLogin);
+	router.use(middleware.requireInitialSetup);
+
 	router.post('/create',
-		middleware.requireLogin,
-		middleware.requireInitialSetup,
 		wrap(apiCreate));
+
+	router.post('/extend',
+		wrap(apiExtend));
+
+	router.post('/delete',
+		wrap(apiDelete));
 
 	return router;
 }

@@ -369,7 +369,7 @@ $(function () {
 
 								performAPIRequest('post', '/api/cirkuleroj/update_deadline', {
 									cirkulero_id: rowData.id,
-									deadline: input.data("DateTimePicker").date().unix()
+									deadline: input.data('DateTimePicker').date().unix()
 								}).then(function (res) {
 									swal.stopLoading();
 									table.draw();

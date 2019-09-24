@@ -147,8 +147,81 @@ $(function () {
 	});
 
 	$('.about-vote').click(function () {
-		var id = $(this).parents('tr').data('id');
+		var tr = $(this).parents('tr');
+		var id = tr.data('id');
 		var modalTemplate = cloneTemplate('#about-vote-modal-' + id);
+
+		modalTemplate.find('.about-vote-modal-delete').click(function () {
+			swal({
+				title: 'Ĉu vi certas, ke vi volas forigi la voĉdonon?',
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Forigi',
+						closeModal: false
+					}
+				]
+			}).then(function (isConfirm) {
+				if (!isConfirm) { return; }
+
+				performAPIRequest('post', '/api/votes/delete', { id: id })
+					.then(function (res) {
+						swal.stopLoading();
+						if (!res.success) { return; }
+						location.reload();
+					});
+			});
+		});
+
+		modalTemplate.find('.about-vote-modal-deadline').click(function () {
+			var deadlineModal = cloneTemplate('.vote-deadline-modal');
+			var form = deadlineModal.find('form');
+			var input = form.find('input');
+
+			var timeTo = moment.unix(tr.data('timeto'));
+
+			input.datetimepicker({
+				locale: 'eo',
+				minDate: timeTo,
+				defaultDate: timeTo
+			});
+
+			input.on('input', function () {
+				var valid = form[0].checkValidity();
+				$('.swal-button--confirm').attr('disabled', !valid);
+			});
+			$.AdminBSB.input.activate(form);
+
+			form.submit(function (e) {
+				e.preventDefault();
+				$('.swal-button--confirm').click();
+			});
+
+			swal({
+				title: 'Ŝovo de limhoro',
+				content: deadlineModal[0],
+				buttons: [
+					'Nuligi',
+					{
+						text: 'Ŝovi',
+						closeModal: false
+					}
+				]
+			}).then(function (isConfirm) {
+				if (!isConfirm) { return; }
+
+				var newTimeTo = input.data('DateTimePicker').date().unix();
+
+				performAPIRequest('post', '/api/votes/extend', {
+					id: id,
+					timeTo: newTimeTo
+				}).then(function (res) {
+					swal.stopLoading();
+					if (!res.success) { return; }
+					location.reload();
+				});
+			});
+		});
 		
 		swal({
 			title: 'Pri voĉdono',

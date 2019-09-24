@@ -70,6 +70,8 @@ export async function getUserVotes (user) {
 		vote.numBallotsCast = userIdsVoted.length;
 		vote.usersNotVoted = usersAllowedToVote.filter(u => !userIdsVoted.includes(u.id));
 
+		vote.hasEnded = vote.timeTo < moment().unix();
+
 		return vote;
 	}));
 }

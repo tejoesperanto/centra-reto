@@ -135,7 +135,7 @@
 						</thead>
 						<tbody>
 							{{#each page.votes}}
-							<tr data-id="{{./id}}">
+							<tr data-id="{{./id}}" data-timeto="{{./timeTo}}">
 								<td><i class="material-icons clickable about-vote" title="Pri la voĉdono">info</i></td>
 								<td>{{dateTimeSimple ./timeFrom}}</td>
 								<td>{{dateTimeSimple ./timeTo}}</td>
@@ -164,6 +164,24 @@
 
 {{#each page.votes}}
 <div class="template about-vote-modal" id="about-vote-modal-{{./id}}">
+	{{#if ../permissions.votes.manage}}
+	<div class="row m-b-15">
+		<div class="col col-sm-6">
+			<button class="about-vote-modal-delete btn btn-danger btn-block waves-effect">
+				<i class="material-icons">delete_forever</i>
+				Forigi voĉdonon
+			</button>
+		</div>
+		{{#unless ./hasEnded}}
+		<div class="col col-sm-6">
+			<button class="about-vote-modal-deadline btn btn-primary btn-block waves-effect">
+				<i class="material-icons">calendar_today</i>
+				Ŝovi limhoron
+			</button>
+		</div>
+		{{/unless}}
+	</div>
+	{{/if}}
 	<table class="align-left">
 		<tr>
 			<td><b>Nomo</b></td>
@@ -251,3 +269,13 @@
 	</table>
 </div>
 {{/each}}
+<div class="template vote-deadline-modal">
+	<form>
+		<div class="form-group form-float m-t-15 align-left">
+			<div class="form-line">
+				<input type="text" class="form-control" required>
+				<label class="form-label">Limhoro (UTC)</label>
+			</div>
+		</div>
+	</form>
+</div>
