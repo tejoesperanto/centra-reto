@@ -1,0 +1,90 @@
+<div class="container-fluid">
+	<div class="block-header">
+		<ol class="breadcrumb breadcrumb-bg-green">
+			<li>
+				<a href="/">
+					<i class="material-icons">home</i>
+					Hejmo
+				</a>
+			</li>
+			<li>
+				<a href="/vochdonado">
+					<i class="material-icons">how_to_vote</i>
+					Voĉdonado
+				</a>
+			</li>
+			<li>
+				<a href="/vochdonado/retaj">
+					Reta voĉdonado
+				</a>
+			</li>
+			<li>
+				<a href="/vochdonado/retaj/{{page.vote.id}}">
+					« {{page.vote.name}} »
+				</a>
+			</li>
+		</ol>
+	</div>
+	<div class="row clearfix">
+		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+			<div class="card">
+				<div class="body">
+					<h1>« {{page.vote.name}} »</h1>
+					<p><pre>{{page.vote.description}}</pre></p>
+					<b>Metodo: </b>
+					{{#switch page.vote.type}}
+						{{#case 'jns'}}Jes/Ne/Sindeteno{{/case}}
+						{{#case 'pr'}}Paroranga Metodo{{/case}}
+						{{#case 'utv'}}Unuopa Transdonebla Voĉo{{/case}}
+					{{/switch}}
+					{{#switch page.vote.type}}
+						{{#case 'utv'}}<br><b>Elektotaj kandidatoj: </b>{{page.vote.numWinners}}{{/case}}
+					{{/switch}}
+
+					<form id="vote-form" autocomplete="off">
+						<h2>Via voĉo:</h2>
+						<p>
+							{{#switch page.vote.type}}
+								{{#case 'pr'}}
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Eblas doni al egale preferataj ebloj la saman numeron. Ebloj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj.
+								{{/case}}
+								{{#case 'utv'}}
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Ĉiu eblo devas ricevi unikan numeron. Ebloj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj.
+								{{/case}}
+							{{/switch}}
+						</p>
+						{{#switch page.vote.type}}
+							{{#case 'jns'}}
+								<div>
+									<input name="vote" type="radio" class="with-gap" id="vote-j" value="j" required>
+									<label for="vote-j">JES</label>
+
+									<input name="vote" type="radio" class="with-gap" id="vote-n" value="n" required>
+									<label for="vote-n">NE</label>
+
+									<input name="vote" type="radio" class="with-gap" id="vote-s" value="s" required>
+									<label for="vote-s">SINDETENE</label>
+								</div>
+							{{/case}}
+							{{#case 'pr' 'utv'}}
+								{{#each page.vote.opts}}
+									<div class="row">
+										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">{{this}}</div>
+										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+											<input name="vote-{{@index}}" size="3">
+										</div>
+									</div>
+								{{/each}}
+							{{/case}}
+						{{/switch}}
+
+						<button type="submit" class="btn btn-success m-t-15 waves-effect">
+							<i class="material-icons">how_to_vote</i>
+							<span>Voĉdoni</span>
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
