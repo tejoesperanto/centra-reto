@@ -289,7 +289,7 @@
 									<tbody>
 										{{#each ./opts as |opt optIndex|}}
 											<tr>
-												<td>{{opt}} ({{lookup voteRoot.results.vochoAliases optIndex}})</td>
+												<td>{{opt}}</td>
 												{{#each voteRoot.results.vochoResults.rounds as |round|}}
 												<td>
 													{{#if (hasOwn round.votes (lookup voteRoot.results.vochoAliases optIndex))}}
