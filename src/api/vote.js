@@ -94,7 +94,8 @@ export async function getUserVotes (user) {
 				results = JSON.parse(results.results);
 			} else {
 				results = {
-					ballots: CR.db.votes.prepare('SELECT user_id, ballot from votes_ballots where vote_id = ?').all(vote.id)
+					ballots: CR.db.votes.prepare('SELECT user_id, ballot from votes_ballots where vote_id = ?').all(vote.id),
+					numAllowedToVote: vote.numAllowedToVote
 				};
 
 				if (vote.type === 'jns') {
@@ -180,7 +181,6 @@ export async function getUserVotes (user) {
 
 				// Insert the results
 				CR.db.votes.prepare('INSERT into votes_results (id, results) values (?, ?)').run(vote.id, JSON.stringify(results));
-				// TODO: When the vote has ended the number of allowed voters needs to be updated
 
 				// Inform the relevant people on the occasion a tie breaker is needed
 				if (results.result === 'TIE_BREAKER_NEEDED') {
@@ -200,6 +200,9 @@ export async function getUserVotes (user) {
 
 			}
 			vote.results = results;
+		}
+		if (vote.results) {
+			vote.numAllowedToVote = vote.results.numAllowedToVote;
 		}
 		console.log(vote.results);
 
