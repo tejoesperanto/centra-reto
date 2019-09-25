@@ -66,7 +66,7 @@ export async function getUserVotes (user) {
 
 		vote.numAllowedToVote = usersAllowedToVote.length;
 
-		const userIdsVoted = await CR.db.votes.prepare('SELECT user_id FROM votes_ballots WHERE vote_id = ?').all(vote.id);
+		const userIdsVoted = (await CR.db.votes.prepare('SELECT user_id FROM votes_ballots WHERE vote_id = ?').all(vote.id)).map(x => x.user_id);
 		vote.numBallotsCast = userIdsVoted.length;
 		vote.usersNotVoted = usersAllowedToVote.filter(u => !userIdsVoted.includes(u.id));
 
