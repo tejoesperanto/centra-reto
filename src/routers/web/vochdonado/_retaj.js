@@ -4,7 +4,7 @@ import Group from '../../../api/group';
 async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const votes = await CRVote.getUserVotes(req.user);
 	for (let vote of votes) {
-		vote.usersNotVotedNames = vote.usersNotVoted.map(u => u.getLongName());
+		vote.usersNotVotedNames = vote.usersNotVoted.map(u => u.getLongName() || u.email);
 	}
 
 	const allGroups = await Group.getAllGroups();

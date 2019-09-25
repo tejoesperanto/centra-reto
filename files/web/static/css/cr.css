@@ -400,3 +400,7 @@ textarea.resizable-card{
 .table-hide-first tr td:nth-child(1), .table-hide-first th:nth-child(1) {
     display: none;
 }
+
+.table-align-top td {
+	vertical-align: top;
+}

@@ -162,7 +162,7 @@
 	</div>
 </div>
 
-{{#each page.votes}}
+{{#each page.votes as |voteRoot|}}
 <div class="template about-vote-modal" id="about-vote-modal-{{./id}}">
 	{{#if ../permissions.votes.manage}}
 	<div class="row m-b-15">
@@ -182,7 +182,7 @@
 		{{/unless}}
 	</div>
 	{{/if}}
-	<table class="align-left">
+	<table class="align-left table-align-top">
 		<tr>
 			<td><b>Nomo</b></td>
 			<td>{{./name}}</td>
@@ -266,6 +266,70 @@
 				{{/if}}
 			</td>
 		</tr>
+		{{#if ./hasEnded}}
+		<tr>
+			<td><b>Rezulto</b></td>
+			<td>
+				{{#if ./results.isSindeteno}}
+					Sindetene ({{./results.vochoResults.ballots}} balotiloj kalkulitaj, {{./results.vochoResults.blankBallots}} blankaj)
+				{{else}}
+					{{#switch ./type}}
+						{{#case 'utv'}}
+							{{#if ./results.vochoResults}}
+								<p>Egalecrompanto {{#unless ./tieBreakerBallot}}ne{{/unless}} estis bezonata.</p>
+								<p>{{./results.vochoResults.ballots}} balotiloj kalkulitaj, {{./results.vochoResults.blankBallots}} blankaj</p>
+								<p>Elektiĝkvoto: {{numberFormat ./results.vochoResults.quota decimalLength="3" decimalSep=","}}</p>
+								<table class="table table-striped">
+									<thead>
+										<th>Voĉdoneblo</th>
+										{{#each ./results.vochoResults.rounds}}
+										<th>{{plusOne @index}}-a vico</th>
+										{{/each}}
+									</thead>
+									<tbody>
+										{{#each ./opts as |opt optIndex|}}
+											<tr>
+												<td>{{opt}} ({{lookup voteRoot.results.vochoAliases optIndex}})</td>
+												{{#each voteRoot.results.vochoResults.rounds as |round|}}
+												<td>
+													{{#if (hasOwn round.votes (lookup voteRoot.results.vochoAliases optIndex))}}
+														{{#if (contains round.elected (lookup voteRoot.results.vochoAliases optIndex))}}
+														<b>
+														{{/if}}
+														{{#if (eq round.eliminated (lookup voteRoot.results.vochoAliases optIndex))}}
+														<strike>
+														{{/if}}
+
+														{{numberFormat (lookup round.votes (lookup voteRoot.results.vochoAliases optIndex)) decimalLength="3" decimalSep=","}}
+
+														{{#if (contains round.elected (lookup voteRoot.results.vochoAliases optIndex))}}
+														</b>
+														{{/if}}
+														{{#if (eq round.eliminated (lookup voteRoot.results.vochoAliases optIndex))}}
+														</strike>
+														{{/if}}
+													{{/if}}
+												</td>
+												{{/each}}
+											</tr>
+										{{/each}}
+									</tbody>
+								</table>
+								<p>
+									Venkintoj (laŭ ordo de elektiĝo):
+									{{#each ./results.vochoResults.winners}}
+										{{lookup voteRoot.results.vochoAliasesInverse this}}{{#unless @last}},{{/unless}}
+									{{/each}}
+								</p>
+							{{else}}
+								Atendas egalecrompanton …
+							{{/if}}
+						{{/case}}
+					{{/switch}}
+				{{/if}}
+			</td>
+		</tr>
+		{{/if}}
 	</table>
 </div>
 {{/each}}

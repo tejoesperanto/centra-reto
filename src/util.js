@@ -1,24 +1,25 @@
 import Handlebars from 'handlebars';
 import fs from 'pn/fs';
 import moment from 'moment-timezone';
+import handlebarsHelpers from 'handlebars-helpers';
 
 Handlebars.registerHelper('dateTimeSimple', function (timestamp) {
 	return moment.unix(timestamp).format(CR.timeFormats.dateTimeSimple);
 });
 
-Handlebars.registerHelper('breaklines', function(text) {
+Handlebars.registerHelper('breaklines', function (text) {
 	text = Handlebars.Utils.escapeExpression(text);
 	text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
 	return new Handlebars.SafeString(text);
 });
 
-Handlebars.registerHelper('switch', function(value, options) {
+Handlebars.registerHelper('switch', function (value, options) {
 	this._switch_value_ = value;
 	var html = options.fn(this); // Process the body of the switch block
 	delete this._switch_value_;
 	return html;
 });
-Handlebars.registerHelper('case', function() {
+Handlebars.registerHelper('case', function () {
 	// Convert "arguments" to a real array - stackoverflow.com/a/4775938
 	var args = Array.prototype.slice.call(arguments);
 
@@ -31,6 +32,16 @@ Handlebars.registerHelper('case', function() {
 		return options.fn(this);
 	}
 });
+Handlebars.registerHelper('plusOne', function (number) {
+	return number + 1;
+});
+Handlebars.registerHelper('typeof', function (value) {
+	return typeof value;
+});
+handlebarsHelpers({
+	handlebars: Handlebars
+});
+
 /**
  * A Handlebars helper to format numbers
  * https://gist.github.com/DennyLoko/61882bc72176ca74a0f2

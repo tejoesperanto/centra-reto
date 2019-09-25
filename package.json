@@ -26,6 +26,7 @@
     "express-rate-limit": "^3.3.2",
     "fs-extra": "^7.0.1",
     "handlebars": "^4.3.1",
+    "handlebars-helpers": "^0.10.0",
     "helmet": "^3.15.0",
     "merge-options": "^1.0.1",
     "moment-timezone": "^0.5.23",

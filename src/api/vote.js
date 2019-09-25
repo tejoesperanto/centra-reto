@@ -126,7 +126,7 @@ export async function getUserVotes (user) {
 							.map(x => x.map(y => symbols[y]).join('='))
 							.join('>');
 					});
-					let tieBreakerBallot = null;
+					let tieBreakerBallot = undefined;
 					if (vote.tieBreakerBallot) {
 						tieBreakerBallot = vote.tieBreakerBallot
 							.split('\n')
@@ -141,11 +141,17 @@ export async function getUserVotes (user) {
 							[], // ignoredCandidates
 							tieBreakerBallot // tieBreaker, if one exists
 						);
+						results.vochoAliases = symbols.substring(0, vote.opts.length).split('');
+						results.vochoAliasesInverse = results.vochoAliases.map(x => vote.opts[symbols.indexOf(x)]);
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
 							results.result = 'TIE_BREAKER_NEEDED';
 						} else if (e.type === 'BLANK_BALLOTS') {
 							results.isSindeteno = true;
+							results.vochoResults = {
+								numBallots: e.numBallots,
+								blankBallots: e.blankBallots
+							};
 						} else {
 							throw e;
 						}
@@ -153,9 +159,9 @@ export async function getUserVotes (user) {
 					results.isSindeteno = false;
 				} else if (vote.type === 'utv') {
 					results.ballotsStr = results.ballots.map(ballotObj => {
-						return ballotObj.ballot.split('\n').map(x => symbols[x]).join('');
+						return ballotObj.ballot.split('\n').map((x, i) => symbols[i]).join('');
 					});
-					let tieBreakerBallot = null;
+					let tieBreakerBallot = undefined;
 					if (vote.tieBreakerBallot) {
 						tieBreakerBallot = vote.tieBreakerBallot.split('\n').map(x => symbols[x]).join('');
 					}
@@ -167,11 +173,17 @@ export async function getUserVotes (user) {
 							[], // ignoredCandidates
 							tieBreakerBallot // tieBreaker, if one exists
 						);
+						results.vochoAliases = symbols.substring(0, vote.opts.length).split('');
+						results.vochoAliasesInverse = results.vochoAliases.map(x => vote.opts[symbols.indexOf(x)]);
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
 							results.result = 'TIE_BREAKER_NEEDED';
 						} else if (e.type === 'BLANK_BALLOTS') {
 							results.isSindeteno = true;
+							results.vochoResults = {
+								numBallots: e.numBallots,
+								blankBallots: e.blankBallots
+							};
 						} else {
 							throw e;
 						}
