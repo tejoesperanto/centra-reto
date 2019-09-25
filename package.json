@@ -25,7 +25,7 @@
     "express": "^4.16.4",
     "express-rate-limit": "^3.3.2",
     "fs-extra": "^7.0.1",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.3.1",
     "helmet": "^3.15.0",
     "merge-options": "^1.0.1",
     "moment-timezone": "^0.5.23",
@@ -36,6 +36,7 @@
     "pn": "^1.1.0",
     "source-map-support": "^0.5.9",
     "tty-table": "^2.7.1",
+    "vocho-lib": "git+https://github.com/tejoesperanto/vocho-lib.git",
     "winston": "^3.1.0",
     "yargs-parser": "^11.1.0"
   },
