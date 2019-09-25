@@ -271,9 +271,26 @@
 			<td><b>Rezulto</b></td>
 			<td>
 				{{#if ./results.isSindeteno}}
-					Sindetene ({{./results.vochoResults.ballots}} balotiloj kalkulitaj, {{./results.vochoResults.blankBallots}} blankaj)
+					{{#switch ./type}}
+						{{#case 'jns'}}
+						Sindetene ({{./results.tally.j}} jesis, {{./results.tally.n}} neis, {{./results.tally.s}} sindetenis)
+						{{/case}}
+						{{#case 'pr' 'utv'}}
+						Sindetene ({{./results.vochoResults.ballots}} balotiloj kalkulitaj, {{./results.vochoResults.blankBallots}} blankaj)
+						{{/case}}
+					{{/switch}}
 				{{else}}
 					{{#switch ./type}}
+						{{#case 'jns'}}
+							<p>
+								Kvorumo {{#unless ./results.reachedQuorum}}ne{{/unless}} atingita,
+								{{#unless ./results.hasMajority}}ne{{/unless}} havas sufiĉe da jesaj voĉoj →
+								{{#unless ./results.isAccepted}}Ne{{/unless}} akceptita
+							</p>
+							<p>
+								{{./results.tally.j}} jesis, {{./results.tally.n}} neis, {{./results.tally.s}} sindetenis
+							</p>
+						{{/case}}
 						{{#case 'utv'}}
 							{{#if ./results.vochoResults}}
 								<p>Egalecrompanto {{#unless ./tieBreakerBallot}}ne{{/unless}} estis bezonata.</p>
