@@ -3,6 +3,8 @@ import { promisify } from 'util';
 import _csvParse from 'csv-parse';
 const csvParse = promisify(_csvParse);
 
+import { tieBreakerGroupId } from '../../../api/vote';
+
 async function vote_vote (req, res, next) { // eslint-disable-line no-unused-vars
 	/**
 	 * POST /vote
@@ -34,21 +36,41 @@ async function vote_vote (req, res, next) { // eslint-disable-line no-unused-var
 	}
 
 	const vote = CR.db.votes.prepare('SELECT type, opts, timeTo FROM votes where id = ?').get(req.body.id);
-	if (!vote || vote.timeTo < moment().unix()) {
+	if (!vote) {
 		return res.sendAPIError('VOTE_NOT_FOUND');
 	}
 
-	const hasVoted = CR.db.votes.prepare('SELECT 1 FROM votes_ballots where vote_id = ? and user_id = ?').get(req.body.id, req.user.id);
-	if (hasVoted) {
-		return res.sendAPIError('ALREADY_VOTED');
+	const userGroups = await req.user.getGroups();
+	const isTieBreakerUser = userGroups.has(tieBreakerGroupId);
+	let isTieBreaker = false;
+	let voteResults;
+	if (isTieBreakerUser) {
+		voteResults = CR.db.votes.prepare('SELECT results from votes_results where id = ?').get(req.body.id);
+		if (voteResults) {
+			voteResults = JSON.parse(voteResults.results);
+			if (voteResults.result === 'TIE_BREAKER_NEEDED') {
+				isTieBreaker = true;
+			}
+		}
 	}
 
-	const groups = await req.user.getGroups();
-	const groupIds = [...groups.values()].map(x => x.group.id);
-	const mayVoteParams = '?,'.repeat(groupIds.length).slice(0, -1);
-	const mayVote = CR.db.votes.prepare(`SELECT 1 from votes_groups where vote_id = ? and group_id in (${mayVoteParams})`).get(req.body.id, ...groupIds);
-	if (!mayVote) {
-		return res.sendAPIError('VOTE_NOT_FOUND');
+	if (!isTieBreaker) {
+		if (vote.timeTo < moment().unix()) {
+			return res.sendAPIError('VOTE_NOT_FOUND');
+		}
+
+		const hasVoted = CR.db.votes.prepare('SELECT 1 FROM votes_ballots where vote_id = ? and user_id = ?').get(req.body.id, req.user.id);
+		if (hasVoted) {
+			return res.sendAPIError('ALREADY_VOTED');
+		}
+
+		const groups = await req.user.getGroups();
+		const groupIds = [...groups.values()].map(x => x.group.id);
+		const mayVoteParams = '?,'.repeat(groupIds.length).slice(0, -1);
+		const mayVote = CR.db.votes.prepare(`SELECT 1 from votes_groups where vote_id = ? and group_id in (${mayVoteParams})`).get(req.body.id, ...groupIds);
+		if (!mayVote) {
+			return res.sendAPIError('VOTE_NOT_FOUND');
+		}
 	}
 
 	if (vote.opts) { vote.opts = (await csvParse(vote.opts))[0]; }
@@ -59,8 +81,11 @@ async function vote_vote (req, res, next) { // eslint-disable-line no-unused-var
 			return res.sendAPIError('INVALID_ARGUMENT', ['ballot']);
 		}
 		ballot = req.body.ballot;
-	} else {
+	} else { // pr, utv
 		if (!Array.isArray(req.body.ballot)) {
+			return res.sendAPIError('INVALID_ARGUMENT', ['ballot']);
+		}
+		if (isTieBreaker && req.body.ballot.length !== vote.opts.length) {
 			return res.sendAPIError('INVALID_ARGUMENT', ['ballot']);
 		}
 		const usedIndices = [];
@@ -68,7 +93,7 @@ async function vote_vote (req, res, next) { // eslint-disable-line no-unused-var
 			if (!Array.isArray(indexArr)) {
 				return res.sendAPIError('INVALID_ARGUMENT', ['ballot']);
 			}
-			if (vote.type === 'utv' && indexArr.length > 1) {
+			if ((vote.type === 'utv' || isTieBreaker) && indexArr.length > 1) {
 				return res.sendAPIError('INVALID_ARGUMENT', ['ballot']);
 			}
 			for (const index of indexArr) {
@@ -84,8 +109,13 @@ async function vote_vote (req, res, next) { // eslint-disable-line no-unused-var
 		ballot = req.body.ballot.map(x => x.join(',')).join('\n');
 	}
 
-	CR.db.votes.prepare('insert into votes_ballots (vote_id, user_id, ballot) values (?, ?, ?)')
-		.run(req.body.id, req.user.id, ballot);
+	if (isTieBreaker) {
+		CR.db.votes.prepare('update votes set tieBreakerBallot = ? where id = ?').run(ballot, req.body.id);
+		CR.db.votes.prepare('delete from votes_results where id = ?').run(req.body.id);
+	} else {
+		CR.db.votes.prepare('insert into votes_ballots (vote_id, user_id, ballot) values (?, ?, ?)')
+			.run(req.body.id, req.user.id, ballot);
+	}
 
 	res.sendAPIResponse({});
 }

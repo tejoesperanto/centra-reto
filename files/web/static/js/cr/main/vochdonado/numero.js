@@ -16,13 +16,24 @@ $(function () {
 			var values = [];
 			for (var i = 0; i < inputs.length; i++) {
 				var val = inputs[i].value;
-				if (!val.length) { continue; }
+				if (!val.length) {
+					if (pageData.isTieBreaker) {
+						return swal({
+							icon: 'warning',
+							title: 'Nevalida balotilo',
+							text: 'Egalecrompaj balotiloj devas listigi ĉiujn opciojn.',
+							button: 'Bone'
+						});
+					} else {
+						continue;
+					}
+				}
 				val = parseInt(val, 10);
 				if (!Number.isSafeInteger(val)) {
 					return swal({
 						icon: 'warning',
 						title: 'Nevalida balotilo',
-						text: 'Bonvolu enmeti nur entjerojn',
+						text: 'Bonvolu enmeti nur entjerojn.',
 						button: 'Bone'
 					});
 				}
@@ -47,7 +58,7 @@ $(function () {
 				ballot[n].push(val.i);
 			}
 
-			if (pageData.vote.type === 'utv') {
+			if (pageData.vote.type === 'utv' || pageData.isTieBreaker) {
 				for (var i in ballot) {
 					var entry = ballot[i];
 					if (entry.length > 1) {

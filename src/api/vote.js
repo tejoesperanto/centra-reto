@@ -3,8 +3,10 @@ import { RankedPairs, STV } from 'vocho-lib';
 import { promisify } from 'util';
 import _csvParse from 'csv-parse';
 const csvParse = promisify(_csvParse);
+import url from 'url';
 
 import Group from './group';
+import * as CRMail from '../mail';
 
 const range = (start, end) => Array.from({length: (end - start + 1)}, (v, k) => k + start);
 const symbols = String.fromCharCode(
@@ -15,6 +17,8 @@ const symbols = String.fromCharCode(
 	...range(0xd8, 0xf6), // latin-1 uppercase 2, latin-1 lowercase 1
 	...range(0xf8, 0xff), // latin-1 lowercase 2
 );
+
+export const tieBreakerGroupId = 7;
 
 /**
  * Gets all the votes the user can see
@@ -121,10 +125,20 @@ export async function getUserVotes (user) {
 							.map(x => x.map(y => symbols[y]).join('='))
 							.join('>');
 					});
+					let tieBreakerBallot = null;
+					if (vote.tieBreakerBallot) {
+						tieBreakerBallot = vote.tieBreakerBallot
+							.split('\n')
+							.map(x => x.split(','))
+							.map(x => x.map(y => symbols[y]).join('='))
+							.join('>');
+					}
 					try {
 						results.vochoResults = RankedPairs(
 							symbols.substring(0, vote.opts.length), // candidates
-							results.ballotsStr // ballots
+							results.ballotsStr, // ballots
+							[], // ignoredCandidates
+							tieBreakerBallot // tieBreaker, if one exists
 						);
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
@@ -140,11 +154,17 @@ export async function getUserVotes (user) {
 					results.ballotsStr = results.ballots.map(ballotObj => {
 						return ballotObj.ballot.split('\n').map(x => symbols[x]).join('');
 					});
+					let tieBreakerBallot = null;
+					if (vote.tieBreakerBallot) {
+						tieBreakerBallot = vote.tieBreakerBallot.split('\n').map(x => symbols[x]).join('');
+					}
 					try {
 						results.vochoResults = STV(
 							vote.numWinners, // places
 							symbols.substring(0, vote.opts.length), // candidates
-							results.ballotsStr // ballots
+							results.ballotsStr, // ballots
+							[], // ignoredCandidates
+							tieBreakerBallot // tieBreaker, if one exists
 						);
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
@@ -160,6 +180,24 @@ export async function getUserVotes (user) {
 
 				// Insert the results
 				CR.db.votes.prepare('INSERT into votes_results (id, results) values (?, ?)').run(vote.id, JSON.stringify(results));
+				// TODO: When the vote has ended the number of allowed voters needs to be updated
+
+				// Inform the relevant people on the occasion a tie breaker is needed
+				if (results.result === 'TIE_BREAKER_NEEDED') {
+					const tieBreakerGroup = await Group.getGroupById(tieBreakerGroupId);
+					const tieBreakerUsers = await tieBreakerGroup.getAllUsers(true);
+					const promises = tieBreakerUsers.map(user => {
+						return CRMail.renderSendMail('voting_tie_breaker', {
+							name: user.getBriefName(),
+							vote: vote,
+							url: url.resolve(CR.conf.addressPrefix, 'vochdonado/retaj/' + vote.id)
+						}, {
+							to: user.email
+						});
+					});
+					await Promise.all(promises);
+				}
+
 			}
 			vote.results = results;
 		}

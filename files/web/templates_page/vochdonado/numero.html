@@ -42,16 +42,22 @@
 					{{/switch}}
 
 					<form id="vote-form" autocomplete="off">
-						<h2>Via voĉo:</h2>
+						<h2>Via {{#if page.isTieBreaker}}egalecrompa{{/if}} voĉo:</h2>
 						<p>
 							{{#switch page.vote.type}}
 								{{#case 'pr'}}
-								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Eblas doni al egale preferataj ebloj la saman numeron. Opcioj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj. Balotilo sen ajna listigita kandidato estas konsiderata blanka.
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron.
+								{{#unless page.isTieBreaker}}Eblas doni al egale preferataj ebloj la saman numeron.{{/unless}}
 								{{/case}}
 								{{#case 'utv'}}
-								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Ĉiu eblo devas ricevi unikan numeron. Opcioj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj. Balotilo sen ajna listigita kandidato estas konsiderata blanka.
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Ĉiu eblo devas ricevi unikan numeron.
 								{{/case}}
 							{{/switch}}
+							{{#if page.isTieBreaker}}
+							Ĉar vi estas egalecrompanto, vi devas listigi ĉiujn opciojn.
+							{{else}}
+							Opcioj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj. Balotilo sen ajna listigita kandidato estas konsiderata blanka.
+							{{/if}}
 						</p>
 						{{#switch page.vote.type}}
 							{{#case 'jns'}}

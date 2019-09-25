@@ -1,0 +1,13 @@
+Via egalecrompanto voĉo estas bezonata
+======================================
+
+Kara {{&name}}
+
+La voĉdono « {{&vote.name}} » rezultis en egaleco, kaj tial vi, kiel Prezidanto, laŭ la Reglamento pri voĉdonado devas doni vian egalecrompan voĉon.
+
+Bonvolu sekvi la ĉi-suban ligilon por egalecrompe voĉdoni:
+
+{{&url}}
+
+Salutas
+Centra Reto-roboto
