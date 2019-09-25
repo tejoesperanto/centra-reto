@@ -46,10 +46,10 @@
 						<p>
 							{{#switch page.vote.type}}
 								{{#case 'pr'}}
-								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Eblas doni al egale preferataj ebloj la saman numeron. Ebloj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj.
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Eblas doni al egale preferataj ebloj la saman numeron. Opcioj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj. Balotilo sen ajna listigita kandidato estas konsiderata blanka.
 								{{/case}}
 								{{#case 'utv'}}
-								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Ĉiu eblo devas ricevi unikan numeron. Ebloj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj.
+								Listigu la eblojn laŭ via preferata ordo donante al viaj plej preferataj pli malaltan numeron. Ĉiu eblo devas ricevi unikan numeron. Opcioj kiuj ne ricevas numeron estas konsiderataj malpreferataj al la listigitaj. Balotilo sen ajna listigita kandidato estas konsiderata blanka.
 								{{/case}}
 							{{/switch}}
 						</p>
@@ -71,14 +71,14 @@
 									<div class="row">
 										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 align-right">{{this}}</div>
 										<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-											<input name="vote-{{@index}}" size="3">
+											<input name="vote-{{@index}}" class="vote" size="3">
 										</div>
 									</div>
 								{{/each}}
 							{{/case}}
 						{{/switch}}
 
-						<button type="submit" class="btn btn-success m-t-15 waves-effect">
+						<button type="submit" class="btn btn-success m-t-15 waves-effect" id="vote-button">
 							<i class="material-icons">how_to_vote</i>
 							<span>Voĉdoni</span>
 						</button>

@@ -4,8 +4,9 @@ import * as CRApi from '..';
 import { wrap } from '../..';
 
 import apiCreate from './_create';
-import apiExtend from './_extend';
 import apiDelete from './_delete';
+import apiExtend from './_extend';
+import apiVote from './_vote';
 
 /**
  * Sets up the router
@@ -22,11 +23,14 @@ export default function () {
 	router.post('/create',
 		wrap(apiCreate));
 
+	router.post('/delete',
+		wrap(apiDelete));
+
 	router.post('/extend',
 		wrap(apiExtend));
 
-	router.post('/delete',
-		wrap(apiDelete));
+	router.post('/vote',
+		wrap(apiVote));
 
 	return router;
 }

@@ -27,20 +27,18 @@ async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const data = {
 		title: `« ${vote.name} » | Reta voĉdonado`,
 		scripts: [
-			
-		],
-		stylesheets: [
-			
+			'/js/cr/main/vochdonado/numero.js'
 		],
 		page: {
 			vote
 		},
 		pageDataObj: {
-			
-		},
-		permissionsCheck: [
-			
-		],
+			vote: {
+				id: vote.id,
+				type: vote.type,
+				opts: vote.opts
+			}
+		}
 	};
 
 	await res.sendRegularPage('vochdonado/numero', data);
