@@ -163,7 +163,7 @@
 </div>
 
 {{#each page.votes as |voteRoot|}}
-<div class="template about-vote-modal" id="about-vote-modal-{{./id}}">
+<div class="template about-vote-modal" id="about-vote-modal-{{./id}}" style="overflow-x: scroll;">
 	{{#if ../permissions.votes.manage}}
 	<div class="row m-b-15">
 		<div class="col col-sm-6">
@@ -403,6 +403,60 @@
 						{{/case}}
 					{{/switch}}
 				{{/if}}
+			</td>
+		</tr>
+		<tr>
+			<td><b>Balotiloj</b></td>
+			<td>
+				<p>Tiu ĉi baloto {{#unless ./secret}}ne{{/unless}} estas sekreta, tial {{#if ./secret}}ne{{/if}} eblas vidi kiel ĉiu rajtinto voĉdonis.</p>
+				{{#unless ./secret}}
+					<table class="table table-striped">
+						<thead>
+							<th>Nomo</th>
+							<th>Balotilo</th>
+						</thead>
+						<tbody>
+							{{#each ./results.ballots as |ballotEntry|}}
+								<tr>
+									<td>{{lookup voteRoot.usersVotedNames ballotEntry.user_id}}</td>
+									<td>
+										{{#switch voteRoot.type}}
+											{{#case 'jns'}}
+												{{#switch ballotEntry.ballot}}
+													{{#case 'j'}}Jes{{/case}}
+													{{#case 'n'}}Ne{{/case}}
+													{{#case 's'}}Sindetene{{/case}}
+												{{/switch}}
+											{{/case}}
+											{{#case 'pr'}}
+												<ul>
+													{{#each (split ballotEntry.ballot "
+") as |ballotRow|}}
+														<li>
+															{{#each (split ballotRow ",") as |ballotCol|}}
+																{{lookup voteRoot.opts ballotCol}}{{#unless @last}},{{/unless}}
+															{{/each}}
+														</li>
+													{{/each}}
+												</ul>
+											{{/case}}
+											{{#case 'utv'}}
+												<ul>
+													{{#each (split ballotEntry.ballot "
+") as |ballotRow|}}
+														<li>
+															{{lookup voteRoot.opts ballotRow}}
+														</li>
+													{{/each}}
+												</ul>
+											{{/case}}
+										{{/switch}}
+									</td>
+								</tr>
+							{{/each}}
+						</tbody>
+					</table>
+				{{/unless}}
 			</td>
 		</tr>
 		{{/if}}

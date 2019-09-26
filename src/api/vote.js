@@ -84,6 +84,7 @@ export async function getUserVotes (user) {
 		const userIdsVoted = (await CR.db.votes.prepare('SELECT user_id FROM votes_ballots WHERE vote_id = ?').all(vote.id)).map(x => x.user_id);
 		vote.numBallotsCast = userIdsVoted.length;
 		vote.usersNotVoted = usersAllowedToVote.filter(u => !userIdsVoted.includes(u.id));
+		vote.usersVoted = usersAllowedToVote.filter(u => userIdsVoted.includes(u.id));
 
 		vote.hasEnded = vote.timeTo < moment().unix();
 
@@ -162,7 +163,7 @@ export async function getUserVotes (user) {
 					results.isSindeteno = false;
 				} else if (vote.type === 'utv') {
 					results.ballotsStr = results.ballots.map(ballotObj => {
-						return ballotObj.ballot.split('\n').map((x, i) => symbols[i]).join('');
+						return ballotObj.ballot.split('\n').map(x => symbols[x]).join('');
 					});
 					let tieBreakerBallot = undefined;
 					if (vote.tieBreakerBallot) {

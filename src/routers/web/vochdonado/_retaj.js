@@ -5,6 +5,11 @@ async function index (req, res, next) { // eslint-disable-line no-unused-vars
 	const votes = await CRVote.getUserVotes(req.user);
 	for (let vote of votes) {
 		vote.usersNotVotedNames = vote.usersNotVoted.map(u => u.getLongName() || u.email);
+		
+		vote.usersVotedNames = {};
+		for (let user of vote.usersVoted) {
+			vote.usersVotedNames[user.id] = user.getLongName() || user.email;
+		}
 	}
 
 	const allGroups = await Group.getAllGroups();
