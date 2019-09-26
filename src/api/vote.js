@@ -223,7 +223,6 @@ export async function getUserVotes (user) {
 		if (vote.results) {
 			vote.numAllowedToVote = vote.results.numAllowedToVote;
 		}
-		console.log(vote.results);
 
 		return vote;
 	}));
