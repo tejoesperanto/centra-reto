@@ -142,7 +142,10 @@ export async function getUserVotes (user) {
 							tieBreakerBallot // tieBreaker, if one exists
 						);
 						results.vochoAliases = symbols.substring(0, vote.opts.length).split('');
-						results.vochoAliasesInverse = results.vochoAliases.map(x => vote.opts[symbols.indexOf(x)]);
+						results.vochoAliasesInverse = {};
+						for (let alias of results.vochoAliases) {
+							results.vochoAliasesInverse[alias] = vote.opts[symbols.indexOf(alias)];
+						}
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
 							results.result = 'TIE_BREAKER_NEEDED';
@@ -174,7 +177,10 @@ export async function getUserVotes (user) {
 							tieBreakerBallot // tieBreaker, if one exists
 						);
 						results.vochoAliases = symbols.substring(0, vote.opts.length).split('');
-						results.vochoAliasesInverse = results.vochoAliases.map(x => vote.opts[symbols.indexOf(x)]);
+						results.vochoAliasesInverse = {};
+						for (let alias of results.vochoAliases) {
+							results.vochoAliasesInverse[alias] = vote.opts[symbols.indexOf(alias)];
+						}
 					} catch (e) {
 						if (e.type === 'TIE_BREAKER_NEEDED') {
 							results.result = 'TIE_BREAKER_NEEDED';
@@ -211,7 +217,7 @@ export async function getUserVotes (user) {
 				}
 
 			}
-			vote.results = results;
+			vote.results = JSON.parse(JSON.stringify(results));
 		}
 		if (vote.results) {
 			vote.numAllowedToVote = vote.results.numAllowedToVote;

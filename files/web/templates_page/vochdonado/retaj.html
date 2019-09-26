@@ -291,6 +291,65 @@
 								{{./results.tally.j}} jesis, {{./results.tally.n}} neis, {{./results.tally.s}} sindetenis
 							</p>
 						{{/case}}
+						{{#case 'pr'}}
+							{{#if ./results.vochoResults}}
+								<p>Egalecrompanto {{#unless ./tieBreakerBallot}}ne{{/unless}} estis bezonata.</p>
+								<p>{{./results.vochoResults.ballots}} balotiloj kalkulitaj, {{./results.vochoResults.blankBallots}} blankaj</p>
+								<p>Komparitaj paroj:</p>
+								<table class="table table-striped">
+									<thead>
+										<th>Paro</th>
+										<th>Gajnanto</th>
+										<th>Diferenco</th>
+									</thead>
+									<tbody>
+										{{#each ./results.vochoResults.rankedPairs as |rankedPair|}}
+											<tr>
+												<td>
+													{{lookup voteRoot.results.vochoAliasesInverse rankedPair.[0].[0]}}
+													({{lookup rankedPair.[1] rankedPair.[0].[0]}})
+
+													kontraŭ
+
+													{{lookup voteRoot.results.vochoAliasesInverse rankedPair.[0].[1]}}
+													({{lookup rankedPair.[1] rankedPair.[0].[1]}})
+												</td>
+												<td>
+													{{lookup voteRoot.results.vochoAliasesInverse rankedPair.1.winner}}
+												</td>
+												<td>
+													{{abs rankedPair.1.diff}}
+												</td>
+											</tr>
+										{{/each}}
+									</tbody>
+								</table>
+								<p>Grafeo:</p>
+								<table class="table table-striped">
+									<thead>
+										<th>De</th>
+										<th>Al</th>
+									</thead>
+									<tbody>
+										{{#each ./results.vochoResults.graph as |graphValue graphKey|}}
+											<tr>
+												<td>
+													{{lookup voteRoot.results.vochoAliasesInverse graphKey}}
+												</td>
+												<td>
+													{{#each graphValue as |graphTo|}}
+														{{lookup voteRoot.results.vochoAliasesInverse graphTo}}{{#unless @last}},{{/unless}}
+													{{/each}}
+												</td>
+											</tr>
+										{{/each}}
+									</tbody>
+								</table>
+								<p>Venkinto: {{lookup voteRoot.results.vochoAliasesInverse voteRoot.results.vochoResults.winner}}</p>
+							{{else}}
+								Atendas egalecrompanton …
+							{{/if}}
+						{{/case}}
 						{{#case 'utv'}}
 							{{#if ./results.vochoResults}}
 								<p>Egalecrompanto {{#unless ./tieBreakerBallot}}ne{{/unless}} estis bezonata.</p>
