@@ -389,6 +389,7 @@ img.blur {
 
 .bs-searchbox>input {
 	margin-left: 38px !important;
+	width: calc(100% - 38px) !important;
 }
 
 /* Improve display of resizable textarea inside update card */
