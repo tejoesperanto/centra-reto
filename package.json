@@ -13,7 +13,7 @@
   "author": "Mia Nordentoft, TEJO",
   "license": "MIT",
   "dependencies": {
-    "bcrypt": "^3.0.2",
+    "bcrypt": "^5.0.0",
     "better-sqlite3": "^5.0.1",
     "canvas": "^2.2.0",
     "connect-flash": "^0.1.1",
