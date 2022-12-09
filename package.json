@@ -22,7 +22,7 @@
     "csurf": "^1.9.0",
     "csv-parse": "^4.4.6",
     "csv-stringify": "^5.0.0",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "express-rate-limit": "^3.3.2",
     "fs-extra": "^7.0.1",
     "handlebars": "^4.3.1",
