@@ -42,7 +42,7 @@
     "yargs-parser": "^11.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.1.5",
+    "@babel/core": "^7.20.7",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
     "@babel/preset-env": "^7.1.5",
     "babel-eslint": "^10.0.1",
