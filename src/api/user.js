@@ -66,6 +66,8 @@ class User {
 		const stmt = CR.db.users.prepare('update users set activation_key = ?, activation_key_time = ? where id = ?');
 		stmt.run(activationKey, activationKeyTime, this.id);
 
+		this.activationKey = activationKey;
+		this.activationKeyTime = activationKeyTime;
 		return activationKey;
 	}
 
